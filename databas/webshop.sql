@@ -25,13 +25,14 @@ DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `categories` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `staff_responsible` mediumint(8) unsigned NOT NULL,
-  PRIMARY KEY (`name`,`staff_responsible`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
   KEY `CATEGORY_STAFF_FK_idx` (`staff_responsible`),
   CONSTRAINT `CATEGORY_STAFF_FK` FOREIGN KEY (`staff_responsible`) REFERENCES `staff` (`id`) ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,8 +41,34 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES ('Books',27),('Films',27),('Computing',58),('Electronics',58),('Toys',62),('Children',63),('Clothes',63),('Gardening',63),('Mens',63),('Womens',63),('Sports & outdoors',71);
+INSERT INTO `categories` VALUES (1,'Books',27),(2,'Children',63),(3,'Clothes',63),(4,'Computing',58),(5,'Electronics',58),(6,'Films',27),(7,'Gardening',63),(8,'Mens',63),(9,'Sports & outdoors',71),(10,'Toys',62),(11,'Womens',63);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_categories`
+--
+
+DROP TABLE IF EXISTS `product_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `product_categories` (
+  `product_id` mediumint(8) unsigned NOT NULL,
+  `category_id` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`product_id`,`category_id`),
+  KEY `category_FK_idx` (`category_id`),
+  CONSTRAINT `product_FK` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `category_FK` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_categories`
+--
+
+LOCK TABLES `product_categories` WRITE;
+/*!40000 ALTER TABLE `product_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -123,7 +150,7 @@ CREATE TABLE `users` (
   `postcode` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,4 +171,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-21 13:09:33
+-- Dump completed on 2014-01-21 14:03:40
