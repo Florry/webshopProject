@@ -98,6 +98,34 @@ LOCK TABLES `products` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `shopping_cart`
+--
+
+DROP TABLE IF EXISTS `shopping_cart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shopping_cart` (
+  `user_id` mediumint(8) unsigned NOT NULL,
+  `product_id` mediumint(8) unsigned NOT NULL,
+  `quantity` int(4) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`user_id`,`product_id`),
+  KEY `product_FK_idx` (`product_id`),
+  KEY `product_shopping_FK_idx` (`product_id`),
+  CONSTRAINT `user_shopping_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `product_shopping_FK` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shopping_cart`
+--
+
+LOCK TABLES `shopping_cart` WRITE;
+/*!40000 ALTER TABLE `shopping_cart` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shopping_cart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `staff`
 --
 
@@ -171,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-21 14:03:40
+-- Dump completed on 2014-01-21 14:18:20
