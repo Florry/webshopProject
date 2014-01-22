@@ -1,12 +1,13 @@
-package se.jiv.webshop.main;
+package tmpPackage;
 
-import se.jiv.webshop.model.*;
+import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 import se.jiv.webshop.repository.dao.UserDAO;
 
-public class Main
+public class UserReposTest
 {
-	public static void main(String args[])
+	
+	public static void main(String[] args)
 	{
 		// TEST FILES
 		// ProductModel product1 = new ProductModel("apple", 20, "a fruit",
@@ -22,6 +23,6 @@ public class Main
 		
 		userdb.addUser(user1);
 		user2 = userdb.getUser(1);
-
 	}
+	
 }
