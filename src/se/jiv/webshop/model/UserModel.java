@@ -55,6 +55,11 @@ public final class UserModel
 		return email;
 	}
 	
+	public String getPassword()
+	{
+		return password;
+	}
+	
 	public String getFirstname()
 	{
 		return firstname;
