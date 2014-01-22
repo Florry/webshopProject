@@ -271,6 +271,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
+	// addProductToCart KANNS VALDIGT FULT!!!!!!!
 	public void addProductToCart(UserModel user, int id)
 	{
 		Connection conn = null;
