@@ -7,25 +7,25 @@ public final class ProductModel
 	double cost;
 	double rrp;
 
-	ProductModel(String name, double cost)
+	public ProductModel(String name, double cost)
 	{
 		this.name = name;
 		this.cost = cost;
 	}
 
-	ProductModel(String name, double cost, String description)
+	public ProductModel(String name, double cost, String description)
 	{
 		this(name, cost);
 		this.description = description;
 	}
 
-	ProductModel(String name, double cost, double rrp)
+	public ProductModel(String name, double cost, double rrp)
 	{
 		this(name, cost);
 		this.rrp = rrp;
 	}
 
-	ProductModel(String name, double cost, String description, double rrp)
+	public ProductModel(String name, double cost, String description, double rrp)
 	{
 		this(name, cost, description);
 		this.rrp = rrp;
