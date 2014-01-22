@@ -6,13 +6,13 @@ import se.jiv.webshop.model.UserModel;
 
 public interface UserRepository
 {
-	void createUser(UserModel user);
+	public UserModel createUser(UserModel user);
 	
-	void updateUser(UserModel user);
+	public UserModel updateUser(UserModel user);
 	
-	void removeUser(UserModel user);
+	public void removeUser(UserModel user);
 	
-	UserModel getUser(String id);
+	public UserModel getUser(String id);
 	
-	List<UserModel> getAllUsers();
+	public List<UserModel> getAllUsers();
 }
