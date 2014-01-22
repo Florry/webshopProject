@@ -18,7 +18,7 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 		try {
 			conn = getConnection();
 
-			String sql = "INSERT INTO categories values(name, staff_responsible)"
+			String sql = "INSERT INTO categories (name, staff_responsible)"
 					+ "VALUES (?, ?)";
 
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
