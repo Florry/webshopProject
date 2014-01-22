@@ -9,19 +9,23 @@ public class Main
 	public static void main(String args[])
 	{
 		// TEST FILES
-		// ProductModel product1 = new ProductModel("apple", 20, "a fruit",
-		// 300);
-		UserModel user1 = new UserModel("apple@apple.com", "Password001", "Bob", "Johnson",
-				"1940-03-04", "0704438573", "Roadrd. 2", "C/O bobson", "New York", "19587");
-		UserModel user2;
-		
-		// System.out.println(String.format("%s %n%n%s", product1.toString(),
-		// user1.toString()));
-		
 		UserRepository userdb = new UserDAO();
 		
-		userdb.addUser(user1);
-		user2 = userdb.getUser(1);
-
+		UserModel user1 = new UserModel("goranGorsson@vitaedolor.co.uk", "Montenegro", "Orlando",
+				"Richmond", "2010-02-01", "0391 352 5730", "P.O. Box 336, 2373 Eleifend, Road",
+				"Maldives", "Midlands", "3332");
+		
+		// userdb.addUser(user1);
+		
+		System.out.println(userdb.getAllUsers().toString());
+		System.out.println(userdb.getUserId(user1));
+		
+		for (int i = 0; i < 1; i++)
+		{
+			userdb.addProductToCart(userdb.getUser("goranGorsson@vitaedolor.co.uk"), 1);
+			System.out.println("+1");
+		}
+		// userdb.removeFromCart(user1, 1);
+		
 	}
 }

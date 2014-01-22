@@ -2,6 +2,7 @@ package se.jiv.webshop.repository;
 
 import java.util.List;
 
+import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.model.UserModel;
 
 public interface UserRepository
@@ -12,7 +13,14 @@ public interface UserRepository
 	
 	public void deleteUser(UserModel user);
 	
-	public UserModel getUser(Integer id);
+	public UserModel getUser(String email);
+	
+	public int getUserId(UserModel user);
 	
 	public List<UserModel> getAllUsers();
+	
+	public void addProductToCart(UserModel user, int id);
+	
+	public void removeFromCart(UserModel user, int id);
+	
 }

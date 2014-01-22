@@ -13,6 +13,13 @@ public final class UserModel
 	private final String town;
 	private final String postcode;
 	
+	public UserModel(UserModel user)
+	{
+		this(user.getEmail(), user.getPassword(), user.getFirstname(), user.getLastname(), user
+				.getDob(), user.getTelephone(), user.getAddress1(), user.getAddress2(), user
+				.getTown(), user.getPostcode());
+	}
+	
 	public UserModel(String email, String password, String firstname, String lastname,
 			String address1, String town, String postcode)
 	{
@@ -103,7 +110,7 @@ public final class UserModel
 	public String toString()
 	{
 		return String.format(
-				"User: %s Firstname: %s Lastname: %s Dob: %s Telephone: %s Address: %s %s %s %s",
+				"User: %s Firstname: %s Lastname: %s Dob: %s Telephone: %s Address: %s %s %s %s ",
 				getEmail(), getFirstname(), getLastname(), getDob(), getTelephone(), getAddress1(),
 				getAddress2(), getTown(), getPostcode());
 	}
