@@ -18,8 +18,8 @@ public abstract class GeneralDAO {
 
 		return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 	}
-	
-	protected void close(ResultSet rs){
+
+	protected void close(ResultSet rs) {
 		if (rs != null) {
 			try {
 				rs.close();
@@ -29,8 +29,8 @@ public abstract class GeneralDAO {
 			rs = null;
 		}
 	}
-	
-	protected void close(Statement stmt){
+
+	protected void close(Statement stmt) {
 		if (stmt != null) {
 			try {
 				stmt.close();
@@ -40,8 +40,8 @@ public abstract class GeneralDAO {
 			stmt = null;
 		}
 	}
-	
-	protected void close(Connection conn){
+
+	protected void close(Connection conn) {
 		if (conn != null) {
 			try {
 				conn.close();
@@ -54,13 +54,13 @@ public abstract class GeneralDAO {
 		close(rs);
 		close(stmt);
 		close(conn);
-		
+
 	}
-	
+
 	protected void close(Statement stmt, Connection conn) {
 		close(null, stmt, conn);
 	}
-	
+
 	protected void close(ResultSet rs, Statement stmt) {
 		close(rs, stmt, null);
 	}
