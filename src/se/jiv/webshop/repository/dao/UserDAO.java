@@ -272,7 +272,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	
 	@Override
 	// addProductToCart KANNS VALDIGT FULT!!!!!!!
-	public void addProductToCart(UserModel user, int id)
+	public void addProductToCart(UserModel user, Integer id)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -356,7 +356,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public void removeFromCart(UserModel user, int id)
+	public void removeFromCart(UserModel user, Integer id)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;

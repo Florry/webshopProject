@@ -1,15 +1,16 @@
 package se.jiv.webshop.main;
 
 import se.jiv.webshop.model.*;
-import se.jiv.webshop.repository.UserRepository;
 import se.jiv.webshop.repository.dao.UserDAO;
+import se.jiv.webshop.service.UserService;
 
 public class Main
 {
 	public static void main(String args[])
 	{
 		// TEST FILES
-		UserRepository userdb = new UserDAO();
+		// UserRepository userdb = new UserDAO();
+		UserService userdb = new UserService(new UserDAO());
 		
 		UserModel user1 = new UserModel("goranGorsson@vitaedolor.co.uk", "Montenegro", "Orlando",
 				"Richmond", "2010-02-01", "0391 352 5730", "P.O. Box 336, 2373 Eleifend, Road",
