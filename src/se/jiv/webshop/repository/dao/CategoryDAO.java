@@ -31,6 +31,8 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 				generatedId = rs.getInt(1);
 			}
 			
+			return new CategoryModel(generatedId, category);
+			
 			
 		}catch(SQLException e){
 			
