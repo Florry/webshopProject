@@ -33,17 +33,7 @@ public final class CategoryModel {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Id: ");
-		sb.append(id);
-		
-		sb.append("Name: ");
-		sb.append(name);
-		
-		sb.append("Staff_Responsible: ");
-		sb.append(staff_responsible);
-	
-		return sb.toString();
+		return String.format("Id: %s, Name: %s, Straff_responsible: %s",id, name, staff_responsible);
 	}
 	
 }
