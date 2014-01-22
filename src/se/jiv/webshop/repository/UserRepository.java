@@ -10,7 +10,7 @@ public interface UserRepository
 	
 	public UserModel updateUser(UserModel user);
 	
-	public void removeUser(UserModel user);
+	public void deleteUser(UserModel user);
 	
 	public UserModel getUser(String id);
 	
