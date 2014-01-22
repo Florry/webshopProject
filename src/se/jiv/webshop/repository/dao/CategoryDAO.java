@@ -37,7 +37,7 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 		}catch(SQLException e){
 			
 		}finally{
-			close(pstmt, conn);
+			close(rs, pstmt, conn);
 		}
 		
 		return null;
