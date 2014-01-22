@@ -7,10 +7,14 @@ public final class CategoryModel {
 	private String name;
 	private Integer staff_responsible;
 
-	public CategoryModel(String name, Integer staff_responsible) {
-		this.id = DEFAULT_ID;
+	public CategoryModel(Integer id, String name, Integer staff_responsible) {
+		this.id = id;
 		this.name = name;
 		this.staff_responsible = staff_responsible;
+	}
+	
+	public CategoryModel(String name, Integer staff_responsible) {
+		this(DEFAULT_ID, name, staff_responsible);
 	}
 
 	public CategoryModel(Integer id, CategoryModel other) {
@@ -23,7 +27,7 @@ public final class CategoryModel {
 		this(other.id, other);
 	}
 
-	public Integer getId() {
+		public Integer getId() {
 		return id;
 	}
 
