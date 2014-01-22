@@ -19,12 +19,17 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			
 			String sql = "INSERT INTO categories values(name, staff_responsible)"
 					+ "VALUES (?, ?)";
-			
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, category.getName());
 			pstmt.setInt(2, category.getStaff_responsible());
 			
 			pstmt.executeUpdate();
+			;
+			Integer generatedId = CategoryModel.DEFAULT_ID;
+			rs = pstmt.getGeneratedKeys();
+			if(rs.next()){
+				generatedId = rs.getInt(1);
+			}
 			
 			
 		}catch(SQLException e){
