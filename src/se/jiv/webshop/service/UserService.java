@@ -1,6 +1,8 @@
 package se.jiv.webshop.service;
 
 import java.util.List;
+import java.util.Map;
+
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
@@ -56,5 +58,10 @@ public final class UserService
 	public void removeFromCart(UserModel user, Integer id)
 	{
 		userRepository.removeFromCart(user, id);
+	}
+	
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+	{
+		return userRepository.getShoppingCartContents(user);
 	}
 }

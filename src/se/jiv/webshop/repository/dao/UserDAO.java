@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.model.ProductModel;
@@ -283,9 +285,10 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			conn = getConnection();
 			
-			String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ?";
+			String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, getUserId(user));
+			pstmt.setInt(2, id);
 			
 			int db_quantity;
 			
@@ -379,6 +382,43 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			close(rs, pstmt, conn);
 		}
+		
+	}
+	
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Map<Integer, Integer> contents = new LinkedHashMap<Integer, Integer>();
+		
+		try
+		{
+			conn = getConnection();
+			
+			String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_id = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, getUserId(user));
+			
+			rs = pstmt.executeQuery();
+			
+			while (rs.next())
+			{
+				contents.put(rs.getInt("product_id"), rs.getInt("quantity"));
+			}
+			
+			return contents;
+			
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			close(rs, pstmt, conn);
+		}
+		
+		return null;
 		
 	}
 }

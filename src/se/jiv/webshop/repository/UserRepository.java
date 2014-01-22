@@ -1,6 +1,7 @@
 package se.jiv.webshop.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.model.UserModel;
@@ -22,5 +23,7 @@ public interface UserRepository
 	public void addProductToCart(UserModel user, Integer id);
 	
 	public void removeFromCart(UserModel user, Integer id);
+	
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user);
 	
 }
