@@ -102,12 +102,4 @@ public final class UserModel
 				getEmail(), getFirstname(), getLastname(), getDob(), getTelephone(), getAddress1(),
 				getAddress2(), getTown(), getPostcode());
 	}
-	
-	// public static void main(String args[])
-	// {
-	// UserModel user = new UserModel("test@test.se", "lol", "bob", "bobson",
-	// "2010-02-23",
-	// "0703298678", "address field 1", "address field 2", "sthlm", "14462");
-	// System.out.println(user.toString());
-	// }
 }
