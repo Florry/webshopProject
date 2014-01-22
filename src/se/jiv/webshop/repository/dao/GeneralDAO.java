@@ -5,8 +5,8 @@ import java.sql.*;
 public abstract class GeneralDAO {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	static final String DB_URL = "jdbc:mysql://localhost/webshop";
-	static final String DB_USER = "webshop_service";
-	static final String DB_PASSWORD = "password";
+	static final String DB_USER = "javamaster";
+	static final String DB_PASSWORD = "java";
 
 	protected Connection getConnection() throws SQLException {
 		try {
