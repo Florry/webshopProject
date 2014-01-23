@@ -3,21 +3,21 @@ package se.jiv.webshop.model;
 public final class CategoryModel {
 	public static final int DEFAULT_ID = -1;
 
-	private Integer id;
+	private int id;
 	private String name;
-	private Integer staff_responsible;
+	private int staff_responsible;
 
-	public CategoryModel(Integer id, String name, Integer staff_responsible) {
+	public CategoryModel(int id, String name, int staff_responsible) {
 		this.id = id;
 		this.name = name;
 		this.staff_responsible = staff_responsible;
 	}
 
-	public CategoryModel(String name, Integer staff_responsible) {
+	public CategoryModel(String name, int staff_responsible) {
 		this(DEFAULT_ID, name, staff_responsible);
 	}
 
-	public CategoryModel(Integer id, CategoryModel other) {
+	public CategoryModel(int id, CategoryModel other) {
 		this.id = id;
 		this.name = other.name;
 		this.staff_responsible = other.staff_responsible;
@@ -27,7 +27,7 @@ public final class CategoryModel {
 		this(other.id, other);
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -35,7 +35,7 @@ public final class CategoryModel {
 		return name;
 	}
 
-	public Integer getStaff_responsible() {
+	public int getStaff_responsible() {
 		return staff_responsible;
 	}
 
