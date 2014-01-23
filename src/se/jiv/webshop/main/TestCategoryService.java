@@ -2,6 +2,7 @@ package se.jiv.webshop.main;
 
 import java.util.List;
 
+import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 import se.jiv.webshop.service.CategoryService;
@@ -13,52 +14,112 @@ public final class TestCategoryService {
 		}
 	}
 
+	private static void testGetAllCategories(CategoryService service) {
+		List<CategoryModel> categories = null;
+		try {
+			categories = service.getAllCategories();
+			printAll(categories);
+		} catch (WebshopAppException e) {
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+		}
+	}
+
+	private static CategoryModel testGetCategory(CategoryService service, int id) {
+		CategoryModel category = null;
+		try {
+			category = service.getCategory(id);
+			System.out.println(category);
+
+			return category;
+		} catch (WebshopAppException e) {
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+		}
+		return null;
+	}
+
+	private static CategoryModel testAddCategory(CategoryService service,
+			CategoryModel category) {
+		try {
+			System.out.println("Trying to add: \n" + category);
+			category = service.addCategory(category);
+			System.out.println("It worked!!");
+			System.out.println("Object returned from the service: \n" + category);
+			return category;
+		} catch (WebshopAppException e) {
+			System.out.println("It NOT worked!!");
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+		}
+		return null;
+	}
+	
+	private static boolean testDeleteCategory(CategoryService service, int id) {
+		try {
+			boolean deleted = service.deleteCategory(id);
+			System.out.println("Was it removed?: " + deleted);
+			return deleted;
+		} catch (WebshopAppException e) {
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+		}
+		return false;
+	}
+
 	public static void main(String[] args) {
 		CategoryService service = new CategoryService(new CategoryDAO());
 
 		System.out.println("---------------------------------------");
 		System.out.println("GET ALL CATEGORIES");
 		System.out.println("---------------------------------------");
-		List<CategoryModel> categories = service.getAllCategories();
-		printAll(categories);
+		System.out.println("All categories in BBDD");
+		testGetAllCategories(service);
 
 		System.out.println("---------------------------------------");
-		System.out.println("GET CATEGORY BY ID 4");
+		System.out.println("GET CATEGORY BY ID");
 		System.out.println("---------------------------------------");
-		System.out.println("A finded category");
-		CategoryModel category = service.getCategory(4);
-		System.out.println(category);
+		System.out.println("We get a category that exist in BBDD(ID=4)");
+		testGetCategory(service, 4);
 
-		System.out.println("\nA not finded category");
-		category = service.getCategory(400000);
-		System.out.println(category);
+		System.out.println("\nWe try to get a category that not exist in BBDD(ID=4000)");
+		testGetCategory(service, 40000);
 
 		System.out.println("---------------------------------------");
 		System.out.println("ADD CATEGORY");
 		System.out.println("---------------------------------------");
-		CategoryModel categoryAdded = new CategoryModel("Cameras", 27);
-		categoryAdded = service.addCategory(categoryAdded);
-		System.out.println("returned from service: " + categoryAdded);
+		System.out.println("We add a new category");
+		CategoryModel categoryAdded = testAddCategory(service,
+				new CategoryModel("Cameras test add", 27));
+		System.out.println("We get the new categoy from BBDD(to compare): ");
+		testGetCategory(service, categoryAdded.getId());
 
-		categoryAdded = service.getCategory(categoryAdded.getId());
-		System.out.println("\nreturned from Databas: " + categoryAdded);
-
+		System.out.println("\nTesting errors:");
+		System.out.println("- insert a category without a name (null)");
+		testAddCategory(service,
+				new CategoryModel(null, 27));
+		
+		System.out
+				.println("\n- insert a category with the same name that another existent (Cameras test add)");
+		testAddCategory(service,
+				new CategoryModel("Cameras test add", 27));
+		
+		System.out
+				.println("\n- insert a category with a not existing staff responsible(staff_id=4000000)");
+		testAddCategory(service,
+				new CategoryModel("asdfadsfaadsfafa", 4000000));
+		
 		System.out.println("---------------------------------------");
 		System.out.println("REMOVE CATEGORY");
 		System.out.println("---------------------------------------");
 		System.out
-				.println("We remove an category that exist(the previus added)");
-		boolean exit = service.deleteCategory(categoryAdded.getId());
-		System.out.println("it was exit: " + exit);
-
-		System.out.println("\nWe remove an category that NOT exist");
-		exit = service.deleteCategory(4000);
-		System.out.println("it was exit: " + exit);
-
-		System.out.println("\nprint alla categories again:");
-		categories = service.getAllCategories();
-		printAll(categories);
+				.println("We remove an category that exist(the previus added with id=" + categoryAdded.getId() + ")");
+		testDeleteCategory(service, categoryAdded.getId());
+				System.out.println("\nWe remove an category that NOT exist(id=4000000)");
+		testDeleteCategory(service, 4000000);
+		
+		System.out.println("---------------------------------------");
+		System.out.println("TEST ENDED");
+		System.out.println("---------------------------------------");
+		System.out
+				.println("All categories in BBDD (It should be exactly the same that the start list)");
+		testGetAllCategories(service);
 
 	}
-
 }

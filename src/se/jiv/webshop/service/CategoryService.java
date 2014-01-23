@@ -2,6 +2,7 @@ package se.jiv.webshop.service;
 
 import java.util.List;
 
+import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.CategoryRepository;
 
@@ -12,19 +13,20 @@ public final class CategoryService {
 		this.categoryRepository = categoryRepository;
 	}
 
-	public CategoryModel addCategory(CategoryModel category) {
+	public CategoryModel addCategory(CategoryModel category)
+			throws WebshopAppException {
 		return categoryRepository.addCategory(category);
 	}
 
-	public CategoryModel getCategory(Integer id) {
+	public CategoryModel getCategory(int id) throws WebshopAppException {
 		return categoryRepository.getCategory(id);
 	}
 
-	public List<CategoryModel> getAllCategories() {
+	public List<CategoryModel> getAllCategories() throws WebshopAppException {
 		return categoryRepository.getAllCategories();
 	}
 
-	public boolean deleteCategory(Integer id) {
+	public boolean deleteCategory(int id) throws WebshopAppException {
 		return categoryRepository.deleteCategory(id);
 	}
 }

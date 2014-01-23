@@ -22,7 +22,7 @@ public class UserReposTest
 		UserRepository userdb = new UserDAO();
 		
 		userdb.addUser(user1);
-		user2 = userdb.getUser(1);
+//		user2 = userdb.getUser(1);
 	}
 	
 }
