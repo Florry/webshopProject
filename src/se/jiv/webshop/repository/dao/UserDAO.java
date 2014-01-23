@@ -369,9 +369,10 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			conn = getConnection();
 			
-			String sql = "DELETE FROM shopping_cart WHERE user_id = ?";
+			String sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, getUserId(user));
+			pstmt.setInt(2, id);
 			
 			pstmt.executeUpdate();
 			

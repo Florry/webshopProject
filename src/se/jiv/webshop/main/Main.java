@@ -14,10 +14,12 @@ public class Main
 		// TEST FILES
 		UserService userService = new UserService(new UserDAO());
 		
-		UserModel user1 = userService.getUser("dic2tum@neque.edu");
+		UserModel user1 = userService.getUser("sed2.facilisis@Proinnon.edu");
 		Map<Integer, Integer> contents = new LinkedHashMap<Integer, Integer>();
 		
 		contents = userService.getShoppingCartContents(user1);
+		
+		userService.removeFromCart(user1, 2);
 		
 		System.out.println(contents.toString());
 	}
