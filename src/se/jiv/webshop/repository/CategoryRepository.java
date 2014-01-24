@@ -10,6 +10,9 @@ public interface CategoryRepository {
 	public CategoryModel addCategory(CategoryModel category)
 			throws WebshopAppException;
 
+	public boolean updateCategory(CategoryModel category)
+			throws WebshopAppException;
+
 	public CategoryModel getCategory(int id) throws WebshopAppException;
 
 	public List<CategoryModel> getAllCategories() throws WebshopAppException;

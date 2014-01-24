@@ -18,6 +18,11 @@ public final class CategoryService {
 		return categoryRepository.addCategory(category);
 	}
 
+	public boolean updateCategory(CategoryModel category)
+			throws WebshopAppException {
+		return categoryRepository.updateCategory(category);
+	}
+
 	public CategoryModel getCategory(int id) throws WebshopAppException {
 		return categoryRepository.getCategory(id);
 	}

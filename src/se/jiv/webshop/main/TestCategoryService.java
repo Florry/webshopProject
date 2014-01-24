@@ -52,6 +52,20 @@ public final class TestCategoryService {
 		return null;
 	}
 	
+	private static boolean testUpdateCategory(CategoryService service,
+			CategoryModel category) {
+		try {
+			System.out.println("Before the update in BBDD have the value: ");
+			testGetCategory(service, category.getId());
+			boolean updated = service.updateCategory(category);
+			System.out.println("Was it updated: " + updated);
+			return updated;
+		} catch (WebshopAppException e) {
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+		}
+		return false;
+	}
+	
 	private static boolean testDeleteCategory(CategoryService service, int id) {
 		try {
 			boolean deleted = service.deleteCategory(id);
@@ -104,6 +118,29 @@ public final class TestCategoryService {
 				.println("\n- insert a category with a not existing staff responsible(staff_id=4000000)");
 		testAddCategory(service,
 				new CategoryModel("asdfadsfaadsfafa", 4000000));
+		
+		System.out.println("---------------------------------------");
+		System.out.println("UPDATE CATEGORY");
+		System.out.println("---------------------------------------");
+		System.out.println("Update the category inserted, set desc to (Cameras test add 2) ");
+		testUpdateCategory(service,
+				new CategoryModel(categoryAdded.getId(),categoryAdded.getName() + " 2", categoryAdded.getStaff_responsible()));
+		System.out.println("After the update retrieve from BBDD(to compare): ");
+		testGetCategory(service, categoryAdded.getId());
+		
+		System.out.println("\nTesting errors:");
+		System.out.println("- update a category without a name (null)");
+		testUpdateCategory(service,
+				new CategoryModel(categoryAdded.getId(),null, 27));
+		
+		System.out
+				.println("\n- update a category with the same name that another existent (Books)");
+		testUpdateCategory(service, new CategoryModel(categoryAdded.getId(),"Books", categoryAdded.getStaff_responsible()));
+		
+		System.out
+				.println("\n- update a category with a not existing staff responsible(staff_id=4000000)");
+		testUpdateCategory(service,
+				new CategoryModel(categoryAdded.getId(),"asdfadsfaadsfafa", 4000000));
 		
 		System.out.println("---------------------------------------");
 		System.out.println("REMOVE CATEGORY");

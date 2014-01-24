@@ -9,15 +9,21 @@ import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.CategoryRepository;
 
 public final class CategoryDAO extends GeneralDAO implements CategoryRepository {
-	
-	private CategoryModel parseResultSetToModel(ResultSet rs) throws SQLException{
+
+	private void prepareStatementFromModel(PreparedStatement pstmt,
+			CategoryModel category) throws SQLException {
+		setString(pstmt, 1, category.getName());
+		setInteger(pstmt, 2, category.getStaff_responsible());
+	}
+
+	private CategoryModel parseResultSetToModel(ResultSet rs)
+			throws SQLException {
 		int id = getInt(rs, "id");
 		String name = rs.getString("name");
-		int staff_responsible = getInt(rs,
-				"staff_responsible");
-		
+		int staff_responsible = getInt(rs, "staff_responsible");
+
 		return new CategoryModel(id, name, staff_responsible);
-		
+
 	}
 
 	@Override
@@ -30,8 +36,7 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 
 			try (PreparedStatement pstmt = conn.prepareStatement(sql,
 					Statement.RETURN_GENERATED_KEYS)) {
-				setString(pstmt, 1, category.getName());
-				setInteger(pstmt, 2, category.getStaff_responsible());
+				prepareStatementFromModel(pstmt, category);
 
 				pstmt.executeUpdate();
 
@@ -47,6 +52,28 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 
 		} catch (SQLException e) {
 			throw new WebshopAppException(e.getMessage(), "ADD_CATEGORY");
+		}
+	}
+
+	@Override
+	public boolean updateCategory(CategoryModel category)
+			throws WebshopAppException {
+		try (Connection conn = getConnection()) {
+
+			String sql = "UPDATE categories SET name = ?, staff_responsible= ? "
+					+ "WHERE id = ?";
+
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				prepareStatementFromModel(pstmt, category);
+				setInteger(pstmt, 3, category.getId());
+
+				pstmt.executeUpdate();
+
+				return true;
+			}
+
+		} catch (SQLException e) {
+			throw new WebshopAppException(e.getMessage(), "UPDATED_CATEGORY");
 		}
 	}
 
@@ -110,17 +137,13 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 				pstmt.setInt(1, id);
 
 				int result = pstmt.executeUpdate();
-				
-				if (result > 0) {
-					return true;
-				}
+
+				return result > 0;
 			}
 
 		} catch (SQLException e) {
 			throw new WebshopAppException(e.getMessage(), "DELETE_CATEGORY");
 		}
-
-		return false;
 	}
 
 }

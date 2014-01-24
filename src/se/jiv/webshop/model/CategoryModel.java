@@ -18,9 +18,7 @@ public final class CategoryModel {
 	}
 
 	public CategoryModel(int id, CategoryModel other) {
-		this.id = id;
-		this.name = other.name;
-		this.staff_responsible = other.staff_responsible;
+		this(id, other.name, other.staff_responsible);
 	}
 
 	public int getId() {

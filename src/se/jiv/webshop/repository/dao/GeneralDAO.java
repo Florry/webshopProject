@@ -64,27 +64,27 @@ public abstract class GeneralDAO {
 	protected void close(ResultSet rs, Statement stmt) {
 		close(rs, stmt, null);
 	}
-	
-	public void setString(PreparedStatement pstmt, int pos,
-			String value) throws SQLException {
-		if(value == null){
+
+	public void setString(PreparedStatement pstmt, int pos, String value)
+			throws SQLException {
+		if (value == null) {
 			pstmt.setNull(pos, Types.VARCHAR);
-		}else{
+		} else {
 			pstmt.setString(pos, value);
 		}
 	}
 
-	public void setInteger(PreparedStatement pstmt, int pos,
-			Integer value) throws SQLException {
-		if(value == null){
+	public void setInteger(PreparedStatement pstmt, int pos, Integer value)
+			throws SQLException {
+		if (value == null) {
 			pstmt.setNull(pos, Types.INTEGER);
-		}else{
+		} else {
 			pstmt.setInt(pos, value);
 		}
 	}
-	
-	public int getInt(ResultSet rs, String column) throws SQLException{
+
+	public int getInt(ResultSet rs, String column) throws SQLException {
 		Integer integer = rs.getInt(column);
-		return (integer ==  null)?-1:integer;
+		return (integer == null) ? -1 : integer;
 	}
 }
