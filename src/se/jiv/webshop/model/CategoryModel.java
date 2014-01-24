@@ -23,10 +23,6 @@ public final class CategoryModel {
 		this.staff_responsible = other.staff_responsible;
 	}
 
-	public CategoryModel(CategoryModel other) {
-		this(other.id, other);
-	}
-
 	public int getId() {
 		return id;
 	}

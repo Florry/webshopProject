@@ -81,6 +81,10 @@ public abstract class GeneralDAO {
 		}else{
 			pstmt.setInt(pos, value);
 		}
-		
+	}
+	
+	public int getInt(ResultSet rs, String column) throws SQLException{
+		Integer integer = rs.getInt(column);
+		return (integer ==  null)?-1:integer;
 	}
 }
