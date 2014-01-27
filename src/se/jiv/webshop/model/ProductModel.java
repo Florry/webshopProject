@@ -1,5 +1,8 @@
 package se.jiv.webshop.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ProductModel
 {
 	String name;
@@ -7,11 +10,13 @@ public final class ProductModel
 	double cost;
 	double rrp;
 	int id;
+	List<String> categories;
 
 	public ProductModel(String name, double cost)
 	{
 		this.name = name;
 		this.cost = cost;
+		categories = new ArrayList<>();
 	}
 
 	public ProductModel(String name, double cost, String description)
