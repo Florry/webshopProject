@@ -3,6 +3,7 @@ package se.jiv.webshop.service;
 import java.util.List;
 import java.util.Map;
 
+import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
@@ -21,9 +22,9 @@ public final class UserService
 		
 	}
 	
-	public UserModel updateUser(UserModel user)
+	public void updateUser(UserModel user)
 	{
-		return userRepository.updateUser(user);
+		userRepository.updateUser(user);
 		
 	}
 	
@@ -38,26 +39,25 @@ public final class UserService
 		
 	}
 	
-	public int getUserId(UserModel user)
-	{
-		return userRepository.getUserId(user);
-		
-	}
-	
 	public List<UserModel> getAllUsers()
 	{
 		return userRepository.getAllUsers();
 		
 	}
 	
-	public void addProductToCart(UserModel user, Integer id)
+	public void addProductToCart(UserModel user, int id, int quantity) throws WebshopAppException
 	{
-		userRepository.addProductToCart(user, id);
+		userRepository.addProductToCart(user, id, quantity);
 	}
 	
-	public void removeFromCart(UserModel user, Integer id)
+	public void removeFromCart(UserModel user, Integer id, int quantity)
 	{
-		userRepository.removeFromCart(user, id);
+		userRepository.removeFromCart(user, id, quantity);
+	}
+	
+	public void updateCart(UserModel user, int productId, int quantity)
+	{
+		userRepository.updateCart(user, productId, quantity);
 	}
 	
 	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
