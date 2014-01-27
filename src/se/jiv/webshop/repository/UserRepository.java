@@ -3,7 +3,6 @@ package se.jiv.webshop.repository;
 import java.util.List;
 import java.util.Map;
 
-import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.model.UserModel;
 
 public interface UserRepository

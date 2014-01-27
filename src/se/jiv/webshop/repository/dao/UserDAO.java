@@ -4,14 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.jiv.webshop.model.CategoryModel;
-import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
@@ -272,6 +269,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		return null;
 	}
 	
+	@SuppressWarnings("resource")
 	@Override
 	public void addProductToCart(UserModel user, int id)
 	{
