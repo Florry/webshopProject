@@ -179,6 +179,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 		return false;
 	}
 
+
 	@Override
 	public boolean deleteProduct(String name)
 	{
@@ -238,8 +239,6 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 		
 		return false;
 	}
-	
-	 
 
 	@Override
 	public List<ProductModel> getProductByName(String productName)
