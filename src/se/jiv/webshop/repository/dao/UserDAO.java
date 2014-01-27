@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
@@ -28,7 +30,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 			String sql = "INSERT INTO users (email, password, firstname, lastname, dob, telephone, address1, address2, town, postcode)"
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, user.getEmail());
 			pstmt.setString(2, user.getPassword());
 			pstmt.setString(3, user.getFirstname());
@@ -39,10 +41,17 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			pstmt.setString(8, user.getAddress2());
 			pstmt.setString(9, user.getTown());
 			pstmt.setString(10, user.getPostcode());
-			
 			pstmt.executeUpdate();
 			
-			return user;
+			int generatedId = 0;
+			rs = pstmt.getGeneratedKeys();
+			
+			if (rs.next())
+			{
+				generatedId = rs.getInt(1);
+			}
+			
+			return new UserModel(user, generatedId);
 			
 		} catch (SQLException e)
 		{
@@ -56,7 +65,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public UserModel updateUser(UserModel user)
+	public void updateUser(UserModel user)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -89,7 +98,6 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			close(pstmt, conn);
 		}
-		return user;
 	}
 	
 	@Override
@@ -102,7 +110,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			conn = getConnection();
 			
-			String sql = "DELETE FROM users " + "WHERE email = ?";
+			String sql = "DELETE FROM users WHERE email = ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, user.getEmail());
@@ -125,6 +133,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
+		int db_id = 0;
 		String db_email = null;
 		String db_password = null;
 		String db_firstname = null;
@@ -149,6 +158,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 			while (rs.next())
 			{
+				db_id = rs.getInt("id");
 				db_email = rs.getString("email");
 				db_password = rs.getString("password");
 				db_firstname = rs.getString("firstname");
@@ -160,7 +170,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 				db_town = rs.getString("town");
 				db_postcode = rs.getString("postcode");
 			}
-			return new UserModel(db_email, db_password, db_firstname, db_lastname, db_dob,
+			return new UserModel(db_id, db_email, db_password, db_firstname, db_lastname, db_dob,
 					db_telephone, db_address1, db_address2, db_town, db_postcode);
 			
 		} catch (SQLException e)
@@ -175,60 +185,12 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public int getUserId(UserModel user)
-	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		int id = 0;
-		
-		try
-		{
-			conn = getConnection();
-			
-			String sql = "SELECT id FROM users WHERE email = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, user.getEmail());
-			
-			rs = pstmt.executeQuery();
-			
-			if (rs.next())
-			{
-				id = rs.getInt("id");
-			}
-			return id;
-			
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		} finally
-		{
-			close(rs, pstmt, conn);
-		}
-		
-		return 0;
-	}
-	
-	@Override
 	public List<UserModel> getAllUsers()
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<UserModel> userList = new ArrayList<UserModel>();
-		
-		String db_email = null;
-		String db_password = null;
-		String db_firstname = null;
-		String db_lastname = null;
-		String db_dob = null;
-		String db_telephone = null;
-		String db_address1 = null;
-		String db_address2 = null;
-		String db_town = null;
-		String db_postcode = null;
 		
 		try
 		{
@@ -242,19 +204,21 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 			while (rs.next())
 			{
-				db_email = rs.getString("email");
-				db_password = rs.getString("password");
-				db_firstname = rs.getString("firstname");
-				db_lastname = rs.getString("lastname");
-				db_dob = "" + rs.getDate("dob");
-				db_telephone = rs.getString("telephone");
-				db_address1 = rs.getString("address1");
-				db_address2 = rs.getString("address2");
-				db_town = rs.getString("town");
-				db_postcode = rs.getString("postcode");
+				int db_int = rs.getInt("id");
+				String db_email = rs.getString("email");
+				String db_password = rs.getString("password");
+				String db_firstname = rs.getString("firstname");
+				String db_lastname = rs.getString("lastname");
+				String db_dob = "" + rs.getDate("dob");
+				String db_telephone = rs.getString("telephone");
+				String db_address1 = rs.getString("address1");
+				String db_address2 = rs.getString("address2");
+				String db_town = rs.getString("town");
+				String db_postcode = rs.getString("postcode");
 				
-				userList.add(new UserModel(db_email, db_password, db_firstname, db_lastname,
-						db_dob, db_telephone, db_address1, db_address2, db_town, db_postcode));
+				userList.add(new UserModel(db_int, db_email, db_password, db_firstname,
+						db_lastname, db_dob, db_telephone, db_address1, db_address2, db_town,
+						db_postcode));
 			}
 			return userList;
 			
@@ -269,92 +233,144 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		return null;
 	}
 	
-	@SuppressWarnings("resource")
 	@Override
-	public void addProductToCart(UserModel user, int id)
+	public void addProductToCart(UserModel user, int productId, int quantity)
+			throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		int quantity = 1;
 		
-		try
+		if (quantity >= 0)
 		{
-			conn = getConnection();
-			
-			String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, getUserId(user));
-			pstmt.setInt(2, id);
-			
-			rs = pstmt.executeQuery();
-			
-			int db_quantity;
-			
-			if (rs.next())
+			try
 			{
-				db_quantity = rs.getInt(quantity);
+				conn = getConnection();
 				
-				if (db_quantity > 0)
+				String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.setInt(2, productId);
+				
+				rs = pstmt.executeQuery();
+				
+				int db_quantity = 0;
+				
+				if (rs.next())
 				{
-					quantity += db_quantity;
+					db_quantity = rs.getInt(quantity);
+					
+					if (db_quantity > 0)
+					{
+						quantity += db_quantity;
+					}
 				}
-			}
-			if (quantity > 1)
-			{
-				sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, quantity);
-				pstmt.setInt(2, getUserId(user));
-				pstmt.setInt(3, id);
+				close(rs, pstmt);
+				if (db_quantity > 1)
+				{
+					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, quantity);
+					pstmt.setInt(2, user.getId());
+					pstmt.setInt(3, productId);
+					
+					pstmt.executeUpdate();
+				} else
+				{
+					sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, user.getId());
+					pstmt.setInt(2, productId);
+					pstmt.setInt(3, quantity);
+					
+					pstmt.executeUpdate();
+				}
+				close(rs, pstmt, conn);
 				
-				pstmt.executeUpdate();
-			} else
+			} catch (SQLException e)
 			{
-				sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, getUserId(user));
-				pstmt.setInt(2, id);
-				pstmt.setInt(3, quantity);
-				
-				pstmt.executeUpdate();
+				e.printStackTrace();
+			} finally
+			{
+				close(rs, pstmt, conn);
 			}
-			close(rs, pstmt, conn);
 			
-		} catch (SQLException e)
+		} else
 		{
-			e.printStackTrace();
-		} finally
-		{
-			close(rs, pstmt, conn);
+			throw new WebshopAppException("quantity is negative", "ADD_PRODUCT_TO_CART");
 		}
 		
 	}
 	
 	@Override
-	public void removeFromCart(UserModel user, int id)
+	// quantity
+	public void removeFromCart(UserModel user, int productId, int quantity)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		try
+		if (quantity > 0)
 		{
-			conn = getConnection();
-			
-			String sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, getUserId(user));
-			pstmt.setInt(2, id);
-			
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e)
+			try
+			{
+				conn = getConnection();
+				
+				String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.setInt(2, productId);
+				
+				rs = pstmt.executeQuery();
+				
+				int db_quantity = 0;
+				
+				if (rs.next())
+				{
+					db_quantity = rs.getInt("quantity");
+					db_quantity -= quantity;
+				}
+				close(rs, pstmt);
+				
+				if (db_quantity > 0)
+				{
+					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, db_quantity);
+					pstmt.setInt(2, user.getId());
+					pstmt.setInt(3, productId);
+					
+					pstmt.executeUpdate();
+				}
+				
+			} catch (SQLException e)
+			{
+				e.printStackTrace();
+			} finally
+			{
+				close(rs, pstmt, conn);
+			}
+		} else
 		{
-			e.printStackTrace();
-		} finally
-		{
-			close(rs, pstmt, conn);
+			
+			try
+			{
+				conn = getConnection();
+				
+				String sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.setInt(2, productId);
+				
+				pstmt.executeUpdate();
+				
+			} catch (SQLException e)
+			{
+				e.printStackTrace();
+			} finally
+			{
+				close(rs, pstmt, conn);
+			}
 		}
 		
 	}
@@ -373,7 +389,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_id = ?";
 			
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, getUserId(user));
+			pstmt.setInt(1, user.getId());
 			
 			rs = pstmt.executeQuery();
 			
@@ -395,4 +411,40 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		return null;
 		
 	}
+	
+	@Override
+	public void updateCart(UserModel user, int productId, int quantity)
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		
+		try
+		{
+			conn = getConnection();
+			if (quantity > 0)
+			{
+				sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, quantity);
+				pstmt.setInt(2, user.getId());
+				pstmt.setInt(3, productId);
+			} else
+			{
+				sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.setInt(2, productId);
+			}
+			pstmt.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			close(pstmt, conn);
+		}
+		
+	}
+	
 }
