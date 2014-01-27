@@ -273,8 +273,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	// addProductToCart KANNS VALDIGT FULT!!!!!!!
-	public void addProductToCart(UserModel user, Integer id)
+	public void addProductToCart(UserModel user, int id)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -290,9 +289,9 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			pstmt.setInt(1, getUserId(user));
 			pstmt.setInt(2, id);
 			
-			int db_quantity;
-			
 			rs = pstmt.executeQuery();
+			
+			int db_quantity;
 			
 			if (rs.next())
 			{
@@ -303,50 +302,26 @@ public class UserDAO extends GeneralDAO implements UserRepository
 					quantity += db_quantity;
 				}
 			}
-			close(rs, pstmt, conn);
 			if (quantity > 1)
 			{
-				try
-				{
-					conn = getConnection();
-					
-					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					pstmt.setInt(1, quantity);
-					pstmt.setInt(2, getUserId(user));
-					pstmt.setInt(3, id);
-					
-					pstmt.executeUpdate();
-					
-				} catch (SQLException e)
-				{
-					e.printStackTrace();
-				} finally
-				{
-					close(rs, pstmt, conn);
-				}
+				sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, quantity);
+				pstmt.setInt(2, getUserId(user));
+				pstmt.setInt(3, id);
+				
+				pstmt.executeUpdate();
 			} else
 			{
-				try
-				{
-					conn = getConnection();
-					
-					sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-					pstmt = conn.prepareStatement(sql);
-					pstmt.setInt(1, getUserId(user));
-					pstmt.setInt(2, id);
-					pstmt.setInt(3, quantity);
-					
-					pstmt.executeUpdate();
-					
-				} catch (SQLException e)
-				{
-					e.printStackTrace();
-				} finally
-				{
-					close(rs, pstmt, conn);
-				}
+				sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, getUserId(user));
+				pstmt.setInt(2, id);
+				pstmt.setInt(3, quantity);
+				
+				pstmt.executeUpdate();
 			}
+			close(rs, pstmt, conn);
 			
 		} catch (SQLException e)
 		{
@@ -359,7 +334,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public void removeFromCart(UserModel user, Integer id)
+	public void removeFromCart(UserModel user, int id)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;

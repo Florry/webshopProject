@@ -16,11 +16,11 @@ public class Main
 		
 		UserModel user1 = userService.getUser("sed2.facilisis@Proinnon.edu");
 		Map<Integer, Integer> contents = new LinkedHashMap<Integer, Integer>();
-		
-		contents = userService.getShoppingCartContents(user1);
-		
-		userService.removeFromCart(user1, 2);
-		
-		System.out.println(contents.toString());
+		userService.addProductToCart(user1, 1);
+		userService.addProductToCart(user1, 1);
+		userService.addProductToCart(user1, 1);
+		userService.addProductToCart(user1, 2);
+		userService.addProductToCart(user1, 2);
+		userService.addProductToCart(user1, 2);
 	}
 }

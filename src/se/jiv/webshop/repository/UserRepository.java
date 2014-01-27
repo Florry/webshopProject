@@ -20,9 +20,9 @@ public interface UserRepository
 	
 	public List<UserModel> getAllUsers();
 	
-	public void addProductToCart(UserModel user, Integer id);
+	public void addProductToCart(UserModel user, int id);
 	
-	public void removeFromCart(UserModel user, Integer id);
+	public void removeFromCart(UserModel user, int id);
 	
 	public Map<Integer, Integer> getShoppingCartContents(UserModel user);
 	
