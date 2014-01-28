@@ -21,66 +21,68 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
-		if (quantity > 0)
+		if (user != null)
 		{
-			try
+			if (quantity > 0)
 			{
-				conn = getConnection();
-				
-				String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, user.getId());
-				pstmt.setInt(2, productId);
-				
-				rs = pstmt.executeQuery();
-				
-				int db_quantity = 0;
-				
-				if (rs.next())
+				try
 				{
-					db_quantity = rs.getInt(quantity);
+					conn = getConnection();
 					
-					if (db_quantity > 0)
-					{
-						quantity += db_quantity;
-					}
-				}
-				close(rs, pstmt);
-				if (db_quantity > 1)
-				{
-					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					pstmt.setInt(1, quantity);
-					pstmt.setInt(2, user.getId());
-					pstmt.setInt(3, productId);
-					
-					pstmt.executeUpdate();
-				} else
-				{
-					sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+					String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
 					pstmt = conn.prepareStatement(sql);
 					pstmt.setInt(1, user.getId());
 					pstmt.setInt(2, productId);
-					pstmt.setInt(3, quantity);
 					
-					pstmt.executeUpdate();
+					rs = pstmt.executeQuery();
+					
+					int db_quantity = 0;
+					
+					if (rs.next())
+					{
+						db_quantity = rs.getInt(quantity);
+						
+						if (db_quantity > 0)
+						{
+							quantity += db_quantity;
+						}
+					}
+					close(rs, pstmt);
+					if (db_quantity >= 1)
+					{
+						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, quantity);
+						pstmt.setInt(2, user.getId());
+						pstmt.setInt(3, productId);
+						
+						pstmt.executeUpdate();
+					} else
+					{
+						sql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, user.getId());
+						pstmt.setInt(2, productId);
+						pstmt.setInt(3, quantity);
+						
+						pstmt.executeUpdate();
+					}
+					close(rs, pstmt, conn);
+					
+				} catch (SQLException e)
+				{
+					throw new WebshopAppException(e, this.getClass().getSimpleName(),
+							"ADD_PRODUCT_TO_SHOPPING_CART");
+				} finally
+				{
+					close(rs, pstmt, conn);
 				}
-				close(rs, pstmt, conn);
 				
-			} catch (SQLException e)
+			} else
 			{
-				throw new WebshopAppException(e, this.getClass().getSimpleName(),
-						"ADD_PRODUCT_TO_SHOPPING_CART");
-			} finally
-			{
-				close(rs, pstmt, conn);
+				throw new WebshopAppException("quantity is negative", this.getClass()
+						.getSimpleName(), "ADD_PRODUCT_TO_SHOPPING_CART");
 			}
-			
-		} else
-		{
-			throw new WebshopAppException("quantity is negative", this.getClass().getSimpleName(),
-					"ADD_PRODUCT_TO_SHOPPING_CART");
 		}
 		
 	}
@@ -92,69 +94,79 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
-		if (quantity > 0)
+		if (user != null)
 		{
-			try
+			if (quantity > 0)
 			{
-				conn = getConnection();
-				
-				String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, user.getId());
-				pstmt.setInt(2, productId);
-				
-				rs = pstmt.executeQuery();
-				
-				int db_quantity = 0;
-				
-				if (rs.next())
+				try
 				{
-					db_quantity = rs.getInt("quantity");
-					db_quantity -= quantity;
-				}
-				close(rs, pstmt);
-				
-				if (db_quantity > 0)
-				{
-					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+					conn = getConnection();
+					
+					String sql = "SELECT quantity FROM shopping_cart WHERE user_id = ? and product_id = ?";
 					pstmt = conn.prepareStatement(sql);
-					pstmt.setInt(1, db_quantity);
-					pstmt.setInt(2, user.getId());
-					pstmt.setInt(3, productId);
+					pstmt.setInt(1, user.getId());
+					pstmt.setInt(2, productId);
+					
+					rs = pstmt.executeQuery();
+					
+					int db_quantity = 0;
+					
+					if (rs.next())
+					{
+						db_quantity = rs.getInt("quantity");
+						db_quantity -= quantity;
+					}
+					close(rs, pstmt);
+					
+					if (db_quantity <= 0)
+					{
+						sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, user.getId());
+						pstmt.setInt(2, productId);
+						
+						pstmt.executeUpdate();
+					} else if (db_quantity > 0)
+					{
+						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, db_quantity);
+						pstmt.setInt(2, user.getId());
+						pstmt.setInt(3, productId);
+						
+						pstmt.executeUpdate();
+					}
+					
+				} catch (SQLException e)
+				{
+					throw new WebshopAppException(e, this.getClass().getSimpleName(),
+							"REMOVE_FROM_SHOPPING_CART");
+				} finally
+				{
+					close(rs, pstmt, conn);
+				}
+			} else
+			{
+				
+				try
+				{
+					conn = getConnection();
+					
+					String sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, user.getId());
+					pstmt.setInt(2, productId);
 					
 					pstmt.executeUpdate();
+					
+				} catch (SQLException e)
+				{
+					throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+							"REMOVE_FROM_SHOPPING_CART");
+				} finally
+				{
+					close(rs, pstmt, conn);
 				}
-				
-			} catch (SQLException e)
-			{
-				throw new WebshopAppException(e, this.getClass().getSimpleName(),
-						"REMOVE_FROM_SHOPPING_CART");
-			} finally
-			{
-				close(rs, pstmt, conn);
-			}
-		} else
-		{
-			
-			try
-			{
-				conn = getConnection();
-				
-				String sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, user.getId());
-				pstmt.setInt(2, productId);
-				
-				pstmt.executeUpdate();
-				
-			} catch (SQLException e)
-			{
-				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-						"REMOVE_FROM_SHOPPING_CART");
-			} finally
-			{
-				close(rs, pstmt, conn);
 			}
 		}
 		
@@ -166,34 +178,34 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Map<Integer, Integer> contents = new LinkedHashMap<Integer, Integer>();
-		
-		try
+		if (user != null)
 		{
-			conn = getConnection();
-			
-			String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_id = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, user.getId());
-			
-			rs = pstmt.executeQuery();
-			
-			while (rs.next())
+			try
 			{
-				contents.put(rs.getInt("product_id"), rs.getInt("quantity"));
+				conn = getConnection();
+				
+				String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_id = ?";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				
+				rs = pstmt.executeQuery();
+				
+				while (rs.next())
+				{
+					contents.put(rs.getInt("product_id"), rs.getInt("quantity"));
+				}
+				
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"GET_SHOPPING_SHOPPING_CART_CONTENTS");
+			} finally
+			{
+				close(rs, pstmt, conn);
 			}
-			
-			return contents;
-			
-		} catch (SQLException e)
-		{
-			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-					"GET_SHOPPING_SHOPPING_CART_CONTENTS");
-		} finally
-		{
-			close(rs, pstmt, conn);
 		}
-		
+		return contents;
 	}
 	
 	@Override
@@ -203,33 +215,36 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		PreparedStatement pstmt = null;
 		String sql = null;
 		
-		try
+		if (user != null)
 		{
-			conn = getConnection();
-			if (quantity > 0)
+			try
 			{
-				sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, quantity);
-				pstmt.setInt(2, user.getId());
-				pstmt.setInt(3, productId);
-			} else
+				conn = getConnection();
+				if (quantity > 0)
+				{
+					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, quantity);
+					pstmt.setInt(2, user.getId());
+					pstmt.setInt(3, productId);
+				} else
+				{
+					sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, user.getId());
+					pstmt.setInt(2, productId);
+				}
+				pstmt.executeUpdate();
+			} catch (SQLException e)
 			{
-				sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, user.getId());
-				pstmt.setInt(2, productId);
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"UPDATE_SHOPPING_CART");
+			} finally
+			{
+				close(pstmt, conn);
 			}
-			pstmt.executeUpdate();
-		} catch (SQLException e)
-		{
-			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-					"UPDATE_SHOPPING_CART");
-		} finally
-		{
-			close(pstmt, conn);
+			
 		}
-		
 	}
 	
 }
