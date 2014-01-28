@@ -72,4 +72,5 @@ public final class UserService
 	{
 		shoppingCartRepository.resetShoppingCart(user);
 	}
+	
 }

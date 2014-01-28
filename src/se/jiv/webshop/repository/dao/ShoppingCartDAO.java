@@ -269,6 +269,7 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 			{
 				close(pstmt, conn);
 			}
+			
 		}
 	}
 }

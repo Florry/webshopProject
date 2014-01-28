@@ -237,6 +237,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			close(rs, pstmt, conn);
 		}
 		return null;
+		
 	}
 	
 }

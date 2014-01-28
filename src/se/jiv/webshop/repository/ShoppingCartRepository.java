@@ -18,4 +18,5 @@ public interface ShoppingCartRepository
 	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException;
 	
 	public void resetShoppingCart(UserModel user) throws WebshopAppException;
+	
 }
