@@ -76,7 +76,8 @@ public final class JLPTestUser
 			System.out.println("TEST 18 -->RESULT: " + sc.get(1)
 					+ " OK if Result=4, NOK other value");
 			userService.removeFromCart(user, 1, 2);
-		} catch (WebshopAppException e) {
+		} catch (WebshopAppException e)
+		{
 			e.printStackTrace();
 			System.out.println("exception");
 		} catch (Exception e1)
