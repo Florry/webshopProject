@@ -48,7 +48,7 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 						}
 					}
 					close(rs, pstmt);
-					if (db_quantity > 1)
+					if (db_quantity >= 1)
 					{
 						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
 						pstmt = conn.prepareStatement(sql);
