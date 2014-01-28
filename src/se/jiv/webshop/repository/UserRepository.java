@@ -8,23 +8,24 @@ import se.jiv.webshop.model.UserModel;
 
 public interface UserRepository
 {
-	public UserModel addUser(UserModel user);
+	public UserModel addUser(UserModel user) throws WebshopAppException;
 	
-	public void updateUser(UserModel user);
+	public void updateUser(UserModel user) throws WebshopAppException;
 	
-	public void deleteUser(UserModel user);
+	public void deleteUser(UserModel user) throws WebshopAppException;
 	
-	public UserModel getUser(String email);
+	public UserModel getUser(String email) throws WebshopAppException;
 	
-	public List<UserModel> getAllUsers();
+	public List<UserModel> getAllUsers() throws WebshopAppException;
 	
 	public void addProductToCart(UserModel user, int productId, int quantity)
 			throws WebshopAppException;
 	
-	public void removeFromCart(UserModel user, int productId, int quantity);
+	public void removeFromCart(UserModel user, int productId, int quantity)
+			throws WebshopAppException;
 	
-	public void updateCart(UserModel user, int productId, int quantity);
+	public void updateCart(UserModel user, int productId, int quantity) throws WebshopAppException;
 	
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user);
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException;
 	
 }

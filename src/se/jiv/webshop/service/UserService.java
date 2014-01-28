@@ -16,30 +16,30 @@ public final class UserService
 		this.userRepository = userRepository;
 	}
 	
-	public UserModel addUser(UserModel user)
+	public UserModel addUser(UserModel user) throws WebshopAppException
 	{
 		return userRepository.addUser(user);
 		
 	}
 	
-	public void updateUser(UserModel user)
+	public void updateUser(UserModel user) throws WebshopAppException
 	{
 		userRepository.updateUser(user);
 		
 	}
 	
-	public void deleteUser(UserModel user)
+	public void deleteUser(UserModel user) throws WebshopAppException
 	{
 		userRepository.deleteUser(user);
 	}
 	
-	public UserModel getUser(String email)
+	public UserModel getUser(String email) throws WebshopAppException
 	{
 		return userRepository.getUser(email);
 		
 	}
 	
-	public List<UserModel> getAllUsers()
+	public List<UserModel> getAllUsers() throws WebshopAppException
 	{
 		return userRepository.getAllUsers();
 		
@@ -50,17 +50,17 @@ public final class UserService
 		userRepository.addProductToCart(user, id, quantity);
 	}
 	
-	public void removeFromCart(UserModel user, Integer id, int quantity)
+	public void removeFromCart(UserModel user, Integer id, int quantity) throws WebshopAppException
 	{
 		userRepository.removeFromCart(user, id, quantity);
 	}
 	
-	public void updateCart(UserModel user, int productId, int quantity)
+	public void updateCart(UserModel user, int productId, int quantity) throws WebshopAppException
 	{
 		userRepository.updateCart(user, productId, quantity);
 	}
 	
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException
 	{
 		return userRepository.getShoppingCartContents(user);
 	}
