@@ -48,7 +48,42 @@ public final class JLPTestUser
 		
 		// updateCart
 		test18(userService);
+		test19(userService);
+		test20(userService);
+		test21(userService);
 		
+	}
+	
+	private static void test21(UserService userService)
+	{
+		try
+		{
+			UserModel user = userService.getUser("apple@apple.com");
+			userService.updateCart(user, 1, -1);
+			Map<Integer, Integer> sc = userService.getShoppingCartContents(user);
+			System.out.println("TEST 21 -->RESULT: " + sc.size()
+					+ " OK if Result=0, NOK other value");
+		} catch (WebshopAppException e)
+		{} catch (Exception e1)
+		{
+			System.out.println("FAILED TEST 21");
+			return;
+		}
+	}
+	
+	private static void test20(UserService userService)
+	{
+		try
+		{
+			UserModel user = userService.getUser("apple@apple.com");
+			userService.updateCart(user, -1, 2);
+		} catch (WebshopAppException e)
+		{} catch (Exception e1)
+		{
+			System.out.println("FAILED TEST 20");
+			return;
+		}
+		System.out.println("OK TEST 20");
 	}
 	
 	private static void test19(UserService userService)
