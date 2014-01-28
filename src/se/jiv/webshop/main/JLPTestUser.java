@@ -34,9 +34,7 @@ public final class JLPTestUser
 		// addProductToCart
 		test9(userService);
 		test10(userService);
-		System.out.println("NOOOOOOOOO OK TEST 10 --> exception");
 		test11(userService);
-		System.out.println("NOOOOOOOOO OK TEST 11 --> exception");
 		
 		// getShoppingCartContents
 		test12(userService);
@@ -79,7 +77,9 @@ public final class JLPTestUser
 					+ " OK if Result=4, NOK other value");
 			userService.removeFromCart(user, 1, 2);
 		} catch (WebshopAppException e)
-		{} catch (Exception e1)
+		{
+			System.out.println("EXception in test 18");
+		} catch (Exception e1)
 		{
 			System.out.println("FAILED TEST 18");
 			return;
