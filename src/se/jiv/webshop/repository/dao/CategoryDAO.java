@@ -68,30 +68,32 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	@Override
 	public boolean updateCategory(CategoryModel category)
 			throws WebshopAppException {
+		if (category != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
 
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+			try {
+				conn = getConnection();
 
-		try {
-			conn = getConnection();
+				String sql = "UPDATE categories SET name = ?, "
+						+ "staff_responsible= ? WHERE id = ?";
 
-			String sql = "UPDATE categories SET name = ?, "
-					+ "staff_responsible= ? WHERE id = ?";
+				pstmt = conn.prepareStatement(sql);
+				prepareStatementFromModel(pstmt, category);
+				setInteger(pstmt, 3, category.getId());
 
-			pstmt = conn.prepareStatement(sql);
-			prepareStatementFromModel(pstmt, category);
-			setInteger(pstmt, 3, category.getId());
+				pstmt.executeUpdate();
 
-			pstmt.executeUpdate();
+				return true;
 
-			return true;
-
-		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(),
-					"UPDATED_CATEGORY");
-		} finally {
-			close(pstmt, conn);
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "UPDATED_CATEGORY");
+			} finally {
+				close(pstmt, conn);
+			}
 		}
+		return false;
 	}
 
 	@Override
@@ -128,33 +130,33 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	@Override
 	public CategoryModel searchCategoryByName(String name)
 			throws WebshopAppException {
+		if (name != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+			try {
+				conn = getConnection();
 
-		try {
-			conn = getConnection();
+				String sql = "SELECT id, name, staff_responsible "
+						+ "FROM categories WHERE name = ?";
 
-			String sql = "SELECT id, name, staff_responsible "
-					+ "FROM categories WHERE name = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, name);
 
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, name);
+				rs = pstmt.executeQuery();
 
-			rs = pstmt.executeQuery();
+				if (rs.next()) {
+					return parseResultSetToModel(rs);
+				}
 
-			if (rs.next()) {
-				return parseResultSetToModel(rs);
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "SEARCH_CATEGORY_BY_NAME");
+			} finally {
+				close(rs, pstmt, conn);
 			}
-
-		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(),
-					"SEARCH_CATEGORY_BY_NAME");
-		} finally {
-			close(rs, pstmt, conn);
 		}
-
 		return null;
 	}
 
