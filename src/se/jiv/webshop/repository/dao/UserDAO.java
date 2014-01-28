@@ -25,41 +25,44 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		try
+		if (user != null)
 		{
-			conn = getConnection();
-			
-			String sql = "INSERT INTO users (email, password, firstname, lastname, dob, telephone, address1, address2, town, postcode)"
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, user.getEmail());
-			pstmt.setString(2, user.getPassword());
-			pstmt.setString(3, user.getFirstname());
-			pstmt.setString(4, user.getLastname());
-			pstmt.setString(5, user.getDob());
-			pstmt.setString(6, user.getTelephone());
-			pstmt.setString(7, user.getAddress1());
-			pstmt.setString(8, user.getAddress2());
-			pstmt.setString(9, user.getTown());
-			pstmt.setString(10, user.getPostcode());
-			pstmt.executeUpdate();
-			
-			int generatedId = 0;
-			rs = pstmt.getGeneratedKeys();
-			
-			if (rs.next())
+			try
 			{
-				generatedId = rs.getInt(1);
-				return new UserModel(user, generatedId);
+				conn = getConnection();
+				
+				String sql = "INSERT INTO users (email, password, firstname, lastname, dob, telephone, address1, address2, town, postcode)"
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				pstmt.setString(1, user.getEmail());
+				pstmt.setString(2, user.getPassword());
+				pstmt.setString(3, user.getFirstname());
+				pstmt.setString(4, user.getLastname());
+				pstmt.setString(5, user.getDob());
+				pstmt.setString(6, user.getTelephone());
+				pstmt.setString(7, user.getAddress1());
+				pstmt.setString(8, user.getAddress2());
+				pstmt.setString(9, user.getTown());
+				pstmt.setString(10, user.getPostcode());
+				pstmt.executeUpdate();
+				
+				int generatedId = 0;
+				rs = pstmt.getGeneratedKeys();
+				
+				if (rs.next())
+				{
+					generatedId = rs.getInt(1);
+					return new UserModel(user, generatedId);
+				}
+				
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"ADD_USER");
+			} finally
+			{
+				close(rs, pstmt, conn);
 			}
-			
-		} catch (SQLException e)
-		{
-			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-					"ADD_USER");
-		} finally
-		{
-			close(rs, pstmt, conn);
 		}
 		return null;
 	}
@@ -69,35 +72,37 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
-		try
+		if (user != null)
 		{
-			conn = getConnection();
-			
-			String sql = "UPDATE users SET password = ?, firstname = ?, lastname = ?, dob = ?, telephone = ?, address1 = ?, "
-					+ "address2 = ?, town = ?, postcode = ? WHERE email = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, user.getPassword());
-			pstmt.setString(2, user.getFirstname());
-			pstmt.setString(3, user.getLastname());
-			pstmt.setString(4, user.getDob());
-			pstmt.setString(5, user.getTelephone());
-			pstmt.setString(6, user.getAddress1());
-			pstmt.setString(7, user.getAddress2());
-			pstmt.setString(8, user.getTown());
-			pstmt.setString(9, user.getPostcode());
-			pstmt.setString(10, user.getEmail());
-			
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e)
-		{
-			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-					"UPDATE_USER");
-		} finally
-		{
-			close(pstmt, conn);
+			try
+			{
+				conn = getConnection();
+				
+				String sql = "UPDATE users SET password = ?, firstname = ?, lastname = ?, dob = ?, telephone = ?, address1 = ?, "
+						+ "address2 = ?, town = ?, postcode = ? WHERE email = ?";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, user.getPassword());
+				pstmt.setString(2, user.getFirstname());
+				pstmt.setString(3, user.getLastname());
+				pstmt.setString(4, user.getDob());
+				pstmt.setString(5, user.getTelephone());
+				pstmt.setString(6, user.getAddress1());
+				pstmt.setString(7, user.getAddress2());
+				pstmt.setString(8, user.getTown());
+				pstmt.setString(9, user.getPostcode());
+				pstmt.setString(10, user.getEmail());
+				
+				pstmt.executeUpdate();
+				
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"UPDATE_USER");
+			} finally
+			{
+				close(pstmt, conn);
+			}
 		}
 	}
 	
@@ -106,25 +111,27 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
-		try
+		if (user != null)
 		{
-			conn = getConnection();
-			
-			String sql = "DELETE FROM users WHERE email = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, user.getEmail());
-			
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e)
-		{
-			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
-					"DELETE_USER");
-		} finally
-		{
-			close(pstmt, conn);
+			try
+			{
+				conn = getConnection();
+				
+				String sql = "DELETE FROM users WHERE email = ?";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, user.getEmail());
+				
+				pstmt.executeUpdate();
+				
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"DELETE_USER");
+			} finally
+			{
+				close(pstmt, conn);
+			}
 		}
 	}
 	

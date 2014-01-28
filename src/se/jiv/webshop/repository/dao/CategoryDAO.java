@@ -30,34 +30,39 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	public CategoryModel addCategory(CategoryModel category)
 			throws WebshopAppException {
 
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		if (category != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 
-		try {
-			conn = getConnection();
+			try {
+				conn = getConnection();
 
-			String sql = "INSERT INTO categories (name, staff_responsible)"
-					+ "VALUES (?, ?)";
+				String sql = "INSERT INTO categories (name, staff_responsible)"
+						+ "VALUES (?, ?)";
 
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			prepareStatementFromModel(pstmt, category);
+				pstmt = conn.prepareStatement(sql,
+						Statement.RETURN_GENERATED_KEYS);
+				prepareStatementFromModel(pstmt, category);
 
-			pstmt.executeUpdate();
+				pstmt.executeUpdate();
 
-			int generatedId = CategoryModel.DEFAULT_ID;
-			rs = pstmt.getGeneratedKeys();
-			if (rs.next()) {
-				generatedId = rs.getInt(1);
+				int generatedId = CategoryModel.DEFAULT_ID;
+				rs = pstmt.getGeneratedKeys();
+				if (rs.next()) {
+					generatedId = rs.getInt(1);
+				}
+
+				return new CategoryModel(generatedId, category);
+
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "ADD_CATEGORY");
+			} finally {
+				close(rs, pstmt, conn);
 			}
-
-			return new CategoryModel(generatedId, category);
-
-		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "ADD_CATEGORY");
-		} finally{
-			close(rs, pstmt, conn);
 		}
+		return null;
 	}
 
 	@Override
@@ -82,8 +87,9 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			return true;
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "UPDATED_CATEGORY");
-		} finally{
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"UPDATED_CATEGORY");
+		} finally {
 			close(pstmt, conn);
 		}
 	}
@@ -110,18 +116,19 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			}
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "GET_CATEGORY");
-		} finally{
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_CATEGORY");
+		} finally {
 			close(rs, pstmt, conn);
 		}
 
 		return null;
 	}
-	
+
 	@Override
 	public CategoryModel searchCategoryByName(String name)
 			throws WebshopAppException {
-		
+
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -142,11 +149,12 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			}
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "SEARCH_CATEGORY_BY_NAME");
-		} finally{
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"SEARCH_CATEGORY_BY_NAME");
+		} finally {
 			close(rs, pstmt, conn);
 		}
-		
+
 		return null;
 	}
 
@@ -173,8 +181,9 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			}
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "GET_ALL_CATEGORIES");
-		} finally{
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_ALL_CATEGORIES");
+		} finally {
 			close(rs, stmt, conn);
 		}
 
@@ -199,8 +208,9 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			return result > 0;
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e, this.getClass().getSimpleName(), "DELETE_CATEGORY");
-		} finally{
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"DELETE_CATEGORY");
+		} finally {
 			close(pstmt, conn);
 		}
 	}
