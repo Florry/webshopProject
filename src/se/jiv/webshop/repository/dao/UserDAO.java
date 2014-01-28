@@ -11,10 +11,6 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
-//NULL
-//ADD product = reset
-//Remove = tar inte bort fra databas
-
 public class UserDAO extends GeneralDAO implements UserRepository
 {
 	
@@ -241,6 +237,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			close(rs, pstmt, conn);
 		}
 		return null;
+		
 	}
 	
 }

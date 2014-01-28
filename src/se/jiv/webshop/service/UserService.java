@@ -67,4 +67,10 @@ public final class UserService
 	{
 		return shoppingCartRepository.getShoppingCartContents(user);
 	}
+	
+	public void resetShoppingCart(UserModel user) throws WebshopAppException
+	{
+		shoppingCartRepository.resetShoppingCart(user);
+	}
+	
 }

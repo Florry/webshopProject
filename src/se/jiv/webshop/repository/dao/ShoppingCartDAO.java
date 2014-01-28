@@ -40,7 +40,7 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 					
 					if (rs.next())
 					{
-						db_quantity = rs.getInt(quantity);
+						db_quantity = rs.getInt(1);
 						
 						if (db_quantity > 0)
 						{
@@ -48,7 +48,7 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 						}
 					}
 					close(rs, pstmt);
-					if (db_quantity > 1)
+					if (db_quantity >= 1)
 					{
 						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
 						pstmt = conn.prepareStatement(sql);
@@ -118,7 +118,15 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 					}
 					close(rs, pstmt);
 					
-					if (db_quantity > 0)
+					if (db_quantity <= 0)
+					{
+						sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, user.getId());
+						pstmt.setInt(2, productId);
+						
+						pstmt.executeUpdate();
+					} else if (db_quantity > 0)
 					{
 						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
 						pstmt = conn.prepareStatement(sql);
@@ -239,4 +247,29 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		}
 	}
 	
+	public void resetShoppingCart(UserModel user) throws WebshopAppException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		if (user != null)
+		{
+			try
+			{
+				conn = getConnection();
+				String sql = "DELETE FROM shopping_cart WHERE user_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.executeUpdate();
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"UPDATE_SHOPPING_CART");
+			} finally
+			{
+				close(pstmt, conn);
+			}
+			
+		}
+	}
 }
