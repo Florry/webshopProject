@@ -118,7 +118,15 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 					}
 					close(rs, pstmt);
 					
-					if (db_quantity > 0)
+					if (db_quantity <= 0)
+					{
+						sql = "DELETE FROM shopping_cart WHERE user_id = ? and product_id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, user.getId());
+						pstmt.setInt(2, productId);
+						
+						pstmt.executeUpdate();
+					} else if (db_quantity > 0)
 					{
 						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? and product_id = ?";
 						pstmt = conn.prepareStatement(sql);
