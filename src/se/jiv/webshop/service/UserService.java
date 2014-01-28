@@ -5,15 +5,18 @@ import java.util.Map;
 
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
+import se.jiv.webshop.repository.ShoppingCartRepository;
 import se.jiv.webshop.repository.UserRepository;
 
 public final class UserService
 {
 	private UserRepository userRepository;
+	private ShoppingCartRepository shoppingCartRepository;
 	
-	public UserService(UserRepository userRepository)
+	public UserService(UserRepository userRepository, ShoppingCartRepository shoppingCartRepository)
 	{
 		this.userRepository = userRepository;
+		this.shoppingCartRepository = shoppingCartRepository;
 	}
 	
 	public UserModel addUser(UserModel user) throws WebshopAppException
@@ -47,21 +50,21 @@ public final class UserService
 	
 	public void addProductToCart(UserModel user, int id, int quantity) throws WebshopAppException
 	{
-		userRepository.addProductToCart(user, id, quantity);
+		shoppingCartRepository.addProductToCart(user, id, quantity);
 	}
 	
 	public void removeFromCart(UserModel user, Integer id, int quantity) throws WebshopAppException
 	{
-		userRepository.removeFromCart(user, id, quantity);
+		shoppingCartRepository.removeFromCart(user, id, quantity);
 	}
 	
 	public void updateCart(UserModel user, int productId, int quantity) throws WebshopAppException
 	{
-		userRepository.updateCart(user, productId, quantity);
+		shoppingCartRepository.updateCart(user, productId, quantity);
 	}
 	
 	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException
 	{
-		return userRepository.getShoppingCartContents(user);
+		return shoppingCartRepository.getShoppingCartContents(user);
 	}
 }

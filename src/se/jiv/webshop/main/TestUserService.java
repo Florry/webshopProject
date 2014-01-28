@@ -5,7 +5,9 @@ import java.util.Map;
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.dao.ProductDAO;
+import se.jiv.webshop.repository.dao.ShoppingCartDAO;
 import se.jiv.webshop.repository.dao.UserDAO;
+import se.jiv.webshop.service.ProductService;
 import se.jiv.webshop.service.UserService;
 
 public class TestUserService
@@ -13,8 +15,8 @@ public class TestUserService
 	
 	public static void main(String[] args) throws WebshopAppException
 	{
-		UserService service = new UserService(new UserDAO());
-		ProductDAO productServ = new ProductDAO();
+		UserService service = new UserService(new UserDAO(), new ShoppingCartDAO());
+		ProductService productServ = new ProductService(new ProductDAO());
 		UserModel user2 = new UserModel("Test@test.se", "123", "Test", "Testson", "1949-09-09",
 				"0807384756", "Stockholmsv. 32", "C/O Olsen", "Stockholm", "postcode");
 		service.addUser(user2);
