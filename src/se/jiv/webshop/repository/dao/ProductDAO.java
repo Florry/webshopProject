@@ -87,7 +87,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 			{
 				sql = "UPDATE products SET rrp = ? WHERE name = ?";
 			}
-			
+
 			if (updateProperty > 2)
 			{
 				double currentNewProperty = Double.parseDouble(newProperty);
@@ -104,6 +104,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 				pstmt.executeUpdate();
 			}
 
+			pstmt.close();
 			sql = "SELECT id, name, description,cost, rrp FROM products WHERE name = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, productName);
@@ -138,9 +139,49 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 		}
 		return null;
 	}
+	
+	@Override
+	public boolean updateProduct(ProductModel product, int productId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try
+		{
+			conn = getConnection();
+			
+			String sql = "SELECT id, name, description,cost, rrp FROM products WHERE id = ?";
+			pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, productId);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.absolute(1);
+			rs.updateString("name", product.getName());
+			rs.updateString("description", product.getDescription());
+			rs.updateDouble("cost", product.getCost());
+			rs.updateDouble("rrp", product.getRrp());
+			rs.updateRow();
+			return true;
+
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			close(rs, pstmt, conn);
+		}
+		
+		
+		return false;
+	}
+
 
 	@Override
-	public void deleteProduct(String name)
+	public boolean deleteProduct(String name)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -155,6 +196,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, name);
 			pstmt.executeUpdate();
+			return true;
 		}
 		catch (SQLException e)
 		{
@@ -164,11 +206,42 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 		{
 			close(rs, pstmt, conn);
 		}
+		return false;
 
+	}
+	
+	@Override
+	public boolean deleteProduct(int productId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try
+		{
+			conn = getConnection();
+
+			String sql = "DELETE FROM products WHERE id = ?";
+
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, productId);
+			pstmt.executeUpdate();
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			close(rs, pstmt, conn);
+		}
+		
+		
+		return false;
 	}
 
 	@Override
-	public List<ProductModel> getProduct(String productName)
+	public List<ProductModel> getProductByName(String productName)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -214,7 +287,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 	}
 
 	@Override
-	public List<ProductModel> getProduct(double cost)
+	public List<ProductModel> getProductByCost(double cost)
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -257,6 +330,46 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 		{
 			close(rs, pstmt, conn);
 		}
+		return null;
+	}
+	
+	@Override
+	public ProductModel getProductById(int productId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try
+		{
+			conn = getConnection();
+
+			String sql = "SELECT* FROM products WHERE id = ?";
+
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt.setDouble(1, productId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next())
+			{
+				int id = rs.getInt("id");
+				String name = rs.getString("name");
+				String description = rs.getString("description");
+				double price = rs.getDouble("cost");
+				double rrp = rs.getDouble("rrp");
+				ProductModel currentProduct = new ProductModel(id,name, price, description, rrp);
+				return currentProduct;
+			}
+
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			close(rs, pstmt, conn);
+		}
+		
 		return null;
 	}
 

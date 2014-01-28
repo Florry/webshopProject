@@ -9,12 +9,18 @@ public interface ProductRepository
 	public ProductModel createProduct(ProductModel product);
 
 	public ProductModel updateProduct(String productName, int updateProperty, String newProperty);
+	
+	public boolean updateProduct(ProductModel product, int productId);
 
-	public void deleteProduct(String name);
+	public boolean deleteProduct(String name);
+	
+	public boolean deleteProduct(int productId);
 
-	public List<ProductModel> getProduct(String name);
+	public List<ProductModel> getProductByName(String name);
 
-	public List<ProductModel> getProduct(double price);
+	public List<ProductModel> getProductByCost(double cost);
+	
+	public ProductModel getProductById(int id);
 
 	public List<ProductModel> getAllProducts();
 
