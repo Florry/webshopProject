@@ -40,7 +40,7 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 					
 					if (rs.next())
 					{
-						db_quantity = rs.getInt(quantity);
+						db_quantity = rs.getInt(1);
 						
 						if (db_quantity > 0)
 						{
