@@ -247,4 +247,28 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 		}
 	}
 	
+	public void resetShoppingCart(UserModel user) throws WebshopAppException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		if (user != null)
+		{
+			try
+			{
+				conn = getConnection();
+				String sql = "DELETE FROM shopping_cart WHERE user_id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user.getId());
+				pstmt.executeUpdate();
+			} catch (SQLException e)
+			{
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"UPDATE_SHOPPING_CART");
+			} finally
+			{
+				close(pstmt, conn);
+			}
+		}
+	}
 }
