@@ -1,7 +1,8 @@
 package se.jiv.webshop.main;
 
+import java.util.Map;
+
 import se.jiv.webshop.exception.WebshopAppException;
-import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.dao.ProductDAO;
 import se.jiv.webshop.repository.dao.UserDAO;
@@ -22,6 +23,16 @@ public class TestUserService
 				"1949-09-09", "0807384756", "Stockholmsv. 32", "C/O Olsen", "Uppsala", "postcode");
 		service.updateUser(updatedUser2);
 		
+		// Add user with same email as an existing user = exception
+		try
+		{
+			service.addUser(updatedUser2);
+		} catch (WebshopAppException e)
+		{
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage() + " - "
+					+ e.getClassName());
+		}
+		
 		System.out.println(service.getUser("test@test.se").toString());
 		
 		System.out.println("______");
@@ -35,23 +46,44 @@ public class TestUserService
 		service.addProductToCart(user3, 2, 20);
 		service.addProductToCart(user3, 1, 10);
 		
+		// add a product of quantity 0 to cart = exception
+		try
+		{
+			service.addProductToCart(user3, 1, 0);
+		} catch (WebshopAppException e)
+		{
+			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage() + " - "
+					+ e.getClassName());
+			;
+		}
+		
 		System.out.print(user3.getFirstname() + " ");
 		System.out.println(user3.getLastname() + ":");
-		System.out.println(service.getShoppingCartContents(user3).toString());
+		
+		Map<Integer, Integer> shoppingCart = service.getShoppingCartContents(user3);
+		for (Integer i : shoppingCart.keySet())
+		{
+			System.out.print(shoppingCart.get(i));
+			System.out.println(" " + productServ.getProductById(i).getName());
+		}
+		
+		System.out.println();
 		System.out.println("______");
 		
 		service.removeFromCart(user3, 1, 2);
 		service.updateCart(user3, 2, 30);
+		
 		System.out.print(user3.getFirstname() + " ");
 		System.out.println(user3.getLastname() + ":");
-		System.out.println(service.getShoppingCartContents(user3).toString());
+		shoppingCart = service.getShoppingCartContents(user3);
+		for (Integer i : shoppingCart.keySet())
+		{
+			System.out.print(shoppingCart.get(i));
+			System.out.println(" " + productServ.getProductById(i).getName());
+		}
 		System.out.println("______");
 		
 		service.deleteUser(user3);
 		
-		for (ProductModel prod : productServ.getAllProducts())
-		{
-			System.out.println(prod.getName());
-		}
 	}
 }

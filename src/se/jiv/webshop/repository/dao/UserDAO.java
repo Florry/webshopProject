@@ -18,7 +18,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 {
 	
 	@Override
-	public UserModel addUser(UserModel user)
+	public UserModel addUser(UserModel user) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -55,17 +55,16 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"ADD_USER");
 		} finally
 		{
 			close(rs, pstmt, conn);
 		}
-		
-		return null;
 	}
 	
 	@Override
-	public void updateUser(UserModel user)
+	public void updateUser(UserModel user) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -93,7 +92,8 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"UPDATE_USER");
 		} finally
 		{
 			close(pstmt, conn);
@@ -101,7 +101,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public void deleteUser(UserModel user)
+	public void deleteUser(UserModel user) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -119,7 +119,8 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"DELETE_USER");
 		} finally
 		{
 			close(pstmt, conn);
@@ -127,7 +128,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	}
 	
 	@Override
-	public UserModel getUser(String email)
+	public UserModel getUser(String email) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -175,17 +176,16 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"GET_USER");
 		} finally
 		{
 			close(rs, pstmt, conn);
 		}
-		
-		return null;
 	}
 	
 	@Override
-	public List<UserModel> getAllUsers()
+	public List<UserModel> getAllUsers() throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -224,13 +224,12 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"GET_ALL_USERS");
 		} finally
 		{
 			close(rs, pstmt, conn);
 		}
-		
-		return null;
 	}
 	
 	@Override
@@ -241,7 +240,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		if (quantity >= 0)
+		if (quantity > 0)
 		{
 			try
 			{
@@ -297,14 +296,15 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} else
 		{
-			throw new WebshopAppException("quantity is negative", this.getClass().getSimpleName(), "ADD_PRODUCT_TO_CART");
+			throw new WebshopAppException("quantity is negative", this.getClass().getSimpleName(),
+					"ADD_PRODUCT_TO_SHOPPING_CART");
 		}
 		
 	}
 	
 	@Override
-	// quantity
 	public void removeFromCart(UserModel user, int productId, int quantity)
+			throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -345,7 +345,8 @@ public class UserDAO extends GeneralDAO implements UserRepository
 				
 			} catch (SQLException e)
 			{
-				e.printStackTrace();
+				throw new WebshopAppException(e, this.getClass().getSimpleName(),
+						"REMOVE_FROM_SHOPPING_CART");
 			} finally
 			{
 				close(rs, pstmt, conn);
@@ -366,7 +367,8 @@ public class UserDAO extends GeneralDAO implements UserRepository
 				
 			} catch (SQLException e)
 			{
-				e.printStackTrace();
+				throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+						"REMOVE_FROM_SHOPPING_CART");
 			} finally
 			{
 				close(rs, pstmt, conn);
@@ -375,7 +377,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		
 	}
 	
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -402,18 +404,17 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"GET_SHOPPING_SHOPPING_CART_CONTENTS");
 		} finally
 		{
 			close(rs, pstmt, conn);
 		}
 		
-		return null;
-		
 	}
 	
 	@Override
-	public void updateCart(UserModel user, int productId, int quantity)
+	public void updateCart(UserModel user, int productId, int quantity) throws WebshopAppException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -439,7 +440,8 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			pstmt.executeUpdate();
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
+			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
+					"UPDATE_SHOPPING_CART");
 		} finally
 		{
 			close(pstmt, conn);
