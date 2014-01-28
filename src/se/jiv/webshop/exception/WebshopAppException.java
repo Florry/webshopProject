@@ -14,6 +14,12 @@ public final class WebshopAppException extends Exception {
 		this.className = className;
 		this.actionName = actionName;
 	}
+	
+	public WebshopAppException(String message, String className, String actionName) {
+		super(message);
+		this.className = className;
+		this.actionName = actionName;
+	}
 
 	public String getActionName() {
 		return actionName;
