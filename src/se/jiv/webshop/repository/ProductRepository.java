@@ -7,18 +7,18 @@ import se.jiv.webshop.model.*;
 public interface ProductRepository
 {
 	public ProductModel createProduct(ProductModel product);
-
-	public ProductModel updateProduct(String productName, int updateProperty, String newProperty);
 	
 	public boolean updateProduct(ProductModel product, int productId);
-
-	public boolean deleteProduct(String name);
 	
 	public boolean deleteProduct(int productId);
+	
+	public List<Integer> getCategoriesOfProduct(int productId);
 
 	public List<ProductModel> getProductByName(String name);
 
-	public List<ProductModel> getProductByCost(double cost);
+	public List<ProductModel> getProductsByCost(double cost);
+	
+	public List<ProductModel> getProductsByCategory(int categoryId);
 	
 	public ProductModel getProductById(int id);
 

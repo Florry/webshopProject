@@ -1,6 +1,5 @@
 package se.jiv.webshop.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class ProductModel
@@ -10,13 +9,19 @@ public final class ProductModel
 	double cost;
 	double rrp;
 	int id;
-	List<String> categories;
+	List<Integer> categories;
 
 	public ProductModel(String name, double cost)
 	{
 		this.name = name;
 		this.cost = cost;
-		categories = new ArrayList<>();
+	}
+
+	public ProductModel(String name, double cost, List<Integer> categories)
+	{
+		this.name = name;
+		this.cost = cost;
+		this.categories = categories;
 	}
 
 	public ProductModel(String name, double cost, String description)
@@ -25,10 +30,22 @@ public final class ProductModel
 		this.description = description;
 	}
 
+	public ProductModel(String name, double cost, String description,
+			List<Integer> categories)
+	{
+		this(name, cost, description);
+		this.categories = categories;
+	}
+
 	public ProductModel(String name, double cost, double rrp)
 	{
 		this(name, cost);
 		this.rrp = rrp;
+	}
+	public ProductModel(String name, double cost, double rrp, List<Integer> categories)
+	{
+		this(name, cost, rrp);
+		this.categories = categories;
 	}
 
 	public ProductModel(String name, double cost, String description, double rrp)
@@ -36,10 +53,22 @@ public final class ProductModel
 		this(name, cost, description);
 		this.rrp = rrp;
 	}
-	public ProductModel(int id,String name, double cost, String description, double rrp)
+	public ProductModel(String name, double cost, String description, double rrp, List<Integer> categories)
+	{
+		this(name, cost, description, rrp);
+		this.categories = categories;
+	}
+
+	public ProductModel(int id, String name, double cost, String description, double rrp)
 	{
 		this(name, cost, description, rrp);
 		this.id = id;
+	}
+	public ProductModel(int id, String name, double cost, String description, double rrp,
+			List<Integer> categories)
+	{
+		this(id, name, cost, description, rrp);
+		this.categories = categories;
 	}
 
 	public ProductModel(ProductModel other)
@@ -49,6 +78,7 @@ public final class ProductModel
 		this.cost = other.cost;
 		this.rrp = other.rrp;
 	}
+
 	public ProductModel(int id, ProductModel other)
 	{
 		this.id = id;
@@ -56,6 +86,7 @@ public final class ProductModel
 		this.description = other.description;
 		this.cost = other.cost;
 		this.rrp = other.rrp;
+		this.categories = other.categories;
 	}
 
 	public String getName()
@@ -77,12 +108,16 @@ public final class ProductModel
 	{
 		return this.rrp;
 	}
+	
+	public List<Integer> getCategories(){
+		return categories;
+	}
 
 	@Override
 	public String toString()
 	{
-		return String.format("Id: " + id + "%nName: " + getName() + "%nCost: " + getCost() +
-				"%nDescription: " + getDescription() + "%nRRP: " + getRrp());
+		return String.format("%nId: " + id + "%nName: " + getName() + "%nCost: " + getCost() +
+				"%nDescription: " + getDescription() + "%nRRP: " + getRrp()) + "%nCategories: " + getCategories();
 	}
 
 }
