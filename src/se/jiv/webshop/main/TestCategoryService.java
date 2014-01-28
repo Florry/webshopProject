@@ -6,6 +6,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 import se.jiv.webshop.service.CategoryService;
+import se.jiv.webshop.ui.ConsoleUI;
 
 public final class TestCategoryService {
 	public static void printAll(List<CategoryModel> categories) {
@@ -20,7 +21,7 @@ public final class TestCategoryService {
 			categories = service.getAllCategories();
 			printAll(categories);
 		} catch (WebshopAppException e) {
-			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+			ConsoleUI.printException(e);
 		}
 	}
 
@@ -32,7 +33,7 @@ public final class TestCategoryService {
 
 			return category;
 		} catch (WebshopAppException e) {
-			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+			ConsoleUI.printException(e);
 		}
 		return null;
 	}
@@ -47,7 +48,7 @@ public final class TestCategoryService {
 			return category;
 		} catch (WebshopAppException e) {
 			System.out.println("It NOT worked!!");
-			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+			ConsoleUI.printException(e);
 		}
 		return null;
 	}
@@ -61,7 +62,7 @@ public final class TestCategoryService {
 			System.out.println("Was it updated: " + updated);
 			return updated;
 		} catch (WebshopAppException e) {
-			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+			ConsoleUI.printException(e);
 		}
 		return false;
 	}
@@ -72,7 +73,7 @@ public final class TestCategoryService {
 			System.out.println("Was it removed?: " + deleted);
 			return deleted;
 		} catch (WebshopAppException e) {
-			System.err.println("Exception: " + e.getActionName() + ": " + e.getMessage());
+			ConsoleUI.printException(e);
 		}
 		return false;
 	}
