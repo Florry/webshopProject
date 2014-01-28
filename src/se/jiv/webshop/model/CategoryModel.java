@@ -32,6 +32,23 @@ public final class CategoryModel {
 	public int getStaff_responsible() {
 		return staff_responsible;
 	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		return 31 * id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if(obj instanceof CategoryModel){
+			CategoryModel other = (CategoryModel) obj;
+			return id == other.id;
+		}
+		return false;
+	}
 
 	public String toString() {
 		return String.format("Id: %s, Name: %s, Straff_responsible: %s", id,

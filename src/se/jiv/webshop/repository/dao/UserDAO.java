@@ -297,7 +297,7 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			
 		} else
 		{
-			throw new WebshopAppException("quantity is negative", "ADD_PRODUCT_TO_CART");
+			throw new WebshopAppException("quantity is negative", this.getClass().getSimpleName(), "ADD_PRODUCT_TO_CART");
 		}
 		
 	}

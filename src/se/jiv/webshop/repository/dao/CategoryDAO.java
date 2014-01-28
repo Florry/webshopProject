@@ -29,99 +29,153 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	@Override
 	public CategoryModel addCategory(CategoryModel category)
 			throws WebshopAppException {
-		try (Connection conn = getConnection()) {
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
 
 			String sql = "INSERT INTO categories (name, staff_responsible)"
 					+ "VALUES (?, ?)";
 
-			try (PreparedStatement pstmt = conn.prepareStatement(sql,
-					Statement.RETURN_GENERATED_KEYS)) {
-				prepareStatementFromModel(pstmt, category);
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			prepareStatementFromModel(pstmt, category);
 
-				pstmt.executeUpdate();
+			pstmt.executeUpdate();
 
-				int generatedId = CategoryModel.DEFAULT_ID;
-				try (ResultSet rs = pstmt.getGeneratedKeys()) {
-					if (rs.next()) {
-						generatedId = rs.getInt(1);
-					}
-				}
-
-				return new CategoryModel(generatedId, category);
+			int generatedId = CategoryModel.DEFAULT_ID;
+			rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				generatedId = rs.getInt(1);
 			}
 
+			return new CategoryModel(generatedId, category);
+
 		} catch (SQLException e) {
-			throw new WebshopAppException(e.getMessage(), "ADD_CATEGORY");
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "ADD_CATEGORY");
+		} finally{
+			close(rs, pstmt, conn);
 		}
 	}
 
 	@Override
 	public boolean updateCategory(CategoryModel category)
 			throws WebshopAppException {
-		try (Connection conn = getConnection()) {
 
-			String sql = "UPDATE categories SET name = ?, staff_responsible= ? "
-					+ "WHERE id = ?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
 
-			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-				prepareStatementFromModel(pstmt, category);
-				setInteger(pstmt, 3, category.getId());
+		try {
+			conn = getConnection();
 
-				pstmt.executeUpdate();
+			String sql = "UPDATE categories SET name = ?, "
+					+ "staff_responsible= ? WHERE id = ?";
 
-				return true;
-			}
+			pstmt = conn.prepareStatement(sql);
+			prepareStatementFromModel(pstmt, category);
+			setInteger(pstmt, 3, category.getId());
+
+			pstmt.executeUpdate();
+
+			return true;
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e.getMessage(), "UPDATED_CATEGORY");
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "UPDATED_CATEGORY");
+		} finally{
+			close(pstmt, conn);
 		}
 	}
 
 	@Override
 	public CategoryModel getCategory(int id) throws WebshopAppException {
-		try (Connection conn = getConnection()) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
 
 			String sql = "SELECT id, name, staff_responsible "
-					+ "FROM categories " + "WHERE id = ?";
+					+ "FROM categories WHERE id = ?";
 
-			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-				pstmt.setInt(1, id);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
 
-				try (ResultSet rs = pstmt.executeQuery()) {
+			rs = pstmt.executeQuery();
 
-					if (rs.next()) {
-						return parseResultSetToModel(rs);
-					}
-				}
+			if (rs.next()) {
+				return parseResultSetToModel(rs);
 			}
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e.getMessage(), "GET_CATEGORY");
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "GET_CATEGORY");
+		} finally{
+			close(rs, pstmt, conn);
 		}
 
+		return null;
+	}
+	
+	@Override
+	public CategoryModel searchCategoryByName(String name)
+			throws WebshopAppException {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
+
+			String sql = "SELECT id, name, staff_responsible "
+					+ "FROM categories WHERE name = ?";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, name);
+
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return parseResultSetToModel(rs);
+			}
+
+		} catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "SEARCH_CATEGORY_BY_NAME");
+		} finally{
+			close(rs, pstmt, conn);
+		}
+		
 		return null;
 	}
 
 	@Override
 	public List<CategoryModel> getAllCategories() throws WebshopAppException {
+
 		List<CategoryModel> categories = new ArrayList<CategoryModel>();
 
-		try (Connection conn = getConnection()) {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
 
 			String sql = "SELECT id, name, staff_responsible FROM categories";
 
-			try (Statement stmt = conn.createStatement()) {
+			stmt = conn.createStatement();
 
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+			rs = stmt.executeQuery(sql);
 
-					while (rs.next()) {
-						categories.add(parseResultSetToModel(rs));
-					}
-				}
+			while (rs.next()) {
+				categories.add(parseResultSetToModel(rs));
 			}
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e.getMessage(), "GET_ALL_CATEGORIES");
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "GET_ALL_CATEGORIES");
+		} finally{
+			close(rs, stmt, conn);
 		}
 
 		return categories;
@@ -129,20 +183,25 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 
 	@Override
 	public boolean deleteCategory(int id) throws WebshopAppException {
-		try (Connection conn = getConnection()) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try {
+			conn = getConnection();
 
 			String sql = "DELETE FROM categories " + "WHERE id = ?";
 
-			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-				pstmt.setInt(1, id);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
 
-				int result = pstmt.executeUpdate();
+			int result = pstmt.executeUpdate();
 
-				return result > 0;
-			}
+			return result > 0;
 
 		} catch (SQLException e) {
-			throw new WebshopAppException(e.getMessage(), "DELETE_CATEGORY");
+			throw new WebshopAppException(e, this.getClass().getSimpleName(), "DELETE_CATEGORY");
+		} finally{
+			close(pstmt, conn);
 		}
 	}
 
