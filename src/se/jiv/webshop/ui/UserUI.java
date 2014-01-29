@@ -233,14 +233,14 @@ public class UserUI extends GeneralUI
 		}
 	}
 	
-	public static void main(String args[]) throws WebshopAppException
-	{
-		UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
-		UserUI uU = new UserUI();
-		
-		// uS.updateUser(uU.updateUser(uS.getUser(uU.askForEmail())));
-		uU.UserMenu();
-		uU.getAllUsers(uS.getAllUsers());
-	}
+	// public static void main(String args[]) throws WebshopAppException
+	// {
+	// UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
+	// UserUI uU = new UserUI();
+	//
+	// // uS.updateUser(uU.updateUser(uS.getUser(uU.askForEmail())));
+	// uU.UserMenu();
+	// uU.getAllUsers(uS.getAllUsers());
+	// }
 	
 }

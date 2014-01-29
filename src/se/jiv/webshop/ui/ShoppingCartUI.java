@@ -61,13 +61,13 @@ public class ShoppingCartUI extends GeneralUI
 		return readInt();
 	}
 	
-	public static void main(String args[]) throws WebshopAppException
-	{
-		UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
-		ShoppingCartUI sC = new ShoppingCartUI();
-		UserUI uU = new UserUI();
-		sC.getContents(uS.getShoppingCartContents(uS.getUser(sC
-				.askForEmail("Get Shopping Cart Contents"))));
-		
-	}
+	// public static void main(String args[]) throws WebshopAppException
+	// {
+	// UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
+	// ShoppingCartUI sC = new ShoppingCartUI();
+	// UserUI uU = new UserUI();
+	// sC.getContents(uS.getShoppingCartContents(uS.getUser(sC
+	// .askForEmail("Get Shopping Cart Contents"))));
+	//
+	// }
 }
