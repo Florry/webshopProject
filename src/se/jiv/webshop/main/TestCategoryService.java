@@ -6,7 +6,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 import se.jiv.webshop.service.CategoryService;
-import se.jiv.webshop.ui.ConsoleUI;
+import se.jiv.webshop.ui.ExceptionUI;
 
 public final class TestCategoryService {
 	public static void printAll(List<CategoryModel> categories) {
@@ -21,7 +21,7 @@ public final class TestCategoryService {
 			categories = service.getAllCategories();
 			printAll(categories);
 		} catch (WebshopAppException e) {
-			ConsoleUI.printException(e);
+			ExceptionUI.printException(e);
 		}
 	}
 
@@ -33,7 +33,7 @@ public final class TestCategoryService {
 
 			return category;
 		} catch (WebshopAppException e) {
-			ConsoleUI.printException(e);
+			ExceptionUI.printException(e);
 		}
 		return null;
 	}
@@ -48,7 +48,7 @@ public final class TestCategoryService {
 			return category;
 		} catch (WebshopAppException e) {
 			System.out.println("It NOT worked!!");
-			ConsoleUI.printException(e);
+			ExceptionUI.printException(e);
 		}
 		return null;
 	}
@@ -62,7 +62,7 @@ public final class TestCategoryService {
 			System.out.println("Was it updated: " + updated);
 			return updated;
 		} catch (WebshopAppException e) {
-			ConsoleUI.printException(e);
+			ExceptionUI.printException(e);
 		}
 		return false;
 	}
@@ -73,7 +73,7 @@ public final class TestCategoryService {
 			System.out.println("Was it removed?: " + deleted);
 			return deleted;
 		} catch (WebshopAppException e) {
-			ConsoleUI.printException(e);
+			ExceptionUI.printException(e);
 		}
 		return false;
 	}
