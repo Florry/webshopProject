@@ -78,16 +78,16 @@ public class UserDAO extends GeneralDAO implements UserRepository
 						+ "address2 = ?, town = ?, postcode = ? WHERE email = ?";
 				
 				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, user.getPassword());
-				pstmt.setString(2, user.getFirstname());
-				pstmt.setString(3, user.getLastname());
-				pstmt.setString(4, user.getDob());
-				pstmt.setString(5, user.getTelephone());
-				pstmt.setString(6, user.getAddress1());
-				pstmt.setString(7, user.getAddress2());
-				pstmt.setString(8, user.getTown());
-				pstmt.setString(9, user.getPostcode());
-				pstmt.setString(10, user.getEmail());
+				setString(pstmt, 1, user.getPassword());
+				setString(pstmt, 2, user.getFirstname());
+				setString(pstmt, 3, user.getLastname());
+				setString(pstmt, 4, user.getDob());
+				setString(pstmt, 5, user.getTelephone());
+				setString(pstmt, 6, user.getAddress1());
+				setString(pstmt, 7, user.getAddress2());
+				setString(pstmt, 8, user.getTown());
+				setString(pstmt, 9, user.getPostcode());
+				setString(pstmt, 10, user.getEmail());
 				
 				pstmt.executeUpdate();
 				
