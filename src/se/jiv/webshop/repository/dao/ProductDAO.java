@@ -261,11 +261,10 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 
 		try {
 			conn = getConnection();
-			conn.setAutoCommit(false);
 
 			String sql = "SELECT id, name, description, cost, rrp FROM product_categories "
 					+ "INNER JOIN products ON product_id = products.id"
-					+ " WHERE category_id = ?;";
+					+ " WHERE category_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, categoryId);
 
@@ -323,16 +322,16 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		ResultSet rs = null;
 
 		try {
-			String sql = "SELECT category_id FROM product_category WHERE product_id = ?";
+			String sql = "SELECT product_id FROM product_categories where category_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 
-			rs = pstmt.executeQuery(sql);
+			rs = pstmt.executeQuery();
 
 			List<Integer> categoryIds = new ArrayList<Integer>();
 
 			while (rs.next()) {
-				int currentCategoryId = rs.getInt("category_id");
+				int currentCategoryId = rs.getInt("product_id");
 				categoryIds.add(currentCategoryId);
 			}
 			return categoryIds;

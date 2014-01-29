@@ -25,7 +25,7 @@ public class ProductUI extends GeneralUI
 		System.out.println("Please enter the rrp of the product: ");
 		double rrp = readInt();
 
-		ProductModel newProduct = new ProductModel(name, cost, description, rrp);
+		ProductModel newProduct = new ProductModel(name, description,cost, rrp);
 
 		return newProduct;
 	}
@@ -48,7 +48,7 @@ public class ProductUI extends GeneralUI
 		System.out.println("Please enter the new rrp of the product: ");
 		double rrp = readInt();
 
-		ProductModel newProduct = new ProductModel(name, cost, description, rrp);
+		ProductModel newProduct = new ProductModel(name, description, cost, rrp);
 
 		return newProduct;
 	}
