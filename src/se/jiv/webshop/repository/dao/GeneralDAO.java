@@ -18,6 +18,18 @@ public abstract class GeneralDAO {
 
 		return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 	}
+	
+	protected void rollback(Connection conn){
+		try
+		{
+			conn.rollback();
+		}
+		catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	protected void close(ResultSet rs) {
 		if (rs != null) {
