@@ -44,7 +44,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 
 				close(rs, pstmt);
 
-				insertCategories(conn, pstmt, generatedId,
+				insertProductCategories(conn, pstmt, generatedId,
 						product.getCategories());
 
 				commit(conn);
@@ -62,7 +62,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		}
 	}
 
-	private void insertCategories(Connection conn, PreparedStatement pstmt,
+	private void insertProductCategories(Connection conn, PreparedStatement pstmt,
 			int productId, List<Integer> categories) throws SQLException {
 		String sql = "INSERT INTO product_categories VALUES( ?, ?)";
 		for (int categoryId : categories) {
@@ -89,7 +89,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 				
 				deleteProductCategories(conn, product.getId());
 
-				insertCategories(conn, pstmt, product.getId(),
+				insertProductCategories(conn, pstmt, product.getId(),
 						product.getCategories());
 
 				commit(conn);
