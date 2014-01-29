@@ -64,11 +64,23 @@ public class MainMenuUI extends GeneralUI
 
 		return readString();
 	}
-	
-	public String productsByCategory(){
+
+	public int productsByCategory()
+	{
 		System.out.println("What category do you want to search for?");
-		
-		return readString();
+		System.out.println("1. Books");
+		System.out.println("2. Children");
+		System.out.println("3. Clothes");
+		System.out.println("4. Computing");
+		System.out.println("5. Electronics");
+		System.out.println("6. Films");
+		System.out.println("7. Gardening");
+		System.out.println("8. Mens");
+		System.out.println("9. Sports and outdoors");
+		System.out.println("10. Toys");
+		System.out.println("11. Womens");
+
+		return readInt();
 	}
 
 }
