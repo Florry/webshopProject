@@ -19,19 +19,9 @@ public class ProductService
 		return productRepository.createProduct(product);
 	}
 	
-	public ProductModel updateProduct(String productName, int updateProperty, String newProperty)
-	{
-		return productRepository.updateProduct(productName, updateProperty, newProperty);
-	}
-	
 	public boolean updateProduct(ProductModel product, int productId)
 	{
 		return productRepository.updateProduct(product, productId);
-	}
-	
-	public boolean deleteProduct(String name)
-	{
-		return productRepository.deleteProduct(name);
 	}
 	
 	public boolean deleteProduct(int productId)
@@ -44,9 +34,9 @@ public class ProductService
 		return productRepository.getProductByName(name);
 	}
 	
-	public List<ProductModel> getProductByCost(double cost)
+	public List<ProductModel> getProductsByCost(double cost)
 	{
-		return productRepository.getProductByCost(cost);
+		return productRepository.getProductsByCost(cost);
 	}
 	
 	public ProductModel getProductById(int id)
