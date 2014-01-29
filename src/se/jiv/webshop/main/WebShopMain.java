@@ -19,11 +19,6 @@ public final class WebShopMain
 		while (in)
 		{
 			MainMenuUI mainMenu = new MainMenuUI();
-			ProductUI productMenu = new ProductUI();
-			CategoryUI categoryMenu = new CategoryUI();
-
-			CategoryService categoryService = new CategoryService(new CategoryDAO());
-			ProductService productService = new ProductService(new ProductDAO());
 
 			int option = mainMenu.firstMenu();
 
@@ -32,65 +27,94 @@ public final class WebShopMain
 			case 1:
 				break;
 			case 2:
-				option = mainMenu.retrieveInformation();
-				switch (option)
-				{
-				case 1:
-					try
-					{
-						System.out.println(productMenu.toStringListArray(productService.getProductsByName(productMenu.productInformation())));
-					}
-					catch (WebshopAppException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					break;
-				case 2:
-					try
-					{
-						System.out.println(categoryService.getCategory(categoryMenu.categoryInformation(categoryService.getAllCategories())));
-					}
-					catch (WebshopAppException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					break;
-				case 3:
-					break;
-				}
+				retrieveInformation();
 				break;
 			case 3:
 				break;
 			case 4:
-				try
-				{
-					option = productMenu.productsByCategory(categoryService.getAllCategories());
-					System.out.println(productMenu.toStringListArray(productService.getProductsByCategory(option)));
-				}
-				catch (WebshopAppException e)
-				{
-					e.printStackTrace();
-				}
+				searchProductsByCategory();
 				break;
 			case 5:
-				option = mainMenu.editInformation();
-				switch (option)
-				{
-				case 1:
-					option = productMenu.editProduct();
-	
-					break;
-				case 2:
-					break;
-				case 3: 
-					break;
-				}
+				editInformation();
 
 				break;
 			}
 
+		}
+	}
+
+	private static void editInformation() {
+		MainMenuUI mainMenu = new MainMenuUI();
+		ProductUI productMenu = new ProductUI();
+		
+		int option = mainMenu.editInformation();
+		switch (option)
+		{
+		case 1:
+			option = productMenu.editProduct();
+
+			break;
+		case 2:
+			break;
+		case 3: 
+			break;
+		}
+		
+	}
+
+	private static void searchProductsByCategory() {
+		ProductUI productMenu = new ProductUI();
+		CategoryService categoryService = new CategoryService(new CategoryDAO());
+		ProductService productService = new ProductService(new ProductDAO());
+		
+		try
+		{
+			int option = productMenu.productsByCategory(categoryService.getAllCategories());
+			System.out.println(productMenu.toStringListArray(productService.getProductsByCategory(option)));
+		}
+		catch (WebshopAppException e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+
+	private static void retrieveInformation() {
+		MainMenuUI mainMenu = new MainMenuUI();
+		ProductUI productMenu = new ProductUI();
+		CategoryUI categoryMenu = new CategoryUI();
+		
+		CategoryService categoryService = new CategoryService(new CategoryDAO());
+		ProductService productService = new ProductService(new ProductDAO());
+		
+		int option = mainMenu.retrieveInformation();
+		switch (option)
+		{
+		case 1:
+			try
+			{
+				System.out.println(productMenu.toStringListArray(productService.getProductsByName(productMenu.productInformation())));
+			}
+			catch (WebshopAppException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+		case 2:
+			try
+			{
+				System.out.println(categoryService.getCategory(categoryMenu.categoryInformation(categoryService.getAllCategories())));
+			}
+			catch (WebshopAppException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+		case 3:
+			break;
+		
 		}
 		
 	}
