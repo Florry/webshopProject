@@ -56,9 +56,9 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			} finally {
 				close(rs, pstmt, conn);
 			}
-		}else{
-			throw new WebshopAppException("Product can't be null", this.getClass()
-					.getSimpleName(), "CREATE_PRODUCT");
+		} else {
+			throw new WebshopAppException("Product can't be null", this
+					.getClass().getSimpleName(), "CREATE_PRODUCT");
 		}
 	}
 
@@ -85,25 +85,9 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 				conn = getConnection();
 				conn.setAutoCommit(false);
 
-				String sql = "UPDATE products SET name = ?, description = ?, cost = ?, rrp = ? WHERE id = ?";
-				pstmt = conn.prepareStatement(sql);
-				setString(pstmt, 1, product.getName());
-				setString(pstmt, 2, product.getDescription());
-				setDouble(pstmt, 3, product.getCost());
-				setDouble(pstmt, 4, product.getRrp());
-				setInteger(pstmt, 5, product.getId());
-
-				pstmt.executeUpdate();
-
-				close(pstmt);
-
-				sql = "DELETE FROM product_categories WHERE product_id=?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, product.getId());
-
-				pstmt.executeUpdate();
-
-				close(pstmt);
+				updateProduct(conn, product);
+				
+				deleteProductCategories(conn, product.getId());
 
 				insertCategories(conn, pstmt, product.getId(),
 						product.getCategories());
@@ -121,12 +105,45 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		}
 		return false;
 	}
+	
+	private void updateProduct(Connection conn, ProductModel product)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+
+		try {
+			String sql = "UPDATE products SET name = ?, description = ?, cost = ?, rrp = ? WHERE id = ?";
+			pstmt = conn.prepareStatement(sql);
+			setString(pstmt, 1, product.getName());
+			setString(pstmt, 2, product.getDescription());
+			setDouble(pstmt, 3, product.getCost());
+			setDouble(pstmt, 4, product.getRrp());
+			setInteger(pstmt, 5, product.getId());
+	
+			pstmt.executeUpdate();
+		} finally {
+			close(pstmt);
+		}
+	}
+
+	private void deleteProductCategories(Connection conn, int productId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+
+		try {
+			String sql = "DELETE FROM product_categories WHERE product_id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, productId);
+
+			pstmt.executeUpdate();
+		} finally {
+			close(pstmt);
+		}
+	}
 
 	@Override
 	public boolean deleteProduct(int productId) throws WebshopAppException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-
 		try {
 			conn = getConnection();
 
@@ -135,7 +152,9 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			pstmt.setInt(1, productId);
 
 			pstmt.executeUpdate();
-
+			
+			//We don't delete product_categories because there are an delete on cascade
+			
 			return true;
 		} catch (SQLException e) {
 			throw new WebshopAppException(e, this.getClass().getSimpleName(),
