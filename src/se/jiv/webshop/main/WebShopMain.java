@@ -1,8 +1,6 @@
 package se.jiv.webshop.main;
 
 import se.jiv.webshop.exception.WebshopAppException;
-import se.jiv.webshop.repository.CategoryRepository;
-import se.jiv.webshop.repository.ProductRepository;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 import se.jiv.webshop.repository.dao.ProductDAO;
 import se.jiv.webshop.service.CategoryService;
@@ -16,15 +14,6 @@ public final class WebShopMain
 
 	public static void main(String[] args)
 	{
-//		MainMenuUI mm = new MainMenuUI();
-//		System.out.println("text:");
-//		String text = mm.readString();
-//		System.out.println(text);
-//		
-//		System.out.println("number:");
-//		int number = mm.readInt();
-//		System.out.println(number);
-		
 		boolean in = true;
 
 		while (in)
@@ -33,11 +22,8 @@ public final class WebShopMain
 			ProductUI productMenu = new ProductUI();
 			CategoryUI categoryMenu = new CategoryUI();
 
-			CategoryRepository categoryRepository = new CategoryDAO();
-			CategoryService categoryService = new CategoryService(categoryRepository);
-
-			ProductRepository productRepository = new ProductDAO();
-			ProductService productService = new ProductService(productRepository);
+			CategoryService categoryService = new CategoryService(new CategoryDAO());
+			ProductService productService = new ProductService(new ProductDAO());
 
 			int option = mainMenu.firstMenu();
 
