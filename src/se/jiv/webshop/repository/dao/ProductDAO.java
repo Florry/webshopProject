@@ -58,7 +58,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			}
 		}else{
 			throw new WebshopAppException("Product can't be null", this.getClass()
-					.getSimpleName(), "ADD_PRODUCT");
+					.getSimpleName(), "CREATE_PRODUCT");
 		}
 	}
 

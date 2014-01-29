@@ -7,6 +7,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.dao.ProductDAO;
 import se.jiv.webshop.service.ProductService;
+import se.jiv.webshop.ui.ExceptionUI;
 
 public final class JLPTestProduct {
 
@@ -25,11 +26,11 @@ public final class JLPTestProduct {
 	private static void test4(ProductService ps) {
 		try {
 			ProductModel product = new ProductModel(null, null, null);
-			product = ps.createProduct(product);
-			System.out.println("product: " + product);
-			ps.deleteProduct(product.getId());
+			ps.createProduct(product);
+			System.out.println("TEST 4 NOK");
 		} catch (WebshopAppException e) {
 			System.out.println("TEST 4 OK");
+			ExceptionUI.printException(e);
 		} catch (Exception e){
 			System.out.println("TEST 4 NOK");
 		}
@@ -41,6 +42,7 @@ public final class JLPTestProduct {
 			System.out.println("TEST 3 NOK");
 		} catch (WebshopAppException e) {
 			System.out.println("TEST 3 OK");
+			ExceptionUI.printException(e);
 		} catch (Exception e){
 			System.out.println("TEST 3 NOK");
 		}
