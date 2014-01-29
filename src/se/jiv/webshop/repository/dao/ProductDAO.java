@@ -44,15 +44,19 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 
 				close(rs, pstmt);
 
-				insertProductCategories(conn, pstmt, generatedId,
+				insertProductCategories(conn, generatedId,
 						product.getCategories());
 
 				commit(conn);
 
 				return new ProductModel(generatedId, product);
 			} catch (SQLException e) {
+				rollback(conn);
 				throw new WebshopAppException(e, this.getClass()
 						.getSimpleName(), "CREATE_PRODUCT");
+			} catch (Exception e1) {
+				rollback(conn);
+				throw e1;
 			} finally {
 				close(rs, pstmt, conn);
 			}
@@ -62,15 +66,22 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		}
 	}
 
-	private void insertProductCategories(Connection conn, PreparedStatement pstmt,
-			int productId, List<Integer> categories) throws SQLException {
-		String sql = "INSERT INTO product_categories VALUES( ?, ?)";
-		for (int categoryId : categories) {
-			pstmt = conn.prepareStatement(sql);
-			setInteger(pstmt, 1, productId);
-			setInteger(pstmt, 2, categoryId);
+	private void insertProductCategories(Connection conn, int productId,
+			List<Integer> categories) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "INSERT INTO product_categories VALUES( ?, ?)";
+			for (int categoryId : categories) {
+				pstmt = conn.prepareStatement(sql);
+				setInteger(pstmt, 1, productId);
+				setInteger(pstmt, 2, categoryId);
 
-			pstmt.executeUpdate();
+				pstmt.executeUpdate();
+
+				close(pstmt);
+			}
+		} finally {
+			close(pstmt);
 		}
 	}
 
@@ -79,34 +90,41 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			throws WebshopAppException {
 		if (product != null) {
 			Connection conn = null;
-			PreparedStatement pstmt = null;
 
 			try {
 				conn = getConnection();
 				conn.setAutoCommit(false);
 
-				updateProduct(conn, product);
+				int nUpdates = updateProduct(conn, product);
 				
-				deleteProductCategories(conn, product.getId());
-
-				insertProductCategories(conn, pstmt, product.getId(),
-						product.getCategories());
+				if(nUpdates > 0){
+					deleteProductCategories(conn, product.getId());
+	
+					insertProductCategories(conn, product.getId(),
+							product.getCategories());
+				}
 
 				commit(conn);
 
 				return true;
 
 			} catch (SQLException e) {
+				rollback(conn);
 				throw new WebshopAppException(e, this.getClass()
 						.getSimpleName(), "UPDATE_PRODUCT");
+			} catch (Exception e1) {
+				rollback(conn);
+				throw e1;
 			} finally {
-				close(pstmt, conn);
+				close(conn);
 			}
+		} else {
+			throw new WebshopAppException("Product can't be null", this
+					.getClass().getSimpleName(), "UPDATE_PRODUCT");
 		}
-		return false;
 	}
-	
-	private void updateProduct(Connection conn, ProductModel product)
+
+	private int updateProduct(Connection conn, ProductModel product)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 
@@ -118,8 +136,8 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			setDouble(pstmt, 3, product.getCost());
 			setDouble(pstmt, 4, product.getRrp());
 			setInteger(pstmt, 5, product.getId());
-	
-			pstmt.executeUpdate();
+
+			return pstmt.executeUpdate();
 		} finally {
 			close(pstmt);
 		}
@@ -152,9 +170,10 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			pstmt.setInt(1, productId);
 
 			pstmt.executeUpdate();
-			
-			//We don't delete product_categories because there are an delete on cascade
-			
+
+			// We don't delete product_categories because there are an delete on
+			// cascade
+
 			return true;
 		} catch (SQLException e) {
 			throw new WebshopAppException(e, this.getClass().getSimpleName(),
@@ -195,7 +214,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 				close(rs, pstmt, conn);
 			}
 		}
-		return null;
+		return new ArrayList<ProductModel>();
 	}
 
 	private ProductModel parseModel(Connection conn, ResultSet rs)
@@ -203,8 +222,8 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		int id = rs.getInt("id");
 		String name = rs.getString("name");
 		String description = rs.getString("description");
-		double price = rs.getInt("cost");
-		double rrp = rs.getInt("rrp");
+		double price = rs.getDouble("cost");
+		double rrp = rs.getDouble("rrp");
 		List<Integer> categories = getCategories(conn, id);
 
 		return new ProductModel(id, name, description, price, rrp, categories);
@@ -341,7 +360,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 		ResultSet rs = null;
 
 		try {
-			String sql = "SELECT product_id FROM product_categories where category_id = ?";
+			String sql = "SELECT category_id FROM product_categories where product_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 
@@ -350,7 +369,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 			List<Integer> categoryIds = new ArrayList<Integer>();
 
 			while (rs.next()) {
-				int currentCategoryId = rs.getInt("product_id");
+				int currentCategoryId = rs.getInt("category_id");
 				categoryIds.add(currentCategoryId);
 			}
 			return categoryIds;

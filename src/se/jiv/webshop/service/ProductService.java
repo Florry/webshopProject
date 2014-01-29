@@ -30,7 +30,7 @@ public class ProductService
 		return productRepository.deleteProduct(productId);
 	}
 
-	public List<ProductModel> getProductByName(String name) throws WebshopAppException
+	public List<ProductModel> getProductsByName(String name) throws WebshopAppException
 	{
 		return productRepository.getProductByName(name);
 	}
