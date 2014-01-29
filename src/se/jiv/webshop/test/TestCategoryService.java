@@ -1,4 +1,4 @@
-package se.jiv.webshop.main;
+package se.jiv.webshop.test;
 
 import java.util.List;
 
