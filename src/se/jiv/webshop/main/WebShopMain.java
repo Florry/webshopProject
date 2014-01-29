@@ -29,9 +29,9 @@ public final class WebShopMain
 
 		while (in)
 		{
-			MainMenuUI mUI = new MainMenuUI();
-			ProductUI pUI = new ProductUI();
-			CategoryUI cUI = new CategoryUI();
+			MainMenuUI mainMenu = new MainMenuUI();
+			ProductUI productMenu = new ProductUI();
+			CategoryUI categoryMenu = new CategoryUI();
 
 			CategoryRepository categoryRepository = new CategoryDAO();
 			CategoryService categoryService = new CategoryService(categoryRepository);
@@ -39,20 +39,20 @@ public final class WebShopMain
 			ProductRepository productRepository = new ProductDAO();
 			ProductService productService = new ProductService(productRepository);
 
-			int option = mUI.firstMenu();
+			int option = mainMenu.firstMenu();
 
 			switch (option)
 			{
 			case 1:
 				break;
 			case 2:
-				option = mUI.retrieveInformation();
+				option = mainMenu.retrieveInformation();
 				switch (option)
 				{
 				case 1:
 					try
 					{
-						System.out.println(pUI.toStringListArray(productService.getProductByName(pUI.productInformation())));
+						System.out.println(productMenu.toStringListArray(productService.getProductsByName(productMenu.productInformation())));
 					}
 					catch (WebshopAppException e1)
 					{
@@ -63,7 +63,7 @@ public final class WebShopMain
 				case 2:
 					try
 					{
-						System.out.println(categoryService.getCategory(cUI.categoryInformation(categoryService.getAllCategories())));
+						System.out.println(categoryService.getCategory(categoryMenu.categoryInformation(categoryService.getAllCategories())));
 					}
 					catch (WebshopAppException e1)
 					{
@@ -80,8 +80,8 @@ public final class WebShopMain
 			case 4:
 				try
 				{
-					option = pUI.productsByCategory(categoryService.getAllCategories());
-					System.out.println(pUI.toStringListArray(productService.getProductsByCategory(option)));
+					option = productMenu.productsByCategory(categoryService.getAllCategories());
+					System.out.println(productMenu.toStringListArray(productService.getProductsByCategory(option)));
 				}
 				catch (WebshopAppException e)
 				{
@@ -89,11 +89,11 @@ public final class WebShopMain
 				}
 				break;
 			case 5:
-				option = mUI.editInformation();
+				option = mainMenu.editInformation();
 				switch (option)
 				{
 				case 1:
-					option = pUI.editProduct();
+					option = productMenu.editProduct();
 	
 					break;
 				case 2:

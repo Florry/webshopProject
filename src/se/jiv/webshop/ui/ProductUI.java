@@ -17,8 +17,8 @@ public class ProductUI extends GeneralUI
 	public int editProduct()
 	{
 		System.out.println("What do you want to do with products?");
-		System.out.println("1. Edit");
-		System.out.println("2. Add");
+		System.out.println("1. Add");
+		System.out.println("2. Updates");
 		System.out.println("3. Delete");
 
 		return readInt();
