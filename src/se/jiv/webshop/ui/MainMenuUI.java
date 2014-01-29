@@ -12,6 +12,7 @@ public class MainMenuUI extends GeneralUI
 		System.out.println("2. Retrieve information");
 		System.out.println("3. Retrieve shopping cart");
 		System.out.println("4. Search for products by category");
+		System.out.println("5. Edit information");
 
 		return readInt();
 
@@ -27,6 +28,14 @@ public class MainMenuUI extends GeneralUI
 		return readInt();
 	}
 
+	public int editInformation()
+	{
+		System.out.println("What do you want to edit?");
+		System.out.println("1. Products");
+		System.out.println("2. Categories");
+		System.out.println("3. Users");
 
+		return readInt();
+	}
 
 }
