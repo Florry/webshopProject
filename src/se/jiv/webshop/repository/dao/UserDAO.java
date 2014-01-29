@@ -17,12 +17,12 @@ public class UserDAO extends GeneralDAO implements UserRepository
 	@Override
 	public UserModel addUser(UserModel user) throws WebshopAppException
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
 		if (user != null)
 		{
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			
 			try
 			{
 				conn = getConnection();
@@ -48,8 +48,9 @@ public class UserDAO extends GeneralDAO implements UserRepository
 				if (rs.next())
 				{
 					generatedId = rs.getInt(1);
-					return new UserModel(user, generatedId);
 				}
+				
+				return new UserModel(user, generatedId);
 				
 			} catch (SQLException e)
 			{
@@ -59,8 +60,10 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			{
 				close(rs, pstmt, conn);
 			}
+		}else{
+			throw new WebshopAppException("User can't be null", this.getClass()
+					.getSimpleName(), "ADD_USER");
 		}
-		return null;
 	}
 	
 	@Override

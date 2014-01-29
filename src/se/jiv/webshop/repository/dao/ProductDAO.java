@@ -8,338 +8,258 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.ProductRepository;
 
-public class ProductDAO extends GeneralDAO implements ProductRepository
-{
-	public final int PRODUCT_NAME = 1;
-	public final int PRODUCT_DESCRIPTION = 2;
-	public final int PRODUCT_COST = 3;
-	public final int PRODUCT_RRP = 4;
-
+public class ProductDAO extends GeneralDAO implements ProductRepository {
 	@Override
 	public ProductModel createProduct(ProductModel product)
-	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+			throws WebshopAppException {
+		if (product != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 
-		try
-		{
-			conn = getConnection();
-			conn.setAutoCommit(false);
+			try {
+				conn = getConnection();
+				conn.setAutoCommit(false);
 
-			String sql = "INSERT INTO products(name,description,cost,rrp) VALUES(?,?,?,?)";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, product.getName());
-			pstmt.setString(2, product.getDescription());
-			pstmt.setDouble(3, product.getCost());
-			pstmt.setDouble(4, product.getRrp());
-
-			pstmt.executeUpdate();
-
-			int generatedId = 0;
-			rs = pstmt.getGeneratedKeys();
-
-			if (rs.next())
-			{
-				generatedId = rs.getInt(1);
-			}
-
-			for (int categoryId : product.getCategories())
-			{
-				sql = "INSERT INTO product_categories VALUES( ?, ?)";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, generatedId);
-				pstmt.setInt(2, categoryId);
+				String sql = "INSERT INTO products(name,description,cost,rrp) VALUES(?,?,?,?)";
+				pstmt = conn.prepareStatement(sql,
+						Statement.RETURN_GENERATED_KEYS);
+				setString(pstmt, 1, product.getName());
+				setString(pstmt, 2, product.getDescription());
+				setDouble(pstmt, 3, product.getCost());
+				setDouble(pstmt, 4, product.getRrp());
 
 				pstmt.executeUpdate();
+
+				int generatedId = 0;
+				rs = pstmt.getGeneratedKeys();
+
+				if (rs.next()) {
+					generatedId = rs.getInt(1);
+				}
+
+				close(rs, pstmt);
+
+				insertCategories(conn, pstmt, generatedId,
+						product.getCategories());
+
+				commit(conn);
+
+				return new ProductModel(generatedId, product);
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "CREATE_PRODUCT");
+			} finally {
+				close(rs, pstmt, conn);
 			}
+		}else{
+			throw new WebshopAppException("Product can't be null", this.getClass()
+					.getSimpleName(), "ADD_PRODUCT");
+		}
+	}
 
-			conn.commit();
+	private void insertCategories(Connection conn, PreparedStatement pstmt,
+			int productId, List<Integer> categories) throws SQLException {
+		String sql = "INSERT INTO product_categories VALUES( ?, ?)";
+		for (int categoryId : categories) {
+			pstmt = conn.prepareStatement(sql);
+			setInteger(pstmt, 1, productId);
+			setInteger(pstmt, 2, categoryId);
 
-			return new ProductModel(generatedId, product);
+			pstmt.executeUpdate();
 		}
-		catch (SQLException e)
-		{
-			rollback(conn);
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(rs, pstmt, conn);
-		}
-		return null;
 	}
 
 	@Override
-	public boolean updateProduct(ProductModel product, int productId)
-	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	public boolean updateProduct(ProductModel product)
+			throws WebshopAppException {
+		if (product != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
 
-		try
-		{
-			conn = getConnection();
-			conn.setAutoCommit(false);
+			try {
+				conn = getConnection();
+				conn.setAutoCommit(false);
 
-			String sql = "SELECT id, name, description,cost, rrp FROM products WHERE id = ?";
-			pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-			pstmt.setInt(1, productId);
+				String sql = "UPDATE products SET name = ?, description = ?, cost = ?, rrp = ? WHERE id = ?";
+				pstmt = conn.prepareStatement(sql);
+				setString(pstmt, 1, product.getName());
+				setString(pstmt, 2, product.getDescription());
+				setDouble(pstmt, 3, product.getCost());
+				setDouble(pstmt, 4, product.getRrp());
+				setInteger(pstmt, 5, product.getId());
 
-			rs = pstmt.executeQuery();
+				pstmt.executeUpdate();
 
-			rs.absolute(1);
-			rs.updateString("name", product.getName());
-			rs.updateString("description", product.getDescription());
-			rs.updateDouble("cost", product.getCost());
-			rs.updateDouble("rrp", product.getRrp());
-			rs.updateRow();
+				close(pstmt);
 
-			pstmt.close();
-			rs.close();
+				sql = "DELETE FROM product_categories WHERE product_id=?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, product.getId());
 
-			sql = "SELECT category_id FROM product_categories "
-					+ "WHERE product_id = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, productId);
+				pstmt.executeUpdate();
 
-			rs = pstmt.executeQuery();
+				close(pstmt);
 
-			List<Integer> allreadyAddedCategories = new ArrayList<>();
+				insertCategories(conn, pstmt, product.getId(),
+						product.getCategories());
 
-			while (rs.next())
-			{
-				allreadyAddedCategories.add(rs.getInt("category_id"));
+				commit(conn);
+
+				return true;
+
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "UPDATE_PRODUCT");
+			} finally {
+				close(pstmt, conn);
 			}
-
-			for (int categoryId : product.getCategories())
-			{
-
-				if (!allreadyAddedCategories.contains(categoryId))
-				{
-					sql = "INSERT INTO product_categories VALUES( ?, ?)";
-					pstmt = conn.prepareStatement(sql);
-					pstmt.setInt(1, productId);
-					pstmt.setInt(2, categoryId);
-					pstmt.executeUpdate();
-				}
-
-			}
-			conn.commit();
-			return true;
-
 		}
-		catch (SQLException e)
-		{
-			rollback(conn);
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(rs, pstmt, conn);
-		}
-
 		return false;
 	}
 
 	@Override
-	public boolean deleteProduct(int productId)
-	{
+	public boolean deleteProduct(int productId) throws WebshopAppException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 
-		try
-		{
+		try {
 			conn = getConnection();
 
 			String sql = "DELETE FROM products WHERE id = ?";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, productId);
 
 			pstmt.executeUpdate();
 
 			return true;
+		} catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"DELETE_PRODUCT");
+		} finally {
+			close(pstmt, conn);
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(rs, pstmt, conn);
-		}
-
-		return false;
 	}
 
 	@Override
 	public List<ProductModel> getProductByName(String productName)
-	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+			throws WebshopAppException {
+		if (productName != null) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 
-		try
-		{
-			conn = getConnection();
+			try {
+				conn = getConnection();
 
-			String sql = "SELECT * FROM products WHERE name = ?";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, productName);
-			rs = pstmt.executeQuery();
+				String sql = "SELECT * FROM products WHERE name = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, productName);
+				rs = pstmt.executeQuery();
 
-			String name;
-			String description;
-			double price;
-			double rrp;
-			int id;
-			List<Integer> categories = new ArrayList<>();
-			List<ProductModel> foundProducts = new ArrayList<>();
+				List<ProductModel> foundProducts = new ArrayList<>();
 
-			while (rs.next())
-			{
-				id = rs.getInt("id");
-				name = rs.getString("name");
-				description = rs.getString("description");
-				price = rs.getInt("cost");
-				rrp = rs.getInt("rrp");
-				categories = getCategoriesOfProduct(id);
+				while (rs.next()) {
+					foundProducts.add(parseModel(conn, rs));
+				}
 
-				ProductModel currentProduct = new ProductModel(id, name, price, description, rrp, categories);
+				return foundProducts;
 
-				foundProducts.add(currentProduct);
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "GET_PRODUCT_BY_NAME");
+			} finally {
+				close(rs, pstmt, conn);
 			}
-			return foundProducts;
-
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(rs, pstmt, conn);
 		}
 		return null;
+	}
+
+	private ProductModel parseModel(Connection conn, ResultSet rs)
+			throws SQLException {
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		String description = rs.getString("description");
+		double price = rs.getInt("cost");
+		double rrp = rs.getInt("rrp");
+		List<Integer> categories = getCategories(conn, id);
+
+		return new ProductModel(id, name, description, price, rrp, categories);
 	}
 
 	@Override
 	public List<ProductModel> getProductsByCost(double cost)
-	{
+			throws WebshopAppException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		try
-		{
+		try {
 			conn = getConnection();
 
-			String sql = "SELECT* FROM products WHERE cost = ?";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			String sql = "SELECT * FROM products WHERE cost = ?";
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setDouble(1, cost);
 
 			rs = pstmt.executeQuery();
 
-			String name;
-			String description;
-			double price;
-			double rrp;
-			int id;
-			List<Integer> categories = new ArrayList<>();
 			List<ProductModel> foundProducts = new ArrayList<>();
 
-			while (rs.next())
-			{
-				id = rs.getInt("id");
-				name = rs.getString("name");
-				description = rs.getString("description");
-				price = rs.getInt("cost");
-				rrp = rs.getInt("rrp");
-				categories = getCategoriesOfProduct(id);
-
-				ProductModel currentProduct = new ProductModel(id, name, price, description, rrp, categories);
-
-				foundProducts.add(currentProduct);
+			while (rs.next()) {
+				foundProducts.add(parseModel(conn, rs));
 			}
 
 			return foundProducts;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
+		} catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_PRODUCT_BY_COST");
+		} finally {
 			close(rs, pstmt, conn);
 		}
-		return null;
 	}
 
 	@Override
 	public ProductModel getProductById(int productId)
-	{
+			throws WebshopAppException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		try
-		{
+		try {
 			conn = getConnection();
 
-			String sql = "SELECT* FROM products WHERE id = ?";
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			String sql = "SELECT * FROM products WHERE id = ?";
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setDouble(1, productId);
 
 			rs = pstmt.executeQuery();
 
-			int id = 0;
-			String name = "";
-			String description = "";
-			double price = 0;
-			double rrp = 0;
-			List<Integer> categories = new ArrayList<>();
-
-			while (rs.next())
-			{
-				id = rs.getInt("id");
-				name = rs.getString("name");
-				description = rs.getString("description");
-				price = rs.getDouble("cost");
-				rrp = rs.getDouble("rrp");
-				categories = getCategoriesOfProduct(id);
+			if (rs.next()) {
+				return parseModel(conn, rs);
 			}
+			return null;
 
-			ProductModel currentProduct = new ProductModel(id, name, price, description, rrp,
-					categories);
-
-			return currentProduct;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
+		} catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_PRODUCT_BY_ID");
+		} finally {
 			close(rs, pstmt, conn);
 		}
-		return null;
 
 	}
 
 	@Override
 	public List<ProductModel> getProductsByCategory(int categoryId)
-	{
+			throws WebshopAppException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		try
-		{
+		try {
 			conn = getConnection();
 			conn.setAutoCommit(false);
 
@@ -351,117 +271,90 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 
 			rs = pstmt.executeQuery();
 
-			List<Integer> categories = new ArrayList<>();
 			List<ProductModel> foundProducts = new ArrayList<>();
 
-			while (rs.next())
-			{
-				int id = rs.getInt("id");
-				String name = rs.getString("name");
-				String description = rs.getString("description");
-				double price = rs.getInt("cost");
-				double rrp = rs.getInt("rrp");
-				categories = getCategoriesOfProduct(id);
-
-				ProductModel currentProduct = new ProductModel(id, name, price, description, rrp, categories);
-
-				foundProducts.add(currentProduct);
+			while (rs.next()) {
+				foundProducts.add(parseModel(conn, rs));
 			}
 
 			return foundProducts;
 		}
 
-		catch (SQLException e)
-		{
-			rollback(conn);
-			e.printStackTrace();
-		}
-		finally
-		{
+		catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_PRODUCT_BY_CATEGORY");
+		} finally {
 			close(rs, pstmt, conn);
 		}
-
-		return null;
 	}
 
 	@Override
-	public List<ProductModel> getAllProducts()
-	{
+	public List<ProductModel> getAllProducts() throws WebshopAppException {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
-		try
-		{
+		try {
 			conn = getConnection();
 
-			String sql = "SELECT* FROM products";
+			String sql = "SELECT * FROM products";
 			stmt = conn.createStatement();
 
 			rs = stmt.executeQuery(sql);
-			List<Integer> categories = new ArrayList<>();
+
 			List<ProductModel> foundProducts = new ArrayList<>();
 
-			while (rs.next())
-			{
-				int id = rs.getInt("id");
-				String name = rs.getString("name");
-				String description = rs.getString("description");
-				double price = rs.getInt("cost");
-				double rrp = rs.getInt("rrp");
-				categories = getCategoriesOfProduct(id);
-
-				ProductModel currentProduct = new ProductModel(id, name, price, description, rrp, categories);
-
-				foundProducts.add(currentProduct);
+			while (rs.next()) {
+				foundProducts.add(parseModel(conn, rs));
 			}
 
 			return foundProducts;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
+		} catch (SQLException e) {
+			throw new WebshopAppException(e, this.getClass().getSimpleName(),
+					"GET_ALL_PRODUCTS");
+		} finally {
 			close(rs, stmt, conn);
 		}
-		return null;
 	}
 
-	@Override
-	public List<Integer> getCategoriesOfProduct(int productId)
-	{
-		Connection conn = null;
+	private List<Integer> getCategories(Connection conn, int id)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		try
-		{
-			conn = getConnection();
-
+		try {
 			String sql = "SELECT category_id FROM product_category WHERE product_id = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, productId);
+			pstmt.setInt(1, id);
+
 			rs = pstmt.executeQuery(sql);
 
-			List<Integer> categoryIds = new ArrayList<>();
+			List<Integer> categoryIds = new ArrayList<Integer>();
 
-			while (rs.next())
-			{
+			while (rs.next()) {
 				int currentCategoryId = rs.getInt("category_id");
 				categoryIds.add(currentCategoryId);
 			}
 			return categoryIds;
+		} finally {
+			close(rs, pstmt);
+		}
+	}
 
-		}
-		catch (SQLException e)
-		{
+	@Override
+	public List<Integer> getCategoriesOfProduct(int productId)
+			throws WebshopAppException {
+		Connection conn = null;
+
+		try {
+			conn = getConnection();
+
+			return getCategories(conn, productId);
+
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		finally
-		{
-			close(rs, pstmt, conn);
+		} finally {
+			close(conn);
 		}
 		return null;
 	}

@@ -12,21 +12,24 @@ public abstract class GeneralDAO {
 		try {
 			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 	}
-	
-	protected void rollback(Connection conn){
-		try
-		{
+
+	protected void rollback(Connection conn) {
+		try {
 			conn.rollback();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
+	}
+
+	protected void commit(Connection conn) {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -92,6 +95,15 @@ public abstract class GeneralDAO {
 			pstmt.setNull(pos, Types.INTEGER);
 		} else {
 			pstmt.setInt(pos, value);
+		}
+	}
+
+	public void setDouble(PreparedStatement pstmt, int pos, Double value)
+			throws SQLException {
+		if (value == null) {
+			pstmt.setNull(pos, Types.DOUBLE);
+		} else {
+			pstmt.setDouble(pos, value);
 		}
 	}
 
