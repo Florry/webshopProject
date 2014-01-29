@@ -60,9 +60,10 @@ public class UserDAO extends GeneralDAO implements UserRepository
 			{
 				close(rs, pstmt, conn);
 			}
-		}else{
-			throw new WebshopAppException("User can't be null", this.getClass()
-					.getSimpleName(), "ADD_USER");
+		} else
+		{
+			throw new WebshopAppException("User can't be null", this.getClass().getSimpleName(),
+					"ADD_USER");
 		}
 	}
 	
@@ -228,9 +229,9 @@ public class UserDAO extends GeneralDAO implements UserRepository
 				userList.add(new UserModel(db_int, db_email, db_password, db_firstname,
 						db_lastname, db_dob, db_telephone, db_address1, db_address2, db_town,
 						db_postcode));
-				return userList;
+				
 			}
-			
+			return userList;
 		} catch (SQLException e)
 		{
 			throw new WebshopAppException(e.getMessage(), this.getClass().getSimpleName(),
@@ -239,7 +240,6 @@ public class UserDAO extends GeneralDAO implements UserRepository
 		{
 			close(rs, pstmt, conn);
 		}
-		return null;
 		
 	}
 	

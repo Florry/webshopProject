@@ -1,5 +1,6 @@
 package se.jiv.webshop.ui;
 
+import java.util.List;
 import java.util.Map;
 
 import se.jiv.webshop.exception.WebshopAppException;
@@ -16,7 +17,20 @@ public class UserUI extends GeneralUI
 	// Get user
 	// Get all users
 	
-	public UserModel createUser()
+	public int UserMenu()
+	{
+		System.out.println("User Menu");
+		System.out.println("Select an Action");
+		System.out.println("1. Create User");
+		System.out.println("2. Update User");
+		System.out.println("3. Delete User");
+		System.out.println("4. Get User");
+		System.out.println("5. Get all Users");
+		
+		return readInt();
+	}
+	
+	protected UserModel createUser()
 	{
 		String email = null;
 		String password = null;
@@ -211,9 +225,12 @@ public class UserUI extends GeneralUI
 		return email;
 	}
 	
-	protected void getUsers()
-	{	
-		
+	protected void getAllUsers(List<UserModel> allUsers)
+	{
+		for (UserModel user : allUsers)
+		{
+			System.out.println(user.toString());
+		}
 	}
 	
 	public static void main(String args[]) throws WebshopAppException
@@ -221,7 +238,9 @@ public class UserUI extends GeneralUI
 		UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
 		UserUI uU = new UserUI();
 		
-		uS.updateUser(uU.updateUser(uS.getUser(uU.askForEmail())));
+		// uS.updateUser(uU.updateUser(uS.getUser(uU.askForEmail())));
+		uU.UserMenu();
+		uU.getAllUsers(uS.getAllUsers());
 	}
 	
 }
