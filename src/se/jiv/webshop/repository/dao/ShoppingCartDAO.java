@@ -251,7 +251,6 @@ public class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepositor
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		if (user != null)
 		{
 			try
