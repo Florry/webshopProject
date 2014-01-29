@@ -119,11 +119,7 @@ public class ProductDAO extends GeneralDAO implements ProductRepository
 			for (int categoryId : product.getCategories())
 			{
 
-				if (allreadyAddedCategories.contains(categoryId))
-				{
-					// Throw exception
-				}
-				else
+				if (!allreadyAddedCategories.contains(categoryId))
 				{
 					sql = "INSERT INTO product_categories VALUES( ?, ?)";
 					pstmt = conn.prepareStatement(sql);
