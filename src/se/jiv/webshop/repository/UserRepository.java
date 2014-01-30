@@ -16,4 +16,6 @@ public interface UserRepository
 	
 	public List<UserModel> getAllUsers() throws WebshopAppException;
 	
+	public boolean validateLogin(UserModel user) throws WebshopAppException;
+	
 }

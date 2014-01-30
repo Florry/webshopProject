@@ -2,11 +2,7 @@ package se.jiv.webshop.ui;
 
 import java.util.Map;
 
-import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
-import se.jiv.webshop.repository.dao.ShoppingCartDAO;
-import se.jiv.webshop.repository.dao.UserDAO;
-import se.jiv.webshop.service.UserService;
 
 public class ShoppingCartUI extends GeneralUI
 {

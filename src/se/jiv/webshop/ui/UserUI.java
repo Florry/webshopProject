@@ -1,13 +1,7 @@
 package se.jiv.webshop.ui;
 
 import java.util.List;
-import java.util.Map;
-
-import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
-import se.jiv.webshop.repository.dao.ShoppingCartDAO;
-import se.jiv.webshop.repository.dao.UserDAO;
-import se.jiv.webshop.service.UserService;
 
 public class UserUI extends GeneralUI
 {
@@ -242,7 +236,7 @@ public class UserUI extends GeneralUI
 		System.out.println("Enter your password:");
 		password = readString();
 		
-		return new UserModel(email, password, "", "", "", "", "");
+		return new UserModel(email, password);
 	}
 	
 	// public static void main(String args[]) throws WebshopAppException

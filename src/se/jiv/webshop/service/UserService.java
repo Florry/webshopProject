@@ -48,6 +48,10 @@ public final class UserService
 		
 	}
 	
+	public boolean validateLogin(UserModel user) throws WebshopAppException{
+		return userRepository.validateLogin(user);
+	}
+	
 	public void addProductToCart(UserModel user, int id, int quantity) throws WebshopAppException
 	{
 		shoppingCartRepository.addProductToCart(user, id, quantity);

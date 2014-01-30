@@ -159,5 +159,27 @@ public class ProductUI extends GeneralUI
 
 		return readInt();
 	}
+	
+	public String toStringListArray(List<ProductModel> objects)
+	{
+		String stringVersionOfList = "";
+		
+		for (Object object : objects)
+		{
+			
+				ProductModel currentProduct = (ProductModel) object;
+				int id = currentProduct.getId();
+				String name = currentProduct.getName();
+				String description = currentProduct.getDescription();
+				double cost = currentProduct.getCost();
+				double rrp = currentProduct.getRrp();
+				
+				stringVersionOfList += "\nId: " + id + "\nName: " + name + 
+						"\nDescription: " + description + "\nCost: " + cost + 
+						"\nRrp: " + rrp + "\n";
+		}
+
+		return stringVersionOfList;
+	}
 
 }

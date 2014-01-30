@@ -1,15 +1,15 @@
 package se.jiv.webshop.ui;
 
-import java.util.List;
 import java.util.Scanner;
-
-import se.jiv.webshop.model.ProductModel;
 
 public abstract class GeneralUI
 {
+	private Scanner scanner = null;
+	public GeneralUI() {
+		scanner = new Scanner(System.in);
+	}
 	protected String readString()
 	{
-		Scanner scanner = new Scanner(System.in);
 		return scanner.nextLine();
 	}
 
@@ -17,7 +17,6 @@ public abstract class GeneralUI
 	{
 		while (true)
 		{
-			Scanner scanner = new Scanner(System.in);
 			int value = -1;
 			try
 			{
@@ -31,29 +30,6 @@ public abstract class GeneralUI
 
 			return value;
 		}
-	}
-
-	public String toStringListArray(List<ProductModel> objects)
-	{
-
-		String stringVersionOfList = "";
-		
-		for (Object object : objects)
-		{
-			
-				ProductModel currentProduct = (ProductModel) object;
-				int id = currentProduct.getId();
-				String name = currentProduct.getName();
-				String description = currentProduct.getDescription();
-				double cost = currentProduct.getCost();
-				double rrp = currentProduct.getRrp();
-				
-				stringVersionOfList += "\nId: " + id + "\nName: " + name + 
-						"\nDescription: " + description + "\nCost: " + cost + 
-						"\nRrp: " + rrp + "\n";
-		}
-
-		return stringVersionOfList;
 	}
 
 }
