@@ -30,12 +30,25 @@ public class MainMenuUI extends GeneralUI
 
 	public int editInformation()
 	{
-		System.out.println("What do you want to edit?");
-		System.out.println("1. Products");
-		System.out.println("2. Categories");
-		System.out.println("3. Users");
+		System.out.println("What do you want to do?");
+		System.out.println("1. Edit Products");
+		System.out.println("2. Edit Categories");
+		System.out.println("3. Edit Users");
 
 		return readInt();
+	}
+
+	public boolean returnToMainMenu()
+	{
+		System.out.println();
+		System.out.println("Return to main menu? yes/no");
+		String anwser = readString();
+		
+		if( anwser.equals("yes")){
+			return true;
+		}
+		return false;
+		
 	}
 
 }

@@ -10,7 +10,7 @@ public abstract class GeneralUI
 	protected String readString()
 	{
 		Scanner scanner = new Scanner(System.in);
-		return scanner.next();
+		return scanner.nextLine();
 	}
 
 	protected int readInt()
