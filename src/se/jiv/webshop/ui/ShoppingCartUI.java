@@ -18,7 +18,7 @@ public class ShoppingCartUI extends GeneralUI
 		return readInt();
 	}
 	
-	protected String askForEmail(String action)
+	public String askForEmail(String action)
 	{
 		String email;
 		System.out.println(action + ": \n Enter the email address of the User");
@@ -26,7 +26,7 @@ public class ShoppingCartUI extends GeneralUI
 		return email;
 	}
 	
-	protected void getContents(Map<Integer, Integer> cart)
+	public void getContents(Map<Integer, Integer> cart)
 	{
 		System.out.println("Cart:");
 		for (Integer item : cart.keySet())
@@ -35,7 +35,7 @@ public class ShoppingCartUI extends GeneralUI
 		}
 	}
 	
-	protected int addProductToCart(UserModel user)
+	public int addProductToCart(UserModel user)
 	{
 		
 		System.out.println("Add product to cart of user " + user.getFirstname() + " "
@@ -45,13 +45,13 @@ public class ShoppingCartUI extends GeneralUI
 	}
 	
 	// Remove product from shopping cart
-	protected int askForProductId()
+	public int askForProductId()
 	{
 		System.out.println("Enter produt id of the product you want to remove from the cart:");
 		return readInt();
 	}
 	
-	protected int askForQuantity()
+	public int askForQuantity()
 	{
 		System.out.println("Enter quantity to remove from cart");
 		return readInt();

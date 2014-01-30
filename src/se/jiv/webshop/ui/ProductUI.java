@@ -6,17 +6,15 @@ import java.util.List;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.model.ProductModel;
 
-public class ProductUI extends GeneralUI
-{
-	public String productInformation()
-	{
-		System.out.println("Please enter the name of the product you information about: ");
+public class ProductUI extends GeneralUI {
+	public String productInformation() {
+		System.out
+				.println("Please enter the name of the product you information about: ");
 
 		return readString();
 	}
 
-	public int productMenu()
-	{
+	public int productMenu() {
 		System.out.println("User Menu");
 		System.out.println("1. Add Product");
 		System.out.println("2. Update Product");
@@ -27,12 +25,12 @@ public class ProductUI extends GeneralUI
 		return readInt();
 	}
 
-	public ProductModel createProduct()
-	{
+	public ProductModel createProduct() {
 		boolean manyCategories = true;
 		List<Integer> categories = new ArrayList<>();
 
-		System.out.println("Please enter the name of the product you want to create: ");
+		System.out
+				.println("Please enter the name of the product you want to create: ");
 		String name = readString();
 		System.out.println("Please enter the description of the product: ");
 		String description = readString();
@@ -40,34 +38,33 @@ public class ProductUI extends GeneralUI
 		double cost = readInt();
 		System.out.println("Please enter the rrp of the product: ");
 		double rrp = readInt();
-		System.out.println("Please enter the id of the category of this product: ");
+		System.out
+				.println("Please enter the id of the category of this product: ");
 		int categoryId = readInt();
 		categories.add(categoryId);
 
-		while (manyCategories)
-		{
-			System.out.println("Do you want to add another category to this product? yes/no");
+		while (manyCategories) {
+			System.out
+					.println("Do you want to add another category to this product? yes/no");
 			String anwser = readString();
-			if (anwser.equals("yes"))
-			{
-				System.out.println("Please enter the id of the other category of this product: ");
+			if (anwser.equals("yes")) {
+				System.out
+						.println("Please enter the id of the other category of this product: ");
 				categoryId = readInt();
 				categories.add(categoryId);
-			}
-			else
-			{
+			} else {
 				manyCategories = false;
 			}
 
 		}
 
-		ProductModel newProduct = new ProductModel(name, description, cost, rrp, categories);
+		ProductModel newProduct = new ProductModel(name, description, cost,
+				rrp, categories);
 
 		return newProduct;
 	}
 
-	public void productCreated(ProductModel product)
-	{
+	public void productCreated(ProductModel product) {
 		System.out.println("This is the product you created: ");
 		System.out.println("Id: " + product.getId());
 		System.out.println("Name: " + product.getName());
@@ -78,8 +75,7 @@ public class ProductUI extends GeneralUI
 
 	}
 
-	public ProductModel updateProduct()
-	{
+	public ProductModel updateProduct() {
 		List<Integer> categories = new ArrayList<>();
 		boolean manyCategories = true;
 
@@ -96,18 +92,16 @@ public class ProductUI extends GeneralUI
 
 		categories.add(categoryId);
 
-		while (manyCategories)
-		{
-			System.out.println("Do you want to add another new category to this product? yes/no");
+		while (manyCategories) {
+			System.out
+					.println("Do you want to add another new category to this product? yes/no");
 			String anwser = readString();
-			if (anwser.equals("yes"))
-			{
-				System.out.println("Please enter the id of the other new category of this product: ");
+			if (anwser.equals("yes")) {
+				System.out
+						.println("Please enter the id of the other new category of this product: ");
 				categoryId = readInt();
 				categories.add(categoryId);
-			}
-			else
-			{
+			} else {
 				manyCategories = false;
 			}
 
@@ -118,25 +112,22 @@ public class ProductUI extends GeneralUI
 		return newProduct;
 	}
 
-	public int deleteProduct()
-	{
-		System.out.println("Please enter the id of the product you want to delete");
+	public int deleteProduct() {
+		System.out
+				.println("Please enter the id of the product you want to delete");
 
 		return readInt();
 	}
 
-	public int getProduct()
-	{
+	public int getProduct() {
 		System.out.println("Please enter the id of the product: ");
 		int productId = readInt();
 
 		return productId;
 	}
 
-	public void getAllProducts(List<ProductModel> products)
-	{
-		for (ProductModel product : products)
-		{
+	public void getAllProducts(List<ProductModel> products) {
+		for (ProductModel product : products) {
 			System.out.println();
 			System.out.println("Id: " + product.getId());
 			System.out.println("Name: " + product.getName());
@@ -147,39 +138,42 @@ public class ProductUI extends GeneralUI
 		}
 	}
 
-	public int productsByCategory(List<CategoryModel> categories)
-	{
+	public int askCategory(List<CategoryModel> categories) {
 
-		System.out.println("What category do you want to retrieve information from: ");
+		System.out.println("What category do you want to search books: ");
 
-		for (CategoryModel category : categories)
-		{
+		for (CategoryModel category : categories) {
 			System.out.println(category.getId() + ". " + category.getName());
 		}
 
 		return readInt();
 	}
-	
-	public String toStringListArray(List<ProductModel> objects)
-	{
-		String stringVersionOfList = "";
-		
-		for (Object object : objects)
-		{
-			
-				ProductModel currentProduct = (ProductModel) object;
-				int id = currentProduct.getId();
-				String name = currentProduct.getName();
-				String description = currentProduct.getDescription();
-				double cost = currentProduct.getCost();
-				double rrp = currentProduct.getRrp();
-				
-				stringVersionOfList += "\nId: " + id + "\nName: " + name + 
-						"\nDescription: " + description + "\nCost: " + cost + 
-						"\nRrp: " + rrp + "\n";
-		}
 
-		return stringVersionOfList;
+	public void showProducts(List<ProductModel> products) {
+		System.out.println();
+		if (products.size() == 0) {
+			System.out.println("We don't found any product in the search.");
+		} else {
+			System.out.println("Products finded in the search: ");
+			for (ProductModel product : products) {
+				System.out.println(product);
+			}
+		}
+	}
+
+	public String askProductName() {
+		System.out
+				.println("Please enter the name of the product that you want to search: ");
+
+		return readString();
+	}
+
+	public void showUpdatedExit() {
+		System.out.println("You have updated your product");
+	}
+
+	public void showUpdatedNotExit() {
+		System.out.println("Your product was not updated, try again.");
 	}
 
 }

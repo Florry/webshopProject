@@ -1,6 +1,7 @@
 package se.jiv.webshop.ui;
 
 import java.util.List;
+
 import se.jiv.webshop.model.UserModel;
 
 public class UserUI extends GeneralUI
@@ -181,8 +182,6 @@ public class UserUI extends GeneralUI
 		newUser = new UserModel(email, password, firstname, lastname, dob, telephone, address1,
 				address2, town, postcode);
 		
-		System.out.println("updated user: " + user.toString());
-		
 		return newUser;
 	}
 	
@@ -227,7 +226,7 @@ public class UserUI extends GeneralUI
 		}
 	}
 	
-	public UserModel loginUser()
+	public UserModel getLoginInfo()
 	{
 		String email;
 		String password;
@@ -238,15 +237,18 @@ public class UserUI extends GeneralUI
 		
 		return new UserModel(email, password);
 	}
-	
-	// public static void main(String args[]) throws WebshopAppException
-	// {
-	// UserService uS = new UserService(new UserDAO(), new ShoppingCartDAO());
-	// UserUI uU = new UserUI();
-	//
-	// // uS.updateUser(uU.updateUser(uS.getUser(uU.askForEmail())));
-	// uU.UserMenu();
-	// uU.getAllUsers(uS.getAllUsers());
-	// }
+
+	public void showLoginExit(UserModel user) {
+		System.out.println("Login successful! Logged in as: "
+				+ user.getFirstname() + " " + user.getLastname());
+	}
+
+	public void showNotLoginExit() {
+		System.out.println("Login failed!");
+	}
+
+	public void showUserNotFound() {
+		System.out.println("User not found");
+	}
 	
 }

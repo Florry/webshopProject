@@ -226,7 +226,7 @@ public class UserDAO extends GeneralDAO implements UserRepository {
 					pstmt.setString(2, password);
 
 					rs = pstmt.executeQuery();
-
+					
 					return rs.next();
 
 				} catch (SQLException e) {
