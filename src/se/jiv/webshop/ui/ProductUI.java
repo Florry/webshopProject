@@ -69,12 +69,12 @@ public class ProductUI extends GeneralUI
 	public void productCreated(ProductModel product)
 	{
 		System.out.println("This is the product you created: ");
-		System.out.println(product.getId());
-		System.out.println(product.getName());
-		System.out.println(product.getDescription());
-		System.out.println(product.getCost());
-		System.out.println(product.getRrp());
-		System.out.println(product.getCategories());
+		System.out.println("Id: " + product.getId());
+		System.out.println("Name: " + product.getName());
+		System.out.println("Description: " + product.getDescription());
+		System.out.println("Cost: " + product.getCost());
+		System.out.println("Rrp: " + product.getRrp());
+		System.out.println("Category: " + product.getCategories());
 
 	}
 
