@@ -30,7 +30,7 @@ public class UserUI extends GeneralUI
 		return readInt();
 	}
 	
-	protected UserModel createUser()
+	public UserModel createUser()
 	{
 		String email = null;
 		String password = null;
@@ -85,7 +85,7 @@ public class UserUI extends GeneralUI
 		return user;
 	}
 	
-	protected String askForEmail()
+	public String askForEmail()
 	{
 		String email;
 		System.out.println("Update user \n Enter the email address of the user to update");
@@ -93,7 +93,7 @@ public class UserUI extends GeneralUI
 		return email;
 	}
 	
-	protected UserModel updateUser(UserModel user)
+	public UserModel updateUser(UserModel user)
 	{
 		String email = user.getEmail();
 		String password = user.getPassword();
@@ -192,7 +192,7 @@ public class UserUI extends GeneralUI
 		return newUser;
 	}
 	
-	protected UserModel deleteUser()
+	public UserModel deleteUser()
 	{
 		String email = null;
 		String password = null;
@@ -216,7 +216,7 @@ public class UserUI extends GeneralUI
 		return user;
 	}
 	
-	protected String getUser()
+	public String getUser()
 	{
 		String email = null;
 		System.out.println("Get user \n Enter the email adress of the user you want to get");
@@ -225,12 +225,24 @@ public class UserUI extends GeneralUI
 		return email;
 	}
 	
-	protected void getAllUsers(List<UserModel> allUsers)
+	public void getAllUsers(List<UserModel> allUsers)
 	{
 		for (UserModel user : allUsers)
 		{
 			System.out.println(user.toString());
 		}
+	}
+	
+	public UserModel loginUser()
+	{
+		String email;
+		String password;
+		System.out.println("Enter your email:");
+		email = readString();
+		System.out.println("Enter your password:");
+		password = readString();
+		
+		return new UserModel(email, password, "", "", "", "", "");
 	}
 	
 	// public static void main(String args[]) throws WebshopAppException
