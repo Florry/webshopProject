@@ -12,6 +12,7 @@ import se.jiv.webshop.service.UserService;
 import se.jiv.webshop.ui.CategoryUI;
 import se.jiv.webshop.ui.MainMenuUI;
 import se.jiv.webshop.ui.ProductUI;
+import se.jiv.webshop.ui.ShoppingCartUI;
 import se.jiv.webshop.ui.UserUI;
 
 public final class WebShopMain
@@ -36,6 +37,7 @@ public final class WebShopMain
 					retrieveInformation();
 					break;
 				case 3:
+					retrieveShoppingCart();
 					break;
 				case 4:
 					searchProductsByCategory();
@@ -324,6 +326,22 @@ public final class WebShopMain
 		
 		}
 		
+	}
+	
+	private static void retrieveShoppingCart()
+	{
+		ShoppingCartUI shoppingMenu = new ShoppingCartUI();
+		UserService userService = new UserService(new UserDAO(), new ShoppingCartDAO());
+		
+		try
+		{
+			System.out.println(userService.getShoppingCartContents(userService.getUser(shoppingMenu
+					.askForEmail("Get Shopping Cart Contents"))));
+		} catch (WebshopAppException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private static void doLogin()
