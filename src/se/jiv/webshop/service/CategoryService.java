@@ -26,8 +26,9 @@ public final class CategoryService {
 	public CategoryModel getCategory(int id) throws WebshopAppException {
 		return categoryRepository.getCategory(id);
 	}
-	
-	public CategoryModel searchCategoryByName(String name) throws WebshopAppException {
+
+	public CategoryModel searchCategoryByName(String name)
+			throws WebshopAppException {
 		return categoryRepository.searchCategoryByName(name);
 	}
 

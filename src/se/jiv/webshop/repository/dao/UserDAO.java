@@ -4,29 +4,26 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.UserRepository;
 
-public class UserDAO extends GeneralDAO implements UserRepository {
+public final class UserDAO extends GeneralDAO implements UserRepository {
 
 	@Override
 	public UserModel addUser(UserModel user) throws WebshopAppException {
 		if (user != null) {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			ResultSet rs = null;
 
 			try {
 				conn = getConnection();
 
 				String sql = "INSERT INTO users (email, password, firstname, lastname, dob, telephone, address1, address2, town, postcode)"
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-				pstmt = conn.prepareStatement(sql,
-						Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, user.getEmail());
 				pstmt.setString(2, user.getPassword());
 				pstmt.setString(3, user.getFirstname());
@@ -39,20 +36,13 @@ public class UserDAO extends GeneralDAO implements UserRepository {
 				pstmt.setString(10, user.getPostcode());
 				pstmt.executeUpdate();
 
-				int generatedId = 0;
-				rs = pstmt.getGeneratedKeys();
-
-				if (rs.next()) {
-					generatedId = rs.getInt(1);
-				}
-
-				return new UserModel(user, generatedId);
+				return new UserModel(user);
 
 			} catch (SQLException e) {
 				throw new WebshopAppException(e.getMessage(), this.getClass()
 						.getSimpleName(), "ADD_USER");
 			} finally {
-				close(rs, pstmt, conn);
+				close(pstmt, conn);
 			}
 		} else {
 			throw new WebshopAppException("User can't be null", this.getClass()
@@ -159,7 +149,6 @@ public class UserDAO extends GeneralDAO implements UserRepository {
 	}
 
 	private UserModel parseModel(ResultSet rs) throws SQLException {
-		int db_int = rs.getInt("id");
 		String db_email = rs.getString("email");
 		String db_password = rs.getString("password");
 		String db_firstname = rs.getString("firstname");
@@ -171,9 +160,9 @@ public class UserDAO extends GeneralDAO implements UserRepository {
 		String db_town = rs.getString("town");
 		String db_postcode = rs.getString("postcode");
 
-		return new UserModel(db_int, db_email, db_password, db_firstname,
-				db_lastname, db_dob, db_telephone, db_address1, db_address2,
-				db_town, db_postcode);
+		return new UserModel(db_email, db_password, db_firstname, db_lastname,
+				db_dob, db_telephone, db_address1, db_address2, db_town,
+				db_postcode);
 	}
 
 	@Override
@@ -226,7 +215,7 @@ public class UserDAO extends GeneralDAO implements UserRepository {
 					pstmt.setString(2, password);
 
 					rs = pstmt.executeQuery();
-					
+
 					return rs.next();
 
 				} catch (SQLException e) {

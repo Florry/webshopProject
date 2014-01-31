@@ -32,8 +32,6 @@ public final class CategoryModel {
 	public int getStaff_responsible() {
 		return staff_responsible;
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
@@ -42,8 +40,9 @@ public final class CategoryModel {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if(obj instanceof CategoryModel){
+		if (this == obj)
+			return true;
+		if (obj instanceof CategoryModel) {
 			CategoryModel other = (CategoryModel) obj;
 			return id == other.id;
 		}

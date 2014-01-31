@@ -61,9 +61,9 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			} finally {
 				close(rs, pstmt, conn);
 			}
-		}else{
-			throw new WebshopAppException("Category can't be null", this.getClass()
-					.getSimpleName(), "ADD_CATEGORY");
+		} else {
+			throw new WebshopAppException("Category can't be null", this
+					.getClass().getSimpleName(), "ADD_CATEGORY");
 		}
 	}
 

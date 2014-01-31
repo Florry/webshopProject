@@ -12,7 +12,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.ProductRepository;
 
-public class ProductDAO extends GeneralDAO implements ProductRepository {
+public final class ProductDAO extends GeneralDAO implements ProductRepository {
 	@Override
 	public ProductModel createProduct(ProductModel product)
 			throws WebshopAppException {
@@ -96,10 +96,10 @@ public class ProductDAO extends GeneralDAO implements ProductRepository {
 				conn.setAutoCommit(false);
 
 				int nUpdates = updateProduct(conn, product);
-				
-				if(nUpdates > 0){
+
+				if (nUpdates > 0) {
 					deleteProductCategories(conn, product.getId());
-	
+
 					insertProductCategories(conn, product.getId(),
 							product.getCategories());
 				}

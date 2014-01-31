@@ -14,8 +14,9 @@ public interface CategoryRepository {
 			throws WebshopAppException;
 
 	public CategoryModel getCategory(int id) throws WebshopAppException;
-	
-	public CategoryModel searchCategoryByName(String name) throws WebshopAppException;
+
+	public CategoryModel searchCategoryByName(String name)
+			throws WebshopAppException;
 
 	public List<CategoryModel> getAllCategories() throws WebshopAppException;
 

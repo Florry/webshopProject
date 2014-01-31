@@ -6,24 +6,7 @@ import java.util.List;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.model.ProductModel;
 
-public class ProductUI extends GeneralUI {
-	public String productInformation() {
-		System.out
-				.println("Please enter the name of the product you information about: ");
-
-		return readString();
-	}
-
-	public int productMenu() {
-		System.out.println("User Menu");
-		System.out.println("1. Add Product");
-		System.out.println("2. Update Product");
-		System.out.println("3. Delete Product");
-		System.out.println("4. Get Product");
-		System.out.println("5. Get all Product");
-
-		return readInt();
-	}
+public final class ProductUI extends GeneralUI {
 
 	public ProductModel createProduct() {
 		boolean manyCategories = true;
@@ -64,18 +47,7 @@ public class ProductUI extends GeneralUI {
 		return newProduct;
 	}
 
-	public void productCreated(ProductModel product) {
-		System.out.println("This is the product you created: ");
-		System.out.println("Id: " + product.getId());
-		System.out.println("Name: " + product.getName());
-		System.out.println("Description: " + product.getDescription());
-		System.out.println("Cost: " + product.getCost());
-		System.out.println("Rrp: " + product.getRrp());
-		System.out.println("Category: " + product.getCategories());
-
-	}
-
-	public ProductModel updateProduct() {
+	public ProductModel updateProduct(int productId) {
 		List<Integer> categories = new ArrayList<>();
 		boolean manyCategories = true;
 
@@ -107,38 +79,13 @@ public class ProductUI extends GeneralUI {
 
 		}
 
-		ProductModel newProduct = new ProductModel(name, description, cost, rrp);
+		ProductModel newProduct = new ProductModel(productId, name,
+				description, cost, rrp, categories);
 
 		return newProduct;
 	}
 
-	public int deleteProduct() {
-		System.out
-				.println("Please enter the id of the product you want to delete");
-
-		return readInt();
-	}
-
-	public int getProduct() {
-		System.out.println("Please enter the id of the product: ");
-		int productId = readInt();
-
-		return productId;
-	}
-
-	public void getAllProducts(List<ProductModel> products) {
-		for (ProductModel product : products) {
-			System.out.println();
-			System.out.println("Id: " + product.getId());
-			System.out.println("Name: " + product.getName());
-			System.out.println("Description: " + product.getDescription());
-			System.out.println("Cost: " + product.getCost());
-			System.out.println("Rrp: " + product.getRrp());
-			System.out.println("Category: " + product.getCategories());
-		}
-	}
-
-	public int askCategory(List<CategoryModel> categories) {
+	public int askCategoryToSearch(List<CategoryModel> categories) {
 
 		System.out.println("What category do you want to search books: ");
 
@@ -149,7 +96,7 @@ public class ProductUI extends GeneralUI {
 		return readInt();
 	}
 
-	public void showProducts(List<ProductModel> products) {
+	public void showProductsSearch(List<ProductModel> products) {
 		System.out.println();
 		if (products.size() == 0) {
 			System.out.println("We don't found any product in the search.");
@@ -161,6 +108,12 @@ public class ProductUI extends GeneralUI {
 		}
 	}
 
+	public int askProductId() {
+		System.out.println("Please enter the id of the product: ");
+
+		return readInt();
+	}
+
 	public String askProductName() {
 		System.out
 				.println("Please enter the name of the product that you want to search: ");
@@ -168,12 +121,17 @@ public class ProductUI extends GeneralUI {
 		return readString();
 	}
 
-	public void showUpdatedExit() {
+	public void showCreateSuccess(ProductModel newProduct) {
+		System.out.println("You have created a new product:");
+		System.out.println(newProduct);
+	}
+
+	public void showUpdatedSuccess() {
 		System.out.println("You have updated your product");
 	}
 
-	public void showUpdatedNotExit() {
-		System.out.println("Your product was not updated, try again.");
+	public void showProductNotFound() {
+		System.out.println("Product not found.");
 	}
 
 }

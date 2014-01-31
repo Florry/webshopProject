@@ -8,73 +8,66 @@ import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.ShoppingCartRepository;
 import se.jiv.webshop.repository.UserRepository;
 
-public final class UserService
-{
+public final class UserService {
 	private UserRepository userRepository;
 	private ShoppingCartRepository shoppingCartRepository;
-	
-	public UserService(UserRepository userRepository, ShoppingCartRepository shoppingCartRepository)
-	{
+
+	public UserService(UserRepository userRepository,
+			ShoppingCartRepository shoppingCartRepository) {
 		this.userRepository = userRepository;
 		this.shoppingCartRepository = shoppingCartRepository;
 	}
-	
-	public UserModel addUser(UserModel user) throws WebshopAppException
-	{
+
+	public UserModel addUser(UserModel user) throws WebshopAppException {
 		return userRepository.addUser(user);
-		
+
 	}
-	
-	public void updateUser(UserModel user) throws WebshopAppException
-	{
+
+	public void updateUser(UserModel user) throws WebshopAppException {
 		userRepository.updateUser(user);
-		
+
 	}
-	
-	public void deleteUser(UserModel user) throws WebshopAppException
-	{
+
+	public void deleteUser(UserModel user) throws WebshopAppException {
 		userRepository.deleteUser(user);
 	}
-	
-	public UserModel getUser(String email) throws WebshopAppException
-	{
+
+	public UserModel getUser(String email) throws WebshopAppException {
 		return userRepository.getUser(email);
-		
+
 	}
-	
-	public List<UserModel> getAllUsers() throws WebshopAppException
-	{
+
+	public List<UserModel> getAllUsers() throws WebshopAppException {
 		return userRepository.getAllUsers();
-		
+
 	}
-	
-	public boolean validateLogin(UserModel user) throws WebshopAppException{
+
+	public boolean validateLogin(UserModel user) throws WebshopAppException {
 		return userRepository.validateLogin(user);
 	}
-	
-	public void addProductToCart(UserModel user, int id, int quantity) throws WebshopAppException
-	{
+
+	public void addProductToCart(UserModel user, int id, int quantity)
+			throws WebshopAppException {
 		shoppingCartRepository.addProductToCart(user, id, quantity);
 	}
-	
-	public void removeFromCart(UserModel user, Integer id, int quantity) throws WebshopAppException
-	{
+
+	public void removeFromCart(UserModel user, Integer id, int quantity)
+			throws WebshopAppException {
 		shoppingCartRepository.removeFromCart(user, id, quantity);
 	}
-	
-	public void updateCart(UserModel user, int productId, int quantity) throws WebshopAppException
-	{
+
+	public void updateCart(UserModel user, int productId, int quantity)
+			throws WebshopAppException {
 		shoppingCartRepository.updateCart(user, productId, quantity);
 	}
-	
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user) throws WebshopAppException
-	{
+
+	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+			throws WebshopAppException {
 		return shoppingCartRepository.getShoppingCartContents(user);
 	}
-	
-	public void resetShoppingCart(UserModel user) throws WebshopAppException
-	{
+
+	public void resetShoppingCart(UserModel user) throws WebshopAppException {
 		shoppingCartRepository.resetShoppingCart(user);
 	}
-	
+
 }
