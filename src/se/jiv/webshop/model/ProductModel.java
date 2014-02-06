@@ -6,77 +6,74 @@ import java.util.List;
 public final class ProductModel {
 	public static final int DEFAULT_PRODUCT_ID = -1;
 
-	int id;
-	String name;
-	String description;
-	double cost;
-	double rrp;
-	List<Integer> categories;
+	private final int id;
+	private final String name;
+	private final String description;
+	private final double cost;
+	private final double rrp;
+	private final List<Integer> categories;
 
-	public ProductModel(int id, String name, String description, double cost,
-			double rrp, List<Integer> categories) {
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.cost = cost;
-		this.rrp = rrp;
-		this.categories = new ArrayList<Integer>();
-		if (categories != null) {
-			this.categories.addAll(categories);
+	public static class Builder {
+		// Required parameters
+		private final String name;
+
+		// optional parameters
+		private int id;
+		private String description;
+		private double cost;
+		private double rrp;
+		private final List<Integer> categories;
+
+		public Builder(String name) {
+			this.name = name;
+
+			id = DEFAULT_PRODUCT_ID;
+			description = "";
+			cost = 0;
+			rrp = 0;
+			categories = new ArrayList<Integer>();
 		}
+
+		public Builder id(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+
+		public Builder cost(double cost) {
+			this.cost = cost;
+			return this;
+		}
+
+		public Builder rrp(double rrp) {
+			this.rrp = rrp;
+			return this;
+		}
+
+		public Builder categories(List<Integer> categories) {
+			if (categories != null) {
+				this.categories.addAll(categories);
+			}
+			return this;
+		}
+
+		public ProductModel build() {
+			return new ProductModel(this);
+		}
+
 	}
 
-	public ProductModel(String name, String description, double cost,
-			double rrp, List<Integer> categories) {
-		this(DEFAULT_PRODUCT_ID, name, description, cost, rrp, categories);
-	}
-
-	public ProductModel(int id, String name, String description, double cost,
-			double rrp) {
-		this(name, description, cost, rrp, null);
-	}
-
-	public ProductModel(String name, String description, double cost) {
-		this(name, description, cost, 0, null);
-	}
-
-	public ProductModel(String name, String description, double cost,
-			List<Integer> categories) {
-		this(name, description, cost, 0, categories);
-	}
-
-	public ProductModel(String name, String description) {
-		this(name, description, 0, 0, null);
-	}
-
-	public ProductModel(String name, String description,
-			List<Integer> categories) {
-		this(name, description, 0, 0, categories);
-	}
-
-	public ProductModel(String name, double cost) {
-		this(name, "", cost, 0, null);
-	}
-
-	public ProductModel(String name, double cost, List<Integer> categories) {
-		this(name, "", cost, 0, categories);
-	}
-
-	public ProductModel(String name) {
-		this(name, "", 0, 0, null);
-	}
-
-	public ProductModel(String name, List<Integer> categories) {
-		this(name, "", 0, 0, categories);
-	}
-
-	public ProductModel(int id, ProductModel other) {
-		this(id, other.name, other.description, other.cost, other.rrp,
-				other.categories);
-	}
-
-	public ProductModel(ProductModel other) {
-		this(other.id, other);
+	private ProductModel(Builder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.description = builder.description;
+		this.cost = builder.cost;
+		this.rrp = builder.rrp;
+		this.categories = builder.categories;
 	}
 
 	public int getId() {
@@ -105,7 +102,18 @@ public final class ProductModel {
 
 	@Override
 	public int hashCode() {
-		return 37 * id;
+		if (id != DEFAULT_PRODUCT_ID) {
+			return 37 * id;
+		}
+
+		int hash = 37;
+		hash *= name.hashCode();
+		hash *= description.hashCode();
+		hash += cost;
+		hash += rrp;
+		hash *= categories.hashCode();
+
+		return hash;
 	}
 
 	@Override
@@ -114,7 +122,21 @@ public final class ProductModel {
 			return true;
 		if (obj instanceof ProductModel) {
 			ProductModel other = (ProductModel) obj;
-			return other.id == this.id;
+
+			if ((other.id != DEFAULT_PRODUCT_ID)
+					|| (this.id != DEFAULT_PRODUCT_ID)) {
+				return other.id == this.id;
+			}
+
+			boolean isEqual = true;
+			isEqual = isEqual && other.name.equals(this.name);
+			isEqual = isEqual && other.description.equals(this.description);
+			isEqual = isEqual && other.cost == this.cost;
+			isEqual = isEqual && other.rrp == this.rrp;
+			isEqual = isEqual && other.categories.equals(this.categories);
+
+			return isEqual;
+
 		}
 		return false;
 	}

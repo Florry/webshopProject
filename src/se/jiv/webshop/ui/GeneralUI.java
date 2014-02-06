@@ -5,6 +5,7 @@ import java.util.Scanner;
 public abstract class GeneralUI {
 
 	protected String readString() {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String value = scanner.nextLine();
 
@@ -15,6 +16,7 @@ public abstract class GeneralUI {
 		while (true) {
 			int value = -1;
 			try {
+				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(System.in);
 				value = scanner.nextInt();
 			} catch (Exception e) {

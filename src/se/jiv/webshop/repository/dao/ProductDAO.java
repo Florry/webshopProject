@@ -49,7 +49,11 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 
 				commit(conn);
 
-				return new ProductModel(generatedId, product);
+				return new ProductModel.Builder(product.getName())
+						.id(generatedId).description(product.getDescription())
+						.cost(product.getCost()).rrp(product.getRrp())
+						.categories(product.getCategories()).build();
+
 			} catch (SQLException e) {
 				rollback(conn);
 				throw new WebshopAppException(e, this.getClass()
@@ -226,7 +230,8 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 		double rrp = rs.getDouble("rrp");
 		List<Integer> categories = getCategories(conn, id);
 
-		return new ProductModel(id, name, description, price, rrp, categories);
+		return new ProductModel.Builder(name).id(id).description(description)
+				.cost(price).rrp(rrp).categories(categories).build();
 	}
 
 	@Override

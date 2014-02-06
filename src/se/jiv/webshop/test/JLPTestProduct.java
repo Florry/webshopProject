@@ -30,27 +30,27 @@ public final class JLPTestProduct {
 		test8(ps);
 		test9(ps);
 		test10(ps);
-		
-		//getAllProducts
+
+		// getAllProducts
 		test11(ps);
-		
-		//getProductByName
+
+		// getProductByName
 		test12(ps);
 		test13(ps);
 		test14(ps);
-		
-		//getProductByCost
+
+		// getProductByCost
 		test15(ps);
 		test16(ps);
-		
-		//getProductById
+
+		// getProductById
 		test17(ps);
 		test18(ps);
-		
-		//getProductsByCategory
+
+		// getProductsByCategory
 		test19(ps);
 		test20(ps);
-		
+
 	}
 
 	private static void test20(ProductService ps) {
@@ -59,30 +59,31 @@ public final class JLPTestProduct {
 			categories.add(1);
 			categories.add(3);
 			categories.add(5);
-			ProductModel product = new ProductModel("test16", "desc", 1.1, 2.2,
-					categories);
+			ProductModel product = new ProductModel.Builder("test20")
+					.description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
 			product = ps.createProduct(product);
-			
+
 			List<ProductModel> products = ps.getProductsByCategory(3);
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
 			System.out.println("TEST 20 OK(1 result)");
-			
+
 			ps.deleteProduct(product.getId());
-			} catch (WebshopAppException e) {
-				System.out.println("TEST 20 NOK");
-				ExceptionUI.printException(e);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("TEST 20 NOK");
-			}
+		} catch (WebshopAppException e) {
+			System.out.println("TEST 20 NOK");
+			ExceptionUI.printException(e);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("TEST 20 NOK");
+		}
 	}
 
 	private static void test19(ProductService ps) {
 		try {
 			List<ProductModel> products = ps.getProductsByCategory(-1);
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
 			System.out.println("TEST 19 OK(not results)");
@@ -97,32 +98,33 @@ public final class JLPTestProduct {
 
 	private static void test18(ProductService ps) {
 		try {
-			ProductModel product = new ProductModel("test18", "desc", 1.1, 2.2,
-					null);
+			ProductModel product = new ProductModel.Builder("test18")
+					.description("desc").cost(1.1).rrp(2.2).categories(null)
+					.build();
 			product = ps.createProduct(product);
-			
+
 			product = ps.getProductById(product.getId());
-			
+
 			System.out.println(product);
-			
+
 			System.out.println("TEST 18 OK(1 result)");
-			
+
 			ps.deleteProduct(product.getId());
-			} catch (WebshopAppException e) {
-				System.out.println("TEST 18 NOK");
-				ExceptionUI.printException(e);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("TEST 18 NOK");
-			}
-		
+		} catch (WebshopAppException e) {
+			System.out.println("TEST 18 NOK");
+			ExceptionUI.printException(e);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("TEST 18 NOK");
+		}
+
 	}
 
 	private static void test17(ProductService ps) {
 		try {
 			ProductModel product = ps.getProductById(-1);
 			System.out.println(product);
-				
+
 			System.out.println("TEST 17 OK(not results)");
 		} catch (WebshopAppException e) {
 			System.out.println("TEST 17 NOK");
@@ -131,22 +133,23 @@ public final class JLPTestProduct {
 			e.printStackTrace();
 			System.out.println("TEST 17 NOK");
 		}
-		
+
 	}
 
 	private static void test16(ProductService ps) {
 		try {
-		ProductModel product = new ProductModel("test16", "desc", 1.1, 2.2,
-				null);
-		product = ps.createProduct(product);
-		
-		List<ProductModel> products = ps.getProductsByCost(1.1);
-		for(ProductModel producto : products){
-			System.out.println(producto);
-		}
-		System.out.println("TEST 16 OK(1 result)");
-		
-		ps.deleteProduct(product.getId());
+			ProductModel product = new ProductModel.Builder("test16")
+					.description("desc").cost(1.1).rrp(2.2).categories(null)
+					.build();
+			product = ps.createProduct(product);
+
+			List<ProductModel> products = ps.getProductsByCost(1.1);
+			for (ProductModel producto : products) {
+				System.out.println(producto);
+			}
+			System.out.println("TEST 16 OK(1 result)");
+
+			ps.deleteProduct(product.getId());
 		} catch (WebshopAppException e) {
 			System.out.println("TEST 16 NOK");
 			ExceptionUI.printException(e);
@@ -154,14 +157,13 @@ public final class JLPTestProduct {
 			e.printStackTrace();
 			System.out.println("TEST 16 NOK");
 		}
-		
-		
+
 	}
 
 	private static void test15(ProductService ps) {
 		try {
 			List<ProductModel> products = ps.getProductsByCost(-1);
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
 			System.out.println("TEST 15 OK(not results)");
@@ -172,13 +174,13 @@ public final class JLPTestProduct {
 			e.printStackTrace();
 			System.out.println("TEST 15 NOK");
 		}
-		
+
 	}
 
 	private static void test14(ProductService ps) {
 		try {
 			List<ProductModel> products = ps.getProductsByName(null);
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
 			System.out.println("TEST 14 OK(not results)");
@@ -194,7 +196,7 @@ public final class JLPTestProduct {
 	private static void test13(ProductService ps) {
 		try {
 			List<ProductModel> products = ps.getProductsByName("aaaaaa");
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
 			System.out.println("TEST 13 OK(not results)");
@@ -204,7 +206,7 @@ public final class JLPTestProduct {
 		} catch (Exception e) {
 			System.out.println("TEST 13 NOK");
 		}
-		
+
 	}
 
 	private static void test12(ProductService ps) {
@@ -214,16 +216,16 @@ public final class JLPTestProduct {
 			categories.add(3);
 			categories.add(5);
 
-			ProductModel product = new ProductModel("test12", "desc", 1.1, 2.2,
-					categories);
-
+			ProductModel product = new ProductModel.Builder("test12")
+					.description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
 			product = ps.createProduct(product);
 
 			List<ProductModel> products = ps.getProductsByName("test12");
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
-			
+
 			ps.deleteProduct(product.getId());
 			System.out.println("TEST 12 OK");
 		} catch (WebshopAppException e) {
@@ -232,7 +234,7 @@ public final class JLPTestProduct {
 		} catch (Exception e) {
 			System.out.println("TEST 12 NOK");
 		}
-		
+
 	}
 
 	private static void test11(ProductService ps) {
@@ -242,16 +244,17 @@ public final class JLPTestProduct {
 			categories.add(3);
 			categories.add(5);
 
-			ProductModel product = new ProductModel("test11", "desc", 1.1, 2.2,
-					categories);
+			ProductModel product = new ProductModel.Builder("test11")
+					.description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
 
 			product = ps.createProduct(product);
 
 			List<ProductModel> products = ps.getAllProducts();
-			for(ProductModel producto : products){
+			for (ProductModel producto : products) {
 				System.out.println(producto);
 			}
-			
+
 			ps.deleteProduct(product.getId());
 			System.out.println("TEST 11 OK");
 		} catch (WebshopAppException e) {
@@ -260,7 +263,7 @@ public final class JLPTestProduct {
 		} catch (Exception e) {
 			System.out.println("TEST 11 NOK");
 		}
-		
+
 	}
 
 	private static void test10(ProductService ps) {
@@ -269,7 +272,9 @@ public final class JLPTestProduct {
 			categories.add(1);
 			categories.add(3);
 			categories.add(5);
-			ProductModel product = new ProductModel(null, null, categories);
+			ProductModel product = new ProductModel.Builder(null)
+					.description(null).categories(categories).build();
+
 			ps.updateProduct(product);
 			System.out.println("TEST 10 OK");
 		} catch (WebshopAppException e) {
@@ -282,7 +287,8 @@ public final class JLPTestProduct {
 
 	private static void test9(ProductService ps) {
 		try {
-			ProductModel product = new ProductModel(null, null, null);
+			ProductModel product = new ProductModel.Builder(null)
+					.description(null).categories(null).build();
 			ps.updateProduct(product);
 			System.out.println("TEST 9 OK");
 		} catch (WebshopAppException e) {
@@ -291,7 +297,7 @@ public final class JLPTestProduct {
 		} catch (Exception e) {
 			System.out.println("TEST 9 NOK");
 		}
-		
+
 	}
 
 	private static void test8(ProductService ps) {
@@ -304,7 +310,7 @@ public final class JLPTestProduct {
 		} catch (Exception e) {
 			System.out.println("TEST 8 NOK");
 		}
-		
+
 	}
 
 	private static void test7(ProductService ps) {
@@ -314,16 +320,18 @@ public final class JLPTestProduct {
 			categories.add(1);
 			categories.add(3);
 			categories.add(5);
-			ProductModel product = new ProductModel("test7",categories);
+			ProductModel product = new ProductModel.Builder("test7")
+					.categories(categories).build();
 			product = ps.createProduct(product);
 
 			// update a product
 			categories = new ArrayList<Integer>();
 			categories.add(2);
 			categories.add(4);
-			ProductModel productNew = new ProductModel("test7 2", "desc", 1.1,
-					2.2, categories);
-			productNew = new ProductModel(product.getId(), productNew);
+			ProductModel productNew = new ProductModel.Builder("test7 2")
+					.id(product.getId()).description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
+
 			boolean success = ps.updateProduct(productNew);
 
 			// query product from BBDD
@@ -345,7 +353,7 @@ public final class JLPTestProduct {
 	private static void test6(ProductService ps) {
 		try {
 			// insert a product
-			ProductModel product = new ProductModel("test6");
+			ProductModel product = new ProductModel.Builder("test6").build();
 			product = ps.createProduct(product);
 
 			// update a product
@@ -353,9 +361,10 @@ public final class JLPTestProduct {
 			categories.add(1);
 			categories.add(3);
 			categories.add(5);
-			ProductModel productNew = new ProductModel("test6 2", "desc", 1.1,
-					2.2, categories);
-			productNew = new ProductModel(product.getId(), productNew);
+			ProductModel productNew = new ProductModel.Builder("test6 2")
+					.id(product.getId()).description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
+
 			boolean success = ps.updateProduct(productNew);
 
 			// query product from BBDD
@@ -388,7 +397,8 @@ public final class JLPTestProduct {
 
 	private static void test4(ProductService ps) {
 		try {
-			ProductModel product = new ProductModel(null, null, null);
+			ProductModel product = new ProductModel.Builder(null)
+					.description(null).categories(null).build();
 			ps.createProduct(product);
 			System.out.println("TEST 4 NOK");
 		} catch (WebshopAppException e) {
@@ -419,8 +429,9 @@ public final class JLPTestProduct {
 			categories.add(3);
 			categories.add(5);
 
-			ProductModel product = new ProductModel("test2", "desc", 1.1, 2.2,
-					categories);
+			ProductModel product = new ProductModel.Builder("test2")
+					.description("desc").cost(1.1).rrp(2.2)
+					.categories(categories).build();
 
 			product = ps.createProduct(product);
 			System.out.println("TEST 2 OK --> product: " + product);
@@ -436,7 +447,7 @@ public final class JLPTestProduct {
 
 	private static void test1(ProductService ps) {
 		try {
-			ProductModel product = new ProductModel("test1");
+			ProductModel product = new ProductModel.Builder("test1").build();
 			product = ps.createProduct(product);
 			System.out.println("TEST 1 OK --> product: " + product);
 			ps.deleteProduct(product.getId());
