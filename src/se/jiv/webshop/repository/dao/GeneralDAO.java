@@ -1,6 +1,11 @@
 package se.jiv.webshop.repository.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
 public abstract class GeneralDAO {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -34,55 +39,9 @@ public abstract class GeneralDAO {
 		}
 	}
 
-	protected void close(ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException sqlEx) {
-			} // ignore
-
-			rs = null;
-		}
-	}
-
-	protected void close(Statement stmt) {
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException sqlEx) {
-			} // ignore
-
-			stmt = null;
-		}
-	}
-
-	protected void close(Connection conn) {
-		if (conn != null) {
-			try {
-				conn.close();
-			} catch (SQLException sqlEx) {
-			}
-		}
-	}
-
-	protected void close(ResultSet rs, Statement stmt, Connection conn) {
-		close(rs);
-		close(stmt);
-		close(conn);
-
-	}
-
-	protected void close(Statement stmt, Connection conn) {
-		close(null, stmt, conn);
-	}
-
-	protected void close(ResultSet rs, Statement stmt) {
-		close(rs, stmt, null);
-	}
-
 	public void setString(PreparedStatement pstmt, int pos, String value)
 			throws SQLException {
-		if (value == null) {
+		if (value == null || "".equals(value)) {
 			pstmt.setNull(pos, Types.VARCHAR);
 		} else {
 			pstmt.setString(pos, value);

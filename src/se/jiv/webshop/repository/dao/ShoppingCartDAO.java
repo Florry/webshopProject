@@ -17,220 +17,183 @@ public final class ShoppingCartDAO extends GeneralDAO implements
 	@Override
 	public void addProductToCart(UserModel user, int productId, int quantity)
 			throws WebshopAppException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		if (user != null) {
-			if (quantity > 0) {
-				try {
-					conn = getConnection();
 
-					String sql = "SELECT quantity FROM shopping_cart WHERE user_email = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					setString(pstmt, 1, user.getEmail());
-					setInteger(pstmt, 2, productId);
+		if (isValidUser(user, "ADD_PRODUCT_TO_SHOPPING_CART")
+				&& isPositiveQuantity(quantity, "ADD_PRODUCT_TO_SHOPPING_CART")) {
 
-					rs = pstmt.executeQuery();
+			try (Connection conn = getConnection()) {
 
-					int db_quantity = 0;
+				int db_quantity = getProductQuantity(conn, user, productId);
 
-					if (rs.next()) {
-						db_quantity = rs.getInt(1);
+				deleteProductFromShoppingCart(conn, user, productId);
 
-						if (db_quantity > 0) {
-							quantity += db_quantity;
-						}
-					}
-					close(rs, pstmt);
-					if (db_quantity >= 1) {
-						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_email = ? and product_id = ?";
-						pstmt = conn.prepareStatement(sql);
-						setInteger(pstmt, 1, quantity);
-						setString(pstmt, 2, user.getEmail());
-						setInteger(pstmt, 3, productId);
+				int newQuantity = db_quantity + quantity;
 
-						pstmt.executeUpdate();
-					} else {
-						sql = "INSERT INTO shopping_cart (user_email, product_id, quantity) VALUES (?, ?, ?)";
-						pstmt = conn.prepareStatement(sql);
-						setString(pstmt, 1, user.getEmail());
-						setInteger(pstmt, 2, productId);
-						setInteger(pstmt, 3, quantity);
+				insertProductQuantity(conn, user, productId, newQuantity);
 
-						pstmt.executeUpdate();
-					}
-					close(rs, pstmt, conn);
-
-				} catch (SQLException e) {
-					throw new WebshopAppException(e, this.getClass()
-							.getSimpleName(), "ADD_PRODUCT_TO_SHOPPING_CART");
-				} finally {
-					close(rs, pstmt, conn);
-				}
-
-			} else {
-				throw new WebshopAppException("quantity is negative", this
-						.getClass().getSimpleName(),
-						"ADD_PRODUCT_TO_SHOPPING_CART");
+			} catch (SQLException e) {
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "ADD_PRODUCT_TO_SHOPPING_CART");
 			}
 		}
 
 	}
 
 	@Override
-	public void removeFromCart(UserModel user, int productId, int quantity)
+	public void removeProductFromCart(UserModel user, int productId)
 			throws WebshopAppException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		if (user != null) {
-			if (quantity > 0) {
-				try {
-					conn = getConnection();
 
-					String sql = "SELECT quantity FROM shopping_cart WHERE user_email = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					setString(pstmt, 1, user.getEmail());
-					setInteger(pstmt, 2, productId);
+		if (isValidUser(user, "REMOVE_PRODUCT_FROM_SHOPPING_CART")) {
 
-					rs = pstmt.executeQuery();
+			try (Connection conn = getConnection()) {
 
-					int db_quantity = 0;
-
-					if (rs.next()) {
-						db_quantity = rs.getInt("quantity");
-						db_quantity -= quantity;
-					}
-					close(rs, pstmt);
-
-					if (db_quantity <= 0) {
-						sql = "DELETE FROM shopping_cart WHERE user_email = ? and product_id = ?";
-						pstmt = conn.prepareStatement(sql);
-						setString(pstmt, 1, user.getEmail());
-						setInteger(pstmt, 2, productId);
-
-						pstmt.executeUpdate();
-					} else if (db_quantity > 0) {
-						sql = "UPDATE shopping_cart SET quantity = ? WHERE user_email = ? and product_id = ?";
-						pstmt = conn.prepareStatement(sql);
-						setInteger(pstmt, 1, db_quantity);
-						setString(pstmt, 2, user.getEmail());
-						setInteger(pstmt, 3, productId);
-
-						pstmt.executeUpdate();
-					}
-
-				} catch (SQLException e) {
-					throw new WebshopAppException(e, this.getClass()
-							.getSimpleName(), "REMOVE_FROM_SHOPPING_CART");
-				} finally {
-					close(rs, pstmt, conn);
-				}
-			} else {
-
-				try {
-					conn = getConnection();
-
-					String sql = "DELETE FROM shopping_cart WHERE user_email = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					setString(pstmt, 1, user.getEmail());
-					setInteger(pstmt, 2, productId);
-
-					pstmt.executeUpdate();
-
-				} catch (SQLException e) {
-					throw new WebshopAppException(e.getMessage(), this
-							.getClass().getSimpleName(),
-							"REMOVE_FROM_SHOPPING_CART");
-				} finally {
-					close(rs, pstmt, conn);
-				}
-			}
-		}
-
-	}
-
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
-			throws WebshopAppException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Map<Integer, Integer> contents = new LinkedHashMap<Integer, Integer>();
-		if (user != null) {
-			try {
-				conn = getConnection();
-
-				String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_email = ?";
-
-				pstmt = conn.prepareStatement(sql);
-				setString(pstmt, 1, user.getEmail());
-
-				rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-					contents.put(rs.getInt("product_id"), rs.getInt("quantity"));
-				}
+				deleteProductFromShoppingCart(conn, user, productId);
 
 			} catch (SQLException e) {
-				throw new WebshopAppException(e.getMessage(), this.getClass()
-						.getSimpleName(), "GET_SHOPPING_SHOPPING_CART_CONTENTS");
-			} finally {
-				close(rs, pstmt, conn);
+				throw new WebshopAppException(e, this.getClass()
+						.getSimpleName(), "REMOVE_PRODUCT_FROM_SHOPPING_CART");
 			}
 		}
-		return contents;
 	}
 
 	@Override
 	public void updateCart(UserModel user, int productId, int quantity)
 			throws WebshopAppException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
 
-		if (user != null) {
-			try {
-				conn = getConnection();
-				if (quantity > 0) {
-					sql = "UPDATE shopping_cart SET quantity = ? WHERE user_email = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					setInteger(pstmt, 1, quantity);
-					setString(pstmt, 2, user.getEmail());
-					setInteger(pstmt, 3, productId);
-				} else {
-					sql = "DELETE FROM shopping_cart WHERE user_email = ? and product_id = ?";
-					pstmt = conn.prepareStatement(sql);
-					setString(pstmt, 1, user.getEmail());
-					setInteger(pstmt, 2, productId);
-				}
-				pstmt.executeUpdate();
+		if (isValidUser(user, "UPDATE_CART")
+				&& isPositiveQuantity(quantity, "UPDATE_CART")) {
+
+			try (Connection conn = getConnection()) {
+
+				deleteProductFromShoppingCart(conn, user, productId);
+
+				insertProductQuantity(conn, user, productId, quantity);
+
 			} catch (SQLException e) {
 				throw new WebshopAppException(e.getMessage(), this.getClass()
-						.getSimpleName(), "UPDATE_SHOPPING_CART");
-			} finally {
-				close(pstmt, conn);
+						.getSimpleName(), "UPDATE_CART");
 			}
-
 		}
+
 	}
 
+	@Override
 	public void resetShoppingCart(UserModel user) throws WebshopAppException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		if (user != null) {
-			try {
-				conn = getConnection();
+
+		if (isValidUser(user, "RESET_SHOPPING_CART")) {
+
+			try (Connection conn = getConnection()) {
+
 				String sql = "DELETE FROM shopping_cart WHERE user_email = ?";
-				pstmt = conn.prepareStatement(sql);
-				setString(pstmt, 1, user.getEmail());
-				pstmt.executeUpdate();
+				try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+					setString(pstmt, 1, user.getEmail());
+
+					pstmt.executeUpdate();
+				}
 			} catch (SQLException e) {
 				throw new WebshopAppException(e.getMessage(), this.getClass()
-						.getSimpleName(), "UPDATE_SHOPPING_CART");
-			} finally {
-				close(pstmt, conn);
+						.getSimpleName(), "RESET_SHOPPING_CART");
 			}
+		}
 
+	}
+
+	@Override
+	public Map<Integer, Integer> getShoppingCart(UserModel user)
+			throws WebshopAppException {
+
+		if (isValidUser(user, "GET_SHOPPING_SHOPPING_CART_CONTENTS")) {
+
+			try (Connection conn = getConnection()) {
+
+				String sql = "SELECT product_id, quantity FROM shopping_cart WHERE user_email = ?";
+				try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+					setString(pstmt, 1, user.getEmail());
+
+					try (ResultSet rs = pstmt.executeQuery()) {
+
+						Map<Integer, Integer> contents = new LinkedHashMap<>();
+						while (rs.next()) {
+							contents.put(rs.getInt("product_id"),
+									rs.getInt("quantity"));
+						}
+
+						return contents;
+					}
+				}
+			} catch (SQLException e) {
+				throw new WebshopAppException(e.getMessage(), this.getClass()
+						.getSimpleName(), "GET_SHOPPING_SHOPPING_CART_CONTENTS");
+			}
+		}
+
+		return null;
+
+	}
+
+	private int getProductQuantity(Connection conn, UserModel user,
+			int productId) throws SQLException {
+
+		String sql = "SELECT quantity FROM shopping_cart WHERE user_email = ? and product_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setString(pstmt, 1, user.getEmail());
+			setInteger(pstmt, 2, productId);
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+				return 0;
+			}
 		}
 	}
+
+	private void deleteProductFromShoppingCart(Connection conn, UserModel user,
+			int productId) throws SQLException {
+		String sql = "DELETE FROM shopping_cart WHERE user_email = ? and product_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setString(pstmt, 1, user.getEmail());
+			setInteger(pstmt, 2, productId);
+
+			pstmt.executeUpdate();
+		}
+
+	}
+
+	private void insertProductQuantity(Connection conn, UserModel user,
+			int productId, int newQuantity) throws SQLException {
+		String sql = "INSERT INTO shopping_cart (user_email, product_id, quantity) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setString(pstmt, 1, user.getEmail());
+			setInteger(pstmt, 2, productId);
+			setInteger(pstmt, 3, newQuantity);
+
+			pstmt.executeUpdate();
+		}
+
+	}
+
+	private boolean isPositiveQuantity(int quantity, String functionName)
+			throws WebshopAppException {
+		if (quantity <= 0) {
+			throw new WebshopAppException("quantity can not be negative", this
+					.getClass().getSimpleName(), functionName);
+		}
+
+		return true;
+	}
+
+	private boolean isValidUser(UserModel user, String functionName)
+			throws WebshopAppException {
+		if (user == null) {
+			throw new WebshopAppException("user can not be null", this
+					.getClass().getSimpleName(), functionName);
+		}
+
+		return true;
+
+	}
+
 }
