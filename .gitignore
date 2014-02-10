@@ -3,4 +3,4 @@
 .project
 .settings
 .DS_Store
-/logs/*
+/logs/webbshop.log
