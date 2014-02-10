@@ -8,11 +8,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.CategoryRepository;
 
 public final class CategoryDAO extends GeneralDAO implements CategoryRepository {
+	private static final Logger LOGGER = Logger.getLogger(GeneralDAO.class);
 
 	private void prepareStatementFromModel(PreparedStatement pstmt,
 			CategoryModel category) throws SQLException {
@@ -54,17 +57,28 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 						}
 					}
 
-					return new CategoryModel(generatedId, category);
+					CategoryModel newModel = new CategoryModel(generatedId,
+							category);
+
+					LOGGER.trace("Category inserted: " + newModel);
+
+					return newModel;
 
 				}
 
 			} catch (SQLException e) {
+				WebshopAppException excep = new WebshopAppException(e, this
+						.getClass().getSimpleName(), "ADD_CATEGORY");
+				LOGGER.error(excep);
 				throw new WebshopAppException(e, this.getClass()
 						.getSimpleName(), "ADD_CATEGORY");
 			}
 		} else {
-			throw new WebshopAppException("Category can't be null", this
-					.getClass().getSimpleName(), "ADD_CATEGORY");
+			WebshopAppException excep = new WebshopAppException(
+					"Category can't be null", this.getClass().getSimpleName(),
+					"ADD_CATEGORY");
+			LOGGER.error(excep);
+			throw excep;
 		}
 	}
 

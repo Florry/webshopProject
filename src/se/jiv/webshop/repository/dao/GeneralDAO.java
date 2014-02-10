@@ -12,7 +12,7 @@ import se.jiv.webshop.utils.Properties;
 public abstract class GeneralDAO {
 	static final String JDBC_DRIVER = Properties.INSTANCE.getDBDriver();
 	static final String DB_URL = Properties.INSTANCE.getDB();
-	static final String DB_USER = Properties.INSTANCE.getDBDriver();
+	static final String DB_USER = Properties.INSTANCE.getDBUser();
 	static final String DB_PASSWORD = Properties.INSTANCE.getDBPassword();
 
 	protected Connection getConnection() throws SQLException {

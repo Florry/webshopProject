@@ -1,8 +1,8 @@
 package se.jiv.webshop.utils;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 public enum Properties {
 	INSTANCE;
@@ -12,7 +12,9 @@ public enum Properties {
 	private Properties() {
 		_prop = new java.util.Properties();
 		try {
-			_prop.load(new FileInputStream("config.properties"));
+			InputStream istream = getClass().getClassLoader()
+					.getResourceAsStream("config.properties");
+			_prop.load(istream);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -34,10 +36,6 @@ public enum Properties {
 
 	public String getDBPassword() {
 		return _prop.getProperty("dbpassword");
-	}
-
-	public String getLogLevel() {
-		return _prop.getProperty("loglevel");
 	}
 
 }
