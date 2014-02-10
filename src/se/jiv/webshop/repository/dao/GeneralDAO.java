@@ -1,12 +1,20 @@
 package se.jiv.webshop.repository.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+
+import se.jiv.webshop.utils.Properties;
 
 public abstract class GeneralDAO {
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost/webshop";
-	static final String DB_USER = "javamaster";
-	static final String DB_PASSWORD = "java";
+	static final String JDBC_DRIVER = Properties.INSTANCE.getDBDriver();
+	static final String DB_URL = Properties.INSTANCE.getDB();
+	static final String DB_USER = Properties.INSTANCE.getDBDriver();
+	static final String DB_PASSWORD = Properties.INSTANCE.getDBPassword();
 
 	protected Connection getConnection() throws SQLException {
 		try {
