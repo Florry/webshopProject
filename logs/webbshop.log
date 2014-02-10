@@ -1,0 +1,1 @@
+2014-02-10 12:01:50 GeneralDAO [ERROR] se.jiv.webshop.exception.WebshopAppException: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry 'ok' for key 'name_UNIQUE'
