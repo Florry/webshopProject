@@ -32,7 +32,7 @@ CREATE TABLE `categories` (
   UNIQUE KEY `name_UNIQUE` (`name`),
   KEY `CATEGORY_STAFF_FK_idx` (`staff_responsible`),
   CONSTRAINT `CATEGORY_STAFF_FK` FOREIGN KEY (`staff_responsible`) REFERENCES `staff` (`id`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Books',27),(2,'Children',63),(3,'Clothes',63),(4,'Computing',58),(5,'Electronics',58),(6,'Films',27),(7,'Gardening',63),(8,'Mens',63),(9,'Sports & outdoors',71),(10,'Toys',62),(11,'Womens',63);
+INSERT INTO `categories` VALUES (1,'Books',27),(2,'Children',63),(3,'Clothes',63),(4,'Computing',58),(5,'Electronics',58),(6,'Films',27),(7,'Gardening',63),(8,'Mens',63),(9,'Sports & outdoors',71),(10,'Toys',62),(11,'Womens',63),(15,'asdfadsfa',1),(16,'adsfad',1),(17,'?lj',1),(18,'wer',1);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,4 +200,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-31 10:43:05
+-- Dump completed on 2014-02-10 12:40:30
