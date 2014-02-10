@@ -51,10 +51,19 @@ public final class UserUI extends GeneralUI {
 		System.out.println("Enter a postcode of the new user:");
 		postcode = readString();
 
-		user = new UserModel(email, password, firstname, lastname, dob,
+		user = getUserModel(email, password, firstname, lastname, dob,
 				telephone, address1, address2, town, postcode);
 
 		return user;
+	}
+
+	private UserModel getUserModel(String email, String password,
+			String firstname, String lastname, String dob, String telephone,
+			String address1, String address2, String town, String postcode) {
+
+		return new UserModel.Builder(email, password, firstname, lastname,
+				address1, town, postcode).address2(address2).dob(dob)
+				.telephone(telephone).build();
 	}
 
 	public String askForEmail() {
@@ -93,22 +102,17 @@ public final class UserUI extends GeneralUI {
 
 			switch (selectedUpdate) {
 			case 1:
-				System.out.println("Enter the new firstname of the user");
-				firstname = readString();
+				firstname = readStringWithLabel("Enter the new firstname of the user");
 				break;
 			case 2:
-				System.out.println("Enter the new lastname of the user");
-				lastname = readString();
+				lastname = readStringWithLabel("Enter the new lastname of the user");
 				break;
 			case 3:
-				System.out.println("Enter the new password of the user");
-				password = readString();
+				password = readStringWithLabel("Enter the new password of the user");
 				break;
 			case 4:
-				System.out
-						.println("Enter the new date of birth of the user (yyyy-mm-dd)");
 				do {
-					dob = readString();
+					dob = readStringWithLabel("Enter the new date of birth of the user (yyyy-mm-dd)");
 					if (dob.matches("\\d{4}-\\d{2}-\\d{2}")) {
 						correctDate = true;
 					} else {
@@ -119,24 +123,18 @@ public final class UserUI extends GeneralUI {
 				} while (correctDate == false);
 				break;
 			case 5:
-				System.out
-						.println("Enter the new telephone number of the user");
-				telephone = readString();
+				telephone = readStringWithLabel("Enter the new telephone number of the user");
 				break;
 			case 6:
-				System.out.println("Enter the new address of the user");
-				address1 = readString();
+				address1 = readStringWithLabel("Enter the new address of the user");
 
-				System.out.println("Enter the new c/o of the user");
-				address2 = readString();
+				address2 = readStringWithLabel("Enter the new c/o of the user");
 				break;
 			case 7:
-				System.out.println("Enter the new town of the user");
-				town = readString();
+				town = readStringWithLabel("Enter the new town of the user");
 				break;
 			case 8:
-				System.out.println("Enter the new postcode of the user");
-				postcode = readString();
+				postcode = readStringWithLabel("Enter the new postcode of the user");
 				break;
 			}
 
@@ -150,21 +148,19 @@ public final class UserUI extends GeneralUI {
 			}
 		} while (updateDone == false);
 
-		newUser = new UserModel(email, password, firstname, lastname, dob,
+		newUser = getUserModel(email, password, firstname, lastname, dob,
 				telephone, address1, address2, town, postcode);
+		;
 
 		return newUser;
 	}
 
-	public UserModel getLoginInfo() {
-		String email;
-		String password;
-		System.out.println("Enter your email:");
-		email = readString();
-		System.out.println("Enter your password:");
-		password = readString();
+	public String getEmail() {
+		return readStringWithLabel("Enter your email:");
+	}
 
-		return new UserModel(email, password);
+	public String getPassword() {
+		return readStringWithLabel("Enter your password:");
 	}
 
 	public void showLoginSuccess(UserModel user) {

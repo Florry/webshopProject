@@ -110,7 +110,7 @@ public final class WebShopMain {
 			UserModel newUser = userMenu.addUser();
 			UserModel existUser = userService.getUser(newUser.getEmail());
 			if (existUser == null) {
-				newUser = userService.addUser(newUser);
+				userService.addUser(newUser);
 				userMenu.showCreatedSuccess(newUser);
 			} else {
 				userMenu.showExistUser(newUser.getEmail());
@@ -205,12 +205,13 @@ public final class WebShopMain {
 		UserService userService = new UserService(new UserDAO(),
 				new ShoppingCartDAO());
 
-		UserModel loginUser = userMenu.getLoginInfo();
+		String email = userMenu.getEmail();
+		String password = userMenu.getPassword();
 
 		try {
-			boolean isLoginValid = userService.validateLogin(loginUser);
+			boolean isLoginValid = userService.validateLogin(email, password);
 			if (isLoginValid) {
-				UserModel user = userService.getUser(loginUser.getEmail());
+				UserModel user = userService.getUser(email);
 				userMenu.showLoginSuccess(user);
 			} else {
 				userMenu.showLoginFailed();

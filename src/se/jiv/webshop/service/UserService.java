@@ -9,8 +9,8 @@ import se.jiv.webshop.repository.ShoppingCartRepository;
 import se.jiv.webshop.repository.UserRepository;
 
 public final class UserService {
-	private UserRepository userRepository;
-	private ShoppingCartRepository shoppingCartRepository;
+	private final UserRepository userRepository;
+	private final ShoppingCartRepository shoppingCartRepository;
 
 	public UserService(UserRepository userRepository,
 			ShoppingCartRepository shoppingCartRepository) {
@@ -18,9 +18,8 @@ public final class UserService {
 		this.shoppingCartRepository = shoppingCartRepository;
 	}
 
-	public UserModel addUser(UserModel user) throws WebshopAppException {
-		return userRepository.addUser(user);
-
+	public void addUser(UserModel user) throws WebshopAppException {
+		userRepository.addUser(user);
 	}
 
 	public void updateUser(UserModel user) throws WebshopAppException {
@@ -42,8 +41,9 @@ public final class UserService {
 
 	}
 
-	public boolean validateLogin(UserModel user) throws WebshopAppException {
-		return userRepository.validateLogin(user);
+	public boolean validateLogin(String email, String password)
+			throws WebshopAppException {
+		return userRepository.validateLogin(email, password);
 	}
 
 	public void addProductToCart(UserModel user, int id, int quantity)
@@ -51,9 +51,9 @@ public final class UserService {
 		shoppingCartRepository.addProductToCart(user, id, quantity);
 	}
 
-	public void removeFromCart(UserModel user, Integer id, int quantity)
+	public void removeProductFromCart(UserModel user, int id)
 			throws WebshopAppException {
-		shoppingCartRepository.removeFromCart(user, id, quantity);
+		shoppingCartRepository.removeProductFromCart(user, id);
 	}
 
 	public void updateCart(UserModel user, int productId, int quantity)
@@ -63,7 +63,7 @@ public final class UserService {
 
 	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
 			throws WebshopAppException {
-		return shoppingCartRepository.getShoppingCartContents(user);
+		return shoppingCartRepository.getShoppingCart(user);
 	}
 
 	public void resetShoppingCart(UserModel user) throws WebshopAppException {

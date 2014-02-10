@@ -1,11 +1,12 @@
 package se.jiv.webshop.repository;
 
 import java.util.List;
+
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 
 public interface UserRepository {
-	public UserModel addUser(UserModel user) throws WebshopAppException;
+	public void addUser(UserModel user) throws WebshopAppException;
 
 	public void updateUser(UserModel user) throws WebshopAppException;
 
@@ -15,6 +16,7 @@ public interface UserRepository {
 
 	public List<UserModel> getAllUsers() throws WebshopAppException;
 
-	public boolean validateLogin(UserModel user) throws WebshopAppException;
+	public boolean validateLogin(String email, String password)
+			throws WebshopAppException;
 
 }

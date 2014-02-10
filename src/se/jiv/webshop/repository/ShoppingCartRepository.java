@@ -9,13 +9,13 @@ public interface ShoppingCartRepository {
 	public void addProductToCart(UserModel user, int productId, int quantity)
 			throws WebshopAppException;
 
-	public void removeFromCart(UserModel user, int productId, int quantity)
+	public void removeProductFromCart(UserModel user, int productId)
 			throws WebshopAppException;
 
 	public void updateCart(UserModel user, int productId, int quantity)
 			throws WebshopAppException;
 
-	public Map<Integer, Integer> getShoppingCartContents(UserModel user)
+	public Map<Integer, Integer> getShoppingCart(UserModel user)
 			throws WebshopAppException;
 
 	public void resetShoppingCart(UserModel user) throws WebshopAppException;
