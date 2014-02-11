@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `webshop` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE  IF NOT EXISTS `webshop` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `webshop`;
 -- MySQL dump 10.13  Distrib 5.6.13, for osx10.6 (i386)
 --
@@ -189,10 +189,10 @@ DROP TABLE IF EXISTS `film_actors`;
 CREATE TABLE `film_actors` (
   `product_id` mediumint(8) unsigned NOT NULL,
   `actors_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`product_id`),
+  PRIMARY KEY (`product_id`,`actors_id`),
   KEY `actors_fakey_idx` (`actors_id`),
-  CONSTRAINT `product_fakey` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `actors_fakey` FOREIGN KEY (`actors_id`) REFERENCES `actors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `actors_fakey` FOREIGN KEY (`actors_id`) REFERENCES `actors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `product_fakey` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -240,11 +240,11 @@ DROP TABLE IF EXISTS `product_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `product_type` (
-  `product_id` int(11) NOT NULL,
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `table_name` varchar(45) NOT NULL,
-  `desc` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `desc` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,6 +253,7 @@ CREATE TABLE `product_type` (
 
 LOCK TABLES `product_type` WRITE;
 /*!40000 ALTER TABLE `product_type` DISABLE KEYS */;
+INSERT INTO `product_type` VALUES (1,'book','Book'),(2,'film','Film');
 /*!40000 ALTER TABLE `product_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,7 +270,10 @@ CREATE TABLE `products` (
   `description` varchar(512) DEFAULT NULL,
   `cost` double(10,2) DEFAULT NULL,
   `rrp` double(10,2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `product_type` mediumint(8) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_PRODUCTS_PRODUCT_TYPE_idx` (`product_type`),
+  CONSTRAINT `FK_PRODUCTS_PRODUCT_TYPE` FOREIGN KEY (`product_type`) REFERENCES `product_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -279,7 +283,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (2,'Yeesus','Kanye West',149.00,1000.00),(3,'VIVA LA VIDA','AWESOME',200.00,0.00),(4,'VIVA LA VIDA','AWESOME',200.00,0.00),(5,'VIVA LA VIDA','AWESOME',200.00,0.00),(6,'VIVA LA VIDA','AWESOME',200.00,0.00),(7,'Mylo Xyloto','Lovers in Japan',149.00,0.00),(8,'Mylo Xyloto',NULL,149.00,0.00),(9,'Mylo Xyloto',NULL,149.00,0.00),(10,'Mylo Xyloto','Epic album!!',149.00,3000.00),(11,'Parachutes','So good',149.00,3000.00),(12,'Mylo Xyloto',NULL,149.00,0.00),(13,'Mylo Xyloto',NULL,149.00,0.00),(14,'Mylo Xyloto',NULL,149.00,0.00),(15,'Mylo Xyloto',NULL,149.00,0.00),(16,'Mylo Xyloto',NULL,149.00,0.00),(17,'Mylo Xyloto',NULL,149.00,0.00),(18,'Mylo Xyloto',NULL,149.00,0.00),(19,'Mylo Xyloto',NULL,149.00,0.00),(20,'Mylo Xyloto',NULL,149.00,0.00),(21,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(22,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(23,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(24,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(25,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(26,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(27,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(28,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(29,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(30,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(31,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(32,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(33,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00),(34,'Streets of Gold','3oh!3',149.00,1000.00),(35,'Streets of Gold','3oh!3',149.00,1000.00),(37,'Yeesus','Kanye West',149.00,1000.00),(38,'Hybrid','Linkin',200.00,201.00),(39,'Hybrid Theory','Linkin Park',149.00,200.00),(40,'odalys','best mom',100.00,200.00);
+INSERT INTO `products` VALUES (2,'Yeesus','Kanye West',149.00,1000.00,NULL),(3,'VIVA LA VIDA','AWESOME',200.00,0.00,NULL),(4,'VIVA LA VIDA','AWESOME',200.00,0.00,NULL),(5,'VIVA LA VIDA','AWESOME',200.00,0.00,NULL),(6,'VIVA LA VIDA','AWESOME',200.00,0.00,NULL),(7,'Mylo Xyloto','Lovers in Japan',149.00,0.00,NULL),(8,'Mylo Xyloto',NULL,149.00,0.00,NULL),(9,'Mylo Xyloto',NULL,149.00,0.00,NULL),(10,'Mylo Xyloto','Epic album!!',149.00,3000.00,NULL),(11,'Parachutes','So good',149.00,3000.00,NULL),(12,'Mylo Xyloto',NULL,149.00,0.00,NULL),(13,'Mylo Xyloto',NULL,149.00,0.00,NULL),(14,'Mylo Xyloto',NULL,149.00,0.00,NULL),(15,'Mylo Xyloto',NULL,149.00,0.00,NULL),(16,'Mylo Xyloto',NULL,149.00,0.00,NULL),(17,'Mylo Xyloto',NULL,149.00,0.00,NULL),(18,'Mylo Xyloto',NULL,149.00,0.00,NULL),(19,'Mylo Xyloto',NULL,149.00,0.00,NULL),(20,'Mylo Xyloto',NULL,149.00,0.00,NULL),(21,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(22,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(23,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(24,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(25,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(26,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(27,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(28,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(29,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(30,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(31,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(32,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(33,'Mylo Xyloto','Coldplay, 2012',149.00,1000.00,NULL),(34,'Streets of Gold','3oh!3',149.00,1000.00,NULL),(35,'Streets of Gold','3oh!3',149.00,1000.00,NULL),(37,'Yeesus','Kanye West',149.00,1000.00,NULL),(38,'Hybrid','Linkin',200.00,201.00,NULL),(39,'Hybrid Theory','Linkin Park',149.00,200.00,NULL),(40,'odalys','best mom',100.00,200.00,NULL);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,4 +389,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-11 11:43:01
+-- Dump completed on 2014-02-11 12:17:27
