@@ -1,8 +1,0 @@
-2014-02-10 14:45:26 CategoryDAO [TRACE] All categories: [Id: 1, Name: Books, Straff_responsible: 27, Id: 2, Name: Children, Straff_responsible: 63, Id: 3, Name: Clothes, Straff_responsible: 63, Id: 4, Name: Computing, Straff_responsible: 58, Id: 5, Name: Electronics, Straff_responsible: 58, Id: 6, Name: Films, Straff_responsible: 27, Id: 7, Name: Gardening, Straff_responsible: 63, Id: 8, Name: Mens, Straff_responsible: 63, Id: 9, Name: Sports & outdoors, Straff_responsible: 71, Id: 10, Name: Toys, Straff_responsible: 62, Id: 11, Name: Womens, Straff_responsible: 63]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1, 8, 11]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1, 6]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1, 11]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1, 11]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found categories: [1, 4]
-2014-02-10 14:45:31 ProductDAO [TRACE] Found products: [Id: 2, Name: Yeesus, Description: Kanye West, Cost: 149.0, RRP: 1000.0, Categories: [1, 8, 11], Id: 33, Name: Mylo Xyloto, Description: Coldplay, 2012, Cost: 149.0, RRP: 1000.0, Categories: [1, 6], Id: 35, Name: Streets of Gold, Description: 3oh!3, Cost: 149.0, RRP: 1000.0, Categories: [1, 11], Id: 37, Name: Yeesus, Description: Kanye West, Cost: 149.0, RRP: 1000.0, Categories: [1, 11], Id: 39, Name: Hybrid Theory, Description: Linkin Park, Cost: 149.0, RRP: 200.0, Categories: [1], Id: 40, Name: odalys, Description: best mom, Cost: 100.0, RRP: 200.0, Categories: [1, 4]]
