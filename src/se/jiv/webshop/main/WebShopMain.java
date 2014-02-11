@@ -2,6 +2,8 @@ package se.jiv.webshop.main;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.model.ProductModel;
@@ -20,6 +22,7 @@ import se.jiv.webshop.ui.ProductUI;
 import se.jiv.webshop.ui.UserUI;
 
 public final class WebShopMain {
+	private static final Logger LOGGER = Logger.getLogger(WebShopMain.class);
 
 	public static void main(String[] args) {
 		try {
@@ -51,6 +54,7 @@ public final class WebShopMain {
 				}
 			}
 		} catch (Exception e) {
+			LOGGER.error(e);
 			ExceptionUI.printUncontrolledException(e);
 		}
 	}
