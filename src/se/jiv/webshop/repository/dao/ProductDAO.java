@@ -155,11 +155,13 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository
 				catch (SQLException e)
 				{
 					rollback(conn);
+					LOGGER.error(e);
 					throw e;
 				}
 				catch (Exception e1)
 				{
 					rollback(conn);
+					LOGGER.error(e1);
 					throw e1;
 				}
 
@@ -235,6 +237,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository
 			}
 			catch (SQLException e)
 			{
+				LOGGER.error(e);
 				throw e;
 			}
 		}
