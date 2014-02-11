@@ -233,8 +233,10 @@ public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRep
 	{
 		if (quantity <= 0)
 		{
-			throw new WebshopAppException("quantity can not be negative", this.getClass()
-					.getSimpleName(), functionName);
+			WebshopAppException excep = new WebshopAppException("quantity can not be negative",
+					this.getClass().getSimpleName(), functionName);
+			LOGGER.error(excep);
+			throw excep;
 		}
 		
 		return true;
@@ -244,8 +246,10 @@ public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRep
 	{
 		if (user == null)
 		{
-			throw new WebshopAppException("user can not be null", this.getClass().getSimpleName(),
-					functionName);
+			WebshopAppException excep = new WebshopAppException("user can not be null", this
+					.getClass().getSimpleName(), functionName);
+			LOGGER.error(excep);
+			throw excep;
 		}
 		
 		return true;
