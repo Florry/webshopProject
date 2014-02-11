@@ -15,7 +15,7 @@ import se.jiv.webshop.repository.ShoppingCartRepository;
 
 public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRepository
 {
-	private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getSimpleName());
+	private static final Logger LOGGER = Logger.getLogger(ShoppingCartDAO.class.getSimpleName());
 	
 	@Override
 	public void addProductToCart(UserModel user, int productId, int quantity)
@@ -36,7 +36,7 @@ public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRep
 				int newQuantity = db_quantity + quantity;
 				
 				insertProductQuantity(conn, user, productId, newQuantity);
-				LOGGER.trace("Added " + quantity + " product " + productId + "to user: "
+				LOGGER.trace("Added " + quantity + " product of id: " + productId + " to user: "
 						+ user.getEmail());
 			} catch (SQLException e)
 			{
@@ -185,7 +185,7 @@ public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRep
 				if (rs.next())
 				{
 					LOGGER.trace("getting quantity of product of id: " + productId + " from user: "
-							+ user.getEmail() + "");
+							+ user.getEmail());
 					return rs.getInt(1);
 				}
 				LOGGER.error("getting quantity of product of id: " + productId + " from user: "
@@ -222,7 +222,7 @@ public final class ShoppingCartDAO extends GeneralDAO implements ShoppingCartRep
 			setInteger(pstmt, 3, newQuantity);
 			
 			pstmt.executeUpdate();
-			LOGGER.trace("inserting quantity " + newQuantity + "of product of id: " + productId
+			LOGGER.trace("inserting quantity: " + newQuantity + " of product of id: " + productId
 					+ " from user: " + user.getEmail());
 		}
 		
