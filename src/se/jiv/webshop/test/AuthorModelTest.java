@@ -2,6 +2,8 @@ package se.jiv.webshop.test;
 
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.AuthorModel;
+import se.jiv.webshop.model.BookModel;
+import se.jiv.webshop.model.FilmModel;
 import se.jiv.webshop.repository.dao.AuthorDAO;
 import se.jiv.webshop.service.AuthorService;
 
@@ -72,6 +74,33 @@ public class AuthorModelTest
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		BookModel book = new BookModel.Builder("Lord of the rings", 11,
+				"Lord of the rings: the two towers", 50393248, 20000, "Book publusher company 2000")
+				.build();
+		BookModel book2 = new BookModel.Builder("Lord of the rings", 11,
+				"Lord of the rings: the two towers", 5093248, 20000, "Book publusher company 2000")
+				.build();
+		BookModel book3 = new BookModel.Builder("Lord of the rings", 11,
+				"Lord of the rings: the two towers", 5093248, 20000, "Book publusher company 2000")
+				.build();
+		
+		FilmModel film = new FilmModel.Builder("Terminator 2", "Terminator 2: Judgement Day", 18,
+				"Karl Thompsson").format("16:9").build();
+		FilmModel film2 = new FilmModel.Builder("Terminator 2", "Terminator 2: Judgement Day", 18,
+				"Bob Bobson").format("16:9").build();
+		FilmModel film3 = new FilmModel.Builder("Terminator 2", "Terminator 2: Judgement Day", 18,
+				"Bob Bobson").format("16:9").build();
+		
+		System.out.println(book);
+		System.out.println(book2);
+		System.out.println(book.equals(book2));
+		System.out.println(book2.equals(book3));
+		
+		System.out.println(film);
+		System.out.println(film2);
+		System.out.println(film.equals(film2));
+		System.out.println(film2.equals(film3));
 		
 	}
 }
