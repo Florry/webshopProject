@@ -7,7 +7,7 @@ import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.CategoryRepository;
 
 public final class CategoryService {
-	private CategoryRepository categoryRepository;
+	private final CategoryRepository categoryRepository;
 
 	public CategoryService(CategoryRepository categoryRepository) {
 		this.categoryRepository = categoryRepository;
@@ -18,9 +18,9 @@ public final class CategoryService {
 		return categoryRepository.addCategory(category);
 	}
 
-	public boolean updateCategory(CategoryModel category)
-			throws WebshopAppException {
-		return categoryRepository.updateCategory(category);
+	public boolean updateCategory(CategoryModel oldCategory,
+			CategoryModel newCategory) throws WebshopAppException {
+		return categoryRepository.updateCategory(oldCategory, newCategory);
 	}
 
 	public CategoryModel getCategory(int id) throws WebshopAppException {

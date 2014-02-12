@@ -82,10 +82,10 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	}
 
 	@Override
-	public boolean updateCategory(CategoryModel category)
-			throws WebshopAppException {
+	public boolean updateCategory(CategoryModel oldCategory,
+			CategoryModel newCategory) throws WebshopAppException {
 
-		if (category != null) {
+		if ((oldCategory != null) && (newCategory != null)) {
 
 			try (Connection conn = getConnection()) {
 
@@ -93,13 +93,16 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 						+ "staff_responsible= ? WHERE id = ?";
 
 				try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-					prepareStatementFromModel(pstmt, category);
+					prepareStatementFromModel(pstmt, newCategory);
 
-					setInteger(pstmt, 3, category.getId());
+					setInteger(pstmt, 3, oldCategory.getId());
 
 					pstmt.executeUpdate();
 
-					LOGGER.trace("Category updated: " + category);
+					LOGGER.trace("The old category: " + oldCategory
+							+ " was updated to have this values: "
+							+ newCategory + " keeping the id: "
+							+ oldCategory.getId());
 
 					return true;
 				}

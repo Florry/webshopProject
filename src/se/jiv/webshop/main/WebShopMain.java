@@ -173,7 +173,7 @@ public final class WebShopMain {
 			if (oldCategory != null) {
 				CategoryModel categoryToUpdate = categoryMenu
 						.updateCategory(categoryId);
-				categoryService.updateCategory(categoryToUpdate);
+				categoryService.updateCategory(oldCategory, categoryToUpdate);
 				categoryMenu.showUpdatedSuccess();
 			} else {
 				categoryMenu.showCategoryNotFound();
