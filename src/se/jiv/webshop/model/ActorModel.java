@@ -41,6 +41,10 @@ public class ActorModel
 	{
 		return lastname;
 	}
+	
+	public String getDob(){
+		return dob;
+	}
 
 	@Override
 	public int hashCode()
