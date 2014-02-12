@@ -16,6 +16,12 @@ public class ActorModel
 		this.lastname = lastname;
 	}
 
+	public ActorModel(int id, String firstname, String lastname, String dob)
+	{
+		this(id, firstname, lastname);
+		this.dob = dob;
+	}
+
 	public ActorModel(String firstname, String lastname)
 	{
 		this(DEFAULT_ID, firstname, lastname);
@@ -29,7 +35,12 @@ public class ActorModel
 
 	public ActorModel(int id, ActorModel other)
 	{
-		this(id, other.firstname, other.lastname);
+		this(id, other.firstname, other.lastname, other.dob);
+	}
+
+	public int getId()
+	{
+		return id;
 	}
 
 	public String getFirstname()
@@ -41,8 +52,9 @@ public class ActorModel
 	{
 		return lastname;
 	}
-	
-	public String getDob(){
+
+	public String getDob()
+	{
 		return dob;
 	}
 
