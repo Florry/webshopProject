@@ -2,6 +2,8 @@ package se.jiv.webshop.model;
 
 public class ActorModel
 {
+	public static final int DEFAULT_ID = -1;
+
 	int id;
 	String firstname;
 	String lastname;
@@ -12,14 +14,17 @@ public class ActorModel
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
-
 	}
 
-	public ActorModel(int id, String firstname, String lastname, String dob)
+	public ActorModel(String firstname, String lastname)
 	{
-		this(id, firstname, lastname);
-		this.dob = dob;
+		this(DEFAULT_ID, firstname, lastname);
+	}
 
+	public ActorModel(String firstname, String lastname, String dob)
+	{
+		this(DEFAULT_ID, firstname, lastname);
+		this.dob = dob;
 	}
 
 	public ActorModel(int id, ActorModel other)
