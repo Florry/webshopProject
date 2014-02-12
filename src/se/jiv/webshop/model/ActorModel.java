@@ -7,7 +7,7 @@ public class ActorModel
 	String lastname;
 	String dob;
 
-	ActorModel(int id, String firstname, String lastname)
+	public ActorModel(int id, String firstname, String lastname)
 	{
 		this.id = id;
 		this.firstname = firstname;
@@ -15,24 +15,24 @@ public class ActorModel
 
 	}
 
-	ActorModel(int id, String firstname, String lastname, String dob)
+	public ActorModel(int id, String firstname, String lastname, String dob)
 	{
 		this(id, firstname, lastname);
 		this.dob = dob;
 
 	}
 
-	ActorModel(int id, ActorModel other)
+	public ActorModel(int id, ActorModel other)
 	{
 		this(id, other.firstname, other.lastname);
 	}
 
-	String getFirstname()
+	public String getFirstname()
 	{
 		return firstname;
 	}
 
-	String getLastname()
+	public String getLastname()
 	{
 		return lastname;
 	}
