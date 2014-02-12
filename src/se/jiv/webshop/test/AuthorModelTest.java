@@ -20,6 +20,8 @@ public class AuthorModelTest
 		System.out.println(author + " = " + author3 + " = " + author.equals(author3));
 		System.out.println(author + " = " + author4 + " = " + author.equals(author4));
 		
+		System.out.println();
+		
 		System.out.println(String.format("author: %s %s's hashcode = %s", author.getFirstname(),
 				author.getLastname(), author.hashCode()));
 		System.out.println(String.format("author3: %s %s's hashcode = %s", author2.getFirstname(),
