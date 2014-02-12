@@ -10,7 +10,7 @@ public class ActorService
 {
 	private final ActorRepository actorRepository;
 	
-	ActorService(ActorRepository actorRepository){
+	public ActorService(ActorRepository actorRepository){
 		this.actorRepository = actorRepository;
 	}
 	
@@ -32,6 +32,10 @@ public class ActorService
 	
 	public List<ActorModel> getAllActors() throws WebshopAppException{
 		return actorRepository.getAllActors();
+	}
+	
+	public boolean deleteActor(int id) throws WebshopAppException{
+		return actorRepository.deleteActor(id);
 	}
 
 }

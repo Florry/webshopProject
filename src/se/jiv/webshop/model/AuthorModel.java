@@ -73,7 +73,7 @@ public class AuthorModel
 	@Override
 	public String toString()
 	{
-		return String.format("Author name: %s %s, Dob: %s, from: %s", this.getFirstname(),
+		return String.format("Author name: %s %s, Dob: %s, from: %s \n", this.getFirstname(),
 				this.getLastname(), this.getDob(), this.getCountry());
 	}
 	
