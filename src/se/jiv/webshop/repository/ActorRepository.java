@@ -7,9 +7,9 @@ import se.jiv.webshop.model.ActorModel;
 
 public interface ActorRepository
 {
-	public ActorModel addActor(int id, String firstname, String lastname) throws WebshopAppException;
+	public ActorModel addActor(ActorModel actor) throws WebshopAppException;
 
-	public boolean updateActor(int id, String firstname, String lastname) throws WebshopAppException;
+	public boolean updateActor(ActorModel actor) throws WebshopAppException;
 
 	public ActorModel getActor(int id) throws WebshopAppException;
 	
