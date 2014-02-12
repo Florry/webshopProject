@@ -77,7 +77,7 @@ public class ProductModel
 		
 	}
 	
-	private ProductModel(Builder builder)
+	protected ProductModel(Builder builder)
 	{
 		this.id = builder.id;
 		this.name = builder.name;
