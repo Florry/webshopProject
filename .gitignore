@@ -3,8 +3,5 @@
 .project
 .settings
 .DS_Store
-<<<<<<< HEAD
 /logs
-=======
-/logs/
->>>>>>> branch 'master' of https://github.com/Florry/webshopProject.git
+/libreries
