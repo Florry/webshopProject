@@ -89,8 +89,8 @@ public class AuthorModelTest
 				"Karl Thompsson").format("16:9").build();
 		FilmModel film2 = new FilmModel.Builder("Terminator 2", "Terminator 2: Judgement Day", 18,
 				"Bob Bobson").format("16:9").build();
-		FilmModel film3 = new FilmModel.Builder("Terminator 2", "Terminator 2: Judgement Day", 18,
-				"Bob Bobson").format("16:9").build();
+		FilmModel film3 = (FilmModel) new FilmModel.Builder("Terminator 2",
+				"Terminator 2: Judgement Day", 18, "Bob Bobson").format("16:9").build();
 		
 		System.out.println(book);
 		System.out.println(book2);
