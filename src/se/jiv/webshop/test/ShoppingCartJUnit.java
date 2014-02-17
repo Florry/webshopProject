@@ -11,7 +11,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.UserModel;
 import se.jiv.webshop.repository.dao.ShoppingCartDAO;
 
-public class ShoppingCartTest
+public class ShoppingCartJUnit
 {
 	ShoppingCartDAO shoppingCart = new ShoppingCartDAO();
 	UserModel user1 = null;

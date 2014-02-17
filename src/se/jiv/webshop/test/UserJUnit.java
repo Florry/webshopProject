@@ -31,20 +31,17 @@ public class UserJUnit
 		user1 = new UserModel.Builder("bbq@test.se", "123456", "Tom", "Whitemore",
 				"Telegrafvagen 32", "Stockholm", "postcode").address2("C/O Olsen")
 				.dob("1949-09-09").telephone("0807384756").build();
+		UserModel user2 = users.getUser(user1.getEmail());
+		if (user2 == null)
+		{
+			users.addUser(user1);
+		}
 	}
 	
 	@Test
 	public void canAddUser()
 	{
 		UserModel getUser = null;
-		try
-		{
-			users.addUser(user1);
-		} catch (WebshopAppException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		try
 		{
 			getUser = users.getUser(user1.getEmail());
@@ -94,6 +91,7 @@ public class UserJUnit
 	@Test
 	public void canUpdateUser()
 	{
+		
 		UserModel newUser = new UserModel.Builder("bbq@test.se", "00700700700", "Bob", "Whitemore",
 				"Telegrafvagen 32", "Stockholm", "postcode").address2("C/O Olsen")
 				.dob("1949-09-09").telephone("0807384756").build();
