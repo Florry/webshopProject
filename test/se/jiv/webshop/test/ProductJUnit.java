@@ -1,8 +1,14 @@
 package se.jiv.webshop.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,20 +20,16 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.dao.ProductDAO;
 
-public class ProductJUnit
-{
+public class ProductJUnit {
 	static final String JDBC_DRIVER = DevDBConfig.JDBC_DRIVER;
 	static final String DB_URL = DevDBConfig.DB_URL;
 	static final String DB_USER = DevDBConfig.DB_USER;
 	static final String DB_PASSWORD = DevDBConfig.DB_PASSWORD;
 
 	@Before
-	public void setUp() throws Exception
-	{
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+	public void setUp() throws Exception {
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "INSERT INTO products(name,description,cost,rrp) VALUES('A rush of blood to the head',"
 						+ "'Best Coldplay Album', 149, 500)";
 
@@ -39,12 +41,9 @@ public class ProductJUnit
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+	public void tearDown() throws Exception {
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "DELETE FROM products WHERE name = 'A rush of blood to the head'";
 
 				stmt.executeUpdate(sql);
@@ -53,44 +52,37 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canCreateProduct()
-	{
+	public void canCreateProduct() {
 		ProductDAO productDao = new ProductDAO();
 		ProductModel expectedProduct = null;
 		ProductModel actualProduct = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT * FROM products";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
 					int id = 0;
 
-					if (rs.last())
-					{
+					if (rs.last()) {
 						id = rs.getInt("id");
 					}
 
-					expectedProduct = new ProductModel.Builder("Night Visions").id(id + 1).description("Imagine Dragons").cost(149).rrp(400).build();
+					expectedProduct = ProductModel.builder("Night Visions")
+							.id(id + 1).description("Imagine Dragons")
+							.cost(149).rrp(400).build();
 
-					try
-					{
-						actualProduct = productDao.createProduct(expectedProduct);
+					try {
+						actualProduct = productDao
+								.createProduct(expectedProduct);
 
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -99,22 +91,17 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetProductsByName()
-	{
+	public void canGetProductsByName() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expectedProducts = new ArrayList<>();
 		List<ProductModel> actualProducts = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT * FROM products WHERE name = 'A rush of blood to the head'";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 
 						int id = rs.getInt("id");
 						String name = rs.getString("name");
@@ -122,23 +109,21 @@ public class ProductJUnit
 						double cost = rs.getDouble("cost");
 						double rrp = rs.getDouble("rrp");
 
-						expectedProducts.add(new ProductModel.Builder(name).id(id).description(description).cost(cost).rrp(rrp).build());
+						expectedProducts.add(ProductModel.builder(name).id(id)
+								.description(description).cost(cost).rrp(rrp)
+								.build());
 					}
 
-					try
-					{
-						actualProducts = productDao.getProductByName("A rush of blood to the head");
-					}
-					catch (WebshopAppException e)
-					{
+					try {
+						actualProducts = productDao
+								.getProductByName("A rush of blood to the head");
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -146,17 +131,13 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetProductByNonExcistingName()
-	{
+	public void canGetProductByNonExcistingName() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expected = new ArrayList<>();
 		List<ProductModel> actual = null;
-		try
-		{
+		try {
 			actual = productDao.getProductByName("alskdaskldj");
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 			fail("Exception");
 		}
@@ -165,22 +146,17 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetProductById()
-	{
+	public void canGetProductById() {
 		ProductDAO productDao = new ProductDAO();
 		ProductModel expectedProduct = null;
 		ProductModel actualProduct = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT * FROM products WHERE id = 2";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 
 						int id = rs.getInt("id");
 						String name = rs.getString("name");
@@ -188,40 +164,34 @@ public class ProductJUnit
 						double cost = rs.getDouble("cost");
 						double rrp = rs.getDouble("rrp");
 
-						expectedProduct = new ProductModel.Builder(name).id(id).description(description).cost(cost).rrp(rrp).build();
+						expectedProduct = ProductModel.builder(name).id(id)
+								.description(description).cost(cost).rrp(rrp)
+								.build();
 					}
 
-					try
-					{
+					try {
 						actualProduct = productDao.getProductById(2);
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		assertTrue("Not able to get the right product", expectedProduct.equals(actualProduct));
+		assertTrue("Not able to get the right product",
+				expectedProduct.equals(actualProduct));
 	}
 
 	@Test
-	public void canGetProductByNonExcistingId()
-	{
+	public void canGetProductByNonExcistingId() {
 		ProductDAO productDao = new ProductDAO();
 		ProductModel retrieved = null;
-		try
-		{
+		try {
 			retrieved = productDao.getProductById(1234);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 			fail("Exception");
 		}
@@ -230,66 +200,56 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetAllProducts()
-	{
+	public void canGetAllProducts() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expectedProducts = new ArrayList<>();
 		List<ProductModel> actualProducts = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT * FROM products";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 						int id = rs.getInt("id");
 						String name = rs.getString("name");
 						String description = rs.getString("description");
 						double cost = rs.getDouble("cost");
 						double rrp = rs.getDouble("rrp");
 
-						expectedProducts.add(new ProductModel.Builder(name).id(id).description(description).cost(cost).rrp(rrp).build());
+						expectedProducts.add(ProductModel.builder(name).id(id)
+								.description(description).cost(cost).rrp(rrp)
+								.build());
 					}
 
-					try
-					{
+					try {
 						actualProducts = productDao.getAllProducts();
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		assertTrue("The product list are not the same", expectedProducts.equals(actualProducts));
+		assertTrue("The product list are not the same",
+				expectedProducts.equals(actualProducts));
 
 	}
 
 	@Test
-	public void canUpdateProduct()
-	{
+	public void canUpdateProduct() {
 		ProductDAO productDao = new ProductDAO();
-		ProductModel newProduct = new ProductModel.Builder("Megalithic Melody").id(3).description("AWOLNATION").cost(145).rrp(199).build();
+		ProductModel newProduct = ProductModel.builder("Megalithic Melody")
+				.id(3).description("AWOLNATION").cost(145).rrp(199).build();
 		boolean expected = true;
 		boolean actual = false;
 
-		try
-		{
+		try {
 			actual = productDao.updateProduct(newProduct);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
 
@@ -298,18 +258,14 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canDeleteProduct()
-	{
+	public void canDeleteProduct() {
 		ProductDAO productDao = new ProductDAO();
 		boolean expected = true;
 		boolean actual = false;
 
-		try
-		{
+		try {
 			actual = productDao.deleteProduct(5);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
 
@@ -317,64 +273,53 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetProductsByCost()
-	{
+	public void canGetProductsByCost() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expectedProducts = new ArrayList<>();
 		List<ProductModel> actualProducts = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT * FROM products WHERE cost = 149";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 						int id = rs.getInt("id");
 						String name = rs.getString("name");
 						String description = rs.getString("description");
 						double cost = rs.getDouble("cost");
 						double rrp = rs.getDouble("rrp");
 
-						expectedProducts.add(new ProductModel.Builder(name).id(id).description(description).cost(cost).rrp(rrp).build());
+						expectedProducts.add(ProductModel.builder(name).id(id)
+								.description(description).cost(cost).rrp(rrp)
+								.build());
 					}
 
-					try
-					{
+					try {
 						actualProducts = productDao.getProductsByCost(149);
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e1)
-		{
+		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 
-		assertTrue("The foundlist are not the same", expectedProducts.equals(actualProducts));
+		assertTrue("The foundlist are not the same",
+				expectedProducts.equals(actualProducts));
 
 	}
 
 	@Test
-	public void canGetProductByNonExcistingCost()
-	{
+	public void canGetProductByNonExcistingCost() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expected = new ArrayList<>();
 		List<ProductModel> actual = null;
-		try
-		{
+		try {
 			actual = productDao.getProductsByCost(123456);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 			fail("Exception");
 		}
@@ -383,66 +328,55 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetProductsByCategory()
-	{
+	public void canGetProductsByCategory() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expectedProducts = new ArrayList<>();
 		List<ProductModel> actualProducts = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT id, name, description, cost, rrp FROM product_categories "
 						+ "INNER JOIN products ON product_id = products.id"
 						+ " WHERE category_id = 1";
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 						int id = rs.getInt("id");
 						String name = rs.getString("name");
 						String description = rs.getString("description");
 						double cost = rs.getDouble("cost");
 						double rrp = rs.getDouble("rrp");
 
-						expectedProducts.add(new ProductModel.Builder(name).id(id).description(description).cost(cost).rrp(rrp).build());
+						expectedProducts.add(ProductModel.builder(name).id(id)
+								.description(description).cost(cost).rrp(rrp)
+								.build());
 					}
 
-					try
-					{
+					try {
 						actualProducts = productDao.getProductsByCategory(1);
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e1)
-		{
+		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 
-		assertTrue("Unable to get products by category", expectedProducts.equals(actualProducts));
+		assertTrue("Unable to get products by category",
+				expectedProducts.equals(actualProducts));
 
 	}
 
 	@Test
-	public void canGetProductByNonExcistingCategory()
-	{
+	public void canGetProductByNonExcistingCategory() {
 		ProductDAO productDao = new ProductDAO();
 		List<ProductModel> expected = new ArrayList<>();
 		List<ProductModel> actual = null;
-		try
-		{
+		try {
 			actual = productDao.getProductsByCategory(1234);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 			fail("Exception");
 		}
@@ -451,60 +385,47 @@ public class ProductJUnit
 	}
 
 	@Test
-	public void canGetCategoriesOfProduct()
-	{
+	public void canGetCategoriesOfProduct() {
 		ProductDAO productDao = new ProductDAO();
 		List<Integer> expectedCategories = new ArrayList<>();
 		List<Integer> actualCategories = null;
 
-		try (Connection conn = DevDBConfig.getConnection())
-		{
-			try (Statement stmt = conn.createStatement())
-			{
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
 				String sql = "SELECT category_id FROM product_categories where product_id = 2";
 
-				try (ResultSet rs = stmt.executeQuery(sql))
-				{
+				try (ResultSet rs = stmt.executeQuery(sql)) {
 
-					while (rs.next())
-					{
+					while (rs.next()) {
 						int categoryId = rs.getInt("category_id");
 
 						expectedCategories.add(categoryId);
 					}
 
-					try
-					{
+					try {
 						actualCategories = productDao.getCategoriesOfProduct(2);
-					}
-					catch (WebshopAppException e)
-					{
+					} catch (WebshopAppException e) {
 						e.printStackTrace();
 					}
 
 				}
 			}
-		}
-		catch (SQLException e1)
-		{
+		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 
-		assertTrue("Unable to get categories of product", expectedCategories.equals(actualCategories));
+		assertTrue("Unable to get categories of product",
+				expectedCategories.equals(actualCategories));
 	}
 
 	@Test
-	public void canGetCategoriesOfNonExcistingProduct()
-	{
+	public void canGetCategoriesOfNonExcistingProduct() {
 		ProductDAO productDao = new ProductDAO();
 		List<Integer> expected = new ArrayList<>();
 		List<Integer> actual = null;
-		try
-		{
+		try {
 			actual = productDao.getCategoriesOfProduct(1234);
-		}
-		catch (WebshopAppException e)
-		{
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 			fail("Exception");
 		}

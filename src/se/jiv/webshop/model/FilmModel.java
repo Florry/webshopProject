@@ -1,24 +1,22 @@
 package se.jiv.webshop.model;
 
-public class FilmModel extends ProductModel
-{
+public class FilmModel extends ProductModel {
 	private final String title;
 	private final int rating;
 	private final String format;
 	private final String director;
-	
-	public static class Builder extends ProductModel.Builder
-	{
+
+	public static abstract class Builder<T extends Builder<T>> extends
+			ProductModel.Builder<T> {
 		// Required parameters
-		private String title;
-		private int rating;
+		private final String title;
+		private final int rating;
 		private String director;
-		
+
 		// Optional parameters
 		private String format;
-		
-		public Builder(String name, String title, int rating, String director)
-		{
+
+		public Builder(String name, String title, int rating, String director) {
 			super(name);
 			this.director = director;
 			this.title = title;
@@ -26,84 +24,90 @@ public class FilmModel extends ProductModel
 			this.director = director;
 			format = "";
 		}
-		
-		public Builder format(String format)
-		{
+
+		public T format(String format) {
 			this.format = format;
-			return this;
+			return self();
 		}
-		
+
 		@Override
-		public FilmModel build()
-		{
+		public FilmModel build() {
 			return new FilmModel(this);
 		}
 	}
-	
-	protected FilmModel(Builder builder)
-	{
+
+	private static class Builder2 extends Builder<Builder2> {
+		public Builder2(String name, String title, int rating, String director) {
+			super(name, title, rating, director);
+		}
+
+		@Override
+		protected Builder2 self() {
+			return this;
+		}
+	}
+
+	public static Builder<?> builder(String name, String title, int rating,
+			String director) {
+		return new Builder2(name, title, rating, director);
+	}
+
+	protected FilmModel(Builder<?> builder) {
 		super(builder);
 		this.title = builder.title;
 		this.format = builder.format;
 		this.director = builder.director;
 		this.rating = builder.rating;
 	}
-	
-	public String getTitle()
-	{
+
+	public String getTitle() {
 		return title;
 	}
-	
-	public String getFormat()
-	{
+
+	public String getFormat() {
 		return format;
 	}
-	
-	public String getDirector()
-	{
+
+	public String getDirector() {
 		return director;
 	}
-	
-	public int getRating()
-	{
+
+	public int getRating() {
 		return rating;
 	}
-	
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return super.toString()
-				+ String.format(" - Film: %s by %s - %s in format %s ", this.getTitle(),
-						this.getFormat(), this.getDirector(), this.getFormat());
+				+ String.format(" - Film: %s by %s - %s in format %s ",
+						this.getTitle(), this.getFormat(), this.getDirector(),
+						this.getFormat());
 	}
-	
+
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		int result = 1;
 		result += 37 * this.getTitle().hashCode();
 		result += 37 * this.getDirector().hashCode();
-		
+
 		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object other)
-	{
-		if (other == this)
-		{
+	public boolean equals(Object other) {
+		if (other == this) {
 			return true;
 		}
-		
-		if (other instanceof FilmModel)
-		{
+
+		if (other instanceof FilmModel) {
 			FilmModel otherBook = (FilmModel) other;
 			boolean isSameClass = this.getClass().equals(otherBook.getClass());
-			
+
 			return (this.getTitle().equals(otherBook.getTitle()))
-					&& this.getDirector().equals(otherBook.getDirector()) && isSameClass;
+					&& this.getDirector().equals(otherBook.getDirector())
+					&& isSameClass;
 		}
-		
+
 		return false;
 	}
 }

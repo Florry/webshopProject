@@ -41,7 +41,7 @@ public final class ProductUI extends GeneralUI {
 
 		}
 
-		ProductModel newProduct = new ProductModel.Builder(name)
+		ProductModel newProduct = ProductModel.builder(name)
 				.description(description).cost(cost).rrp(rrp)
 				.categories(categories).build();
 
@@ -80,7 +80,7 @@ public final class ProductUI extends GeneralUI {
 
 		}
 
-		ProductModel newProduct = new ProductModel.Builder(name).id(productId)
+		ProductModel newProduct = ProductModel.builder(name).id(productId)
 				.description(description).cost(cost).rrp(rrp)
 				.categories(categories).build();
 

@@ -19,7 +19,7 @@ import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 
-public class CategoryTest {
+public class CategoryJUnit {
 	static final String JDBC_DRIVER = DevDBConfig.JDBC_DRIVER;
 	static final String DB_URL = DevDBConfig.DB_URL;
 	static final String DB_USER = DevDBConfig.DB_USER;
