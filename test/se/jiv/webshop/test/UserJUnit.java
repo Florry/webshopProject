@@ -194,7 +194,6 @@ public class UserJUnit
 	@Test
 	public void canAddUserThatExists()
 	{
-		UserModel getUser = null;
 		boolean wasExcpetion = false;
 		try
 		{
@@ -202,7 +201,6 @@ public class UserJUnit
 		} catch (WebshopAppException e)
 		{
 			wasExcpetion = true;
-			e.printStackTrace();
 		}
 		assertTrue(wasExcpetion);
 	}
