@@ -201,36 +201,42 @@ public final class UserDAO extends GeneralDAO implements UserRepository
 	@Override
 	public boolean validateLogin(String email, String password) throws WebshopAppException
 	{
-		try (Connection conn = getConnection())
+		if (email != null && password != null)
 		{
-			
-			String sql = "SELECT * FROM users WHERE email = ? and password = ?";
-			
-			try (PreparedStatement pstmt = conn.prepareStatement(sql))
+			try (Connection conn = getConnection())
 			{
-				setString(pstmt, 1, email);
-				setString(pstmt, 2, password);
 				
-				try (ResultSet rs = pstmt.executeQuery())
+				String sql = "SELECT * FROM users WHERE email = ? and password = ?";
+				
+				try (PreparedStatement pstmt = conn.prepareStatement(sql))
 				{
-					if (rs.next())
+					setString(pstmt, 1, email);
+					setString(pstmt, 2, password);
+					
+					try (ResultSet rs = pstmt.executeQuery())
 					{
-						LOGGER.trace("User validated: " + email);
-						return true;
-					} else
-					{
-						LOGGER.trace("User not valid: " + email);
-						return false;
+						if (rs.next())
+						{
+							LOGGER.trace("User validated: " + email);
+							return true;
+						} else
+						{
+							LOGGER.trace("User not valid: " + email);
+							return false;
+						}
 					}
 				}
+				
+			} catch (SQLException e)
+			{
+				WebshopAppException excep = new WebshopAppException(e.getMessage(), this.getClass()
+						.getSimpleName(), "VALIDATE_LOGIN");
+				LOGGER.error(excep);
+				throw excep;
 			}
-			
-		} catch (SQLException e)
+		} else
 		{
-			WebshopAppException excep = new WebshopAppException(e.getMessage(), this.getClass()
-					.getSimpleName(), "VALIDATE_LOGIN");
-			LOGGER.error(excep);
-			throw excep;
+			return false;
 		}
 		
 	}
