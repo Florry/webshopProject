@@ -73,6 +73,8 @@ public final class WebShopMain {
 		case 3:
 			createUser();
 			break;
+		case 0:
+			break;
 		default:
 			mainMenu.showOptionNotValid();
 		}
@@ -97,7 +99,7 @@ public final class WebShopMain {
 		CategoryService categoryService = new CategoryService(new CategoryDAO());
 
 		try {
-			CategoryModel newCategory = categoryMenu.addCategory();
+			CategoryModel newCategory = categoryMenu.askAddCategory();
 			newCategory = categoryService.addCategory(newCategory);
 			categoryMenu.showCreatedSuccess(newCategory);
 		} catch (WebshopAppException e) {
@@ -138,6 +140,8 @@ public final class WebShopMain {
 		case 3:
 			editUser();
 			break;
+		case 0:
+			break;
 		default:
 			mainMenu.showOptionNotValid();
 		}
@@ -171,9 +175,12 @@ public final class WebShopMain {
 			int categoryId = categoryMenu.askForCategoryId();
 			CategoryModel oldCategory = categoryService.getCategory(categoryId);
 			if (oldCategory != null) {
+
 				CategoryModel categoryToUpdate = categoryMenu
-						.updateCategory(categoryId);
-				categoryService.updateCategory(oldCategory, categoryToUpdate);
+						.askUpdateCategory(categoryId);
+
+				categoryService.updateCategory(categoryToUpdate);
+
 				categoryMenu.showUpdatedSuccess();
 			} else {
 				categoryMenu.showCategoryNotFound();

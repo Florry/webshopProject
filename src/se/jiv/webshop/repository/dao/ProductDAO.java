@@ -13,79 +13,90 @@ import org.apache.log4j.Logger;
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.ProductRepository;
+import se.jiv.webshop.utils.Log;
 
-public final class ProductDAO extends GeneralDAO implements ProductRepository {
+public class ProductDAO extends GeneralDAO implements ProductRepository {
 
 	private static final Logger LOGGER = Logger.getLogger(ProductDAO.class
 			.getName());
 
+	private boolean isValidProduct(ProductModel product, String functionName)
+			throws WebshopAppException {
+		if (product == null) {
+			WebshopAppException excep = new WebshopAppException(
+					"product can not be null", this.getClass().getSimpleName(),
+					functionName);
+			Log.logOutWAException(LOGGER, excep);
+			throw excep;
+		}
+
+		return true;
+	}
+
 	@Override
 	public ProductModel createProduct(ProductModel product)
 			throws WebshopAppException {
-
-		if (product != null) {
-			int generatedId = 0;
+		int generatedId = ProductModel.DEFAULT_PRODUCT_ID;
+		if (isValidProduct(product, "CREATE_PRODUCT")) {
 			try (Connection conn = getConnection()) {
 
 				conn.setAutoCommit(false);
-
-				String sql = "INSERT INTO products(name,description,cost,rrp) VALUES(?,?,?,?)";
-
-				try (PreparedStatement pstmt = conn.prepareStatement(sql,
-						Statement.RETURN_GENERATED_KEYS)) {
-					setString(pstmt, 1, product.getName());
-					setString(pstmt, 2, product.getDescription());
-					setDouble(pstmt, 3, product.getCost());
-					setDouble(pstmt, 4, product.getRrp());
-
-					pstmt.executeUpdate();
-
-					try (ResultSet rs = pstmt.getGeneratedKeys()) {
-
-						if (rs.next()) {
-							generatedId = rs.getInt(1);
-						}
-
-					}
-
-					insertProductCategories(conn, generatedId,
-							product.getCategories());
+				try {
+					generatedId = insertProduct(conn, product);
 
 					conn.commit();
 
-					ProductModel newProduct = ProductModel
-							.builder(product.getName()).id(generatedId)
-							.description(product.getDescription())
-							.cost(product.getCost()).rrp(product.getRrp())
-							.categories(product.getCategories()).build();
-
-					LOGGER.trace("Product created: " + newProduct);
-
-					return newProduct;
-
 				} catch (SQLException e) {
 					rollback(conn);
-					LOGGER.error(e);
 					throw e;
-				} catch (Exception e1) {
-					rollback(conn);
-					LOGGER.error(e1);
-					throw e1;
 				}
 
 			} catch (SQLException e2) {
 				WebshopAppException excep = new WebshopAppException(e2, this
 						.getClass().getSimpleName(), "CREATE_PRODUCT");
-				LOGGER.error(excep);
+				Log.logOutWAException(LOGGER, excep);
 				throw excep;
 			}
-		} else {
-			WebshopAppException excep = new WebshopAppException(
-					"Product can't be null", this.getClass().getSimpleName(),
-					"CREATE_PRODUCT");
-			LOGGER.error(excep);
-			throw excep;
 		}
+
+		ProductModel newProduct = ProductModel
+				.builder(product.getName(), product.getProductType())
+				.id(generatedId).description(product.getDescription())
+				.cost(product.getCost()).rrp(product.getRrp())
+				.categories(product.getCategories()).build();
+
+		Log.logOut(LOGGER, this, "CREATE_PRODUCT", "Product created:",
+				newProduct.toString());
+
+		return newProduct;
+	}
+
+	protected int insertProduct(Connection conn, ProductModel product)
+			throws SQLException {
+		int generatedId = ProductModel.DEFAULT_PRODUCT_ID;
+		String sql = "INSERT INTO products(name,description,cost,rrp, product_type) VALUES(?,?,?,?,?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql,
+				Statement.RETURN_GENERATED_KEYS)) {
+			setString(pstmt, 1, product.getName());
+			setString(pstmt, 2, product.getDescription());
+			setDouble(pstmt, 3, product.getCost());
+			setDouble(pstmt, 4, product.getRrp());
+			setInteger(pstmt, 5, product.getProductType());
+
+			pstmt.executeUpdate();
+
+			try (ResultSet rs = pstmt.getGeneratedKeys()) {
+
+				if (rs.next()) {
+					generatedId = rs.getInt(1);
+				}
+
+			}
+
+			insertProductCategories(conn, generatedId, product.getCategories());
+		}
+		return generatedId;
 	}
 
 	private void insertProductCategories(Connection conn, int productId,
@@ -110,7 +121,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 	public boolean updateProduct(ProductModel product)
 			throws WebshopAppException {
 
-		if (product != null) {
+		if (isValidProduct(product, "UPDATE_PRODUCT")) {
 
 			try (Connection conn = getConnection()) {
 				conn.setAutoCommit(false);
@@ -127,45 +138,38 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 
 					commit(conn);
 
-					LOGGER.trace("Updated product: " + product);
+					Log.logOut(LOGGER, this, "UPDATE_PRODUCT",
+							"Updated product:", product.toString());
 
 					return true;
 				} catch (SQLException e) {
 					rollback(conn);
-					LOGGER.error(e);
 					throw e;
-				} catch (Exception e1) {
-					rollback(conn);
-					LOGGER.error(e1);
-					throw e1;
 				}
 
 			} catch (SQLException e2) {
 				WebshopAppException excep = new WebshopAppException(e2, this
 						.getClass().getSimpleName(), "UPDATE_PRODUCT");
-				LOGGER.error(excep);
+				Log.logOutWAException(LOGGER, excep);
 				throw excep;
 			}
-		} else {
-			WebshopAppException excep = new WebshopAppException(
-					"Product can't be null", this.getClass().getSimpleName(),
-					"UPDATE_PRODUCT");
-			LOGGER.error(excep);
-			throw excep;
 		}
+
+		return false;
 	}
 
 	private int updateProduct(Connection conn, ProductModel product)
 			throws SQLException {
 
-		String sql = "UPDATE products SET name = ?, description = ?, cost = ?, rrp = ? WHERE id = ?";
+		String sql = "UPDATE products SET name = ?, description = ?, cost = ?, rrp = ?, product_type = ? WHERE id = ?";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			setString(pstmt, 1, product.getName());
 			setString(pstmt, 2, product.getDescription());
 			setDouble(pstmt, 3, product.getCost());
 			setDouble(pstmt, 4, product.getRrp());
-			setInteger(pstmt, 5, product.getId());
+			setInteger(pstmt, 5, product.getProductType());
+			setInteger(pstmt, 6, product.getId());
 
 			return pstmt.executeUpdate();
 		}
@@ -196,13 +200,11 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 				// There are delete_on_cascade in BBDD but we delete anyway
 				deleteProductCategories(conn, productId);
 
-				LOGGER.trace("Product with product id = " + productId
-						+ " deleted");
+				Log.logOut(LOGGER, this, "DELETE_PRODUCT",
+						"Product with product id=", String.valueOf(productId),
+						" deleted");
 
 				return true;
-			} catch (SQLException e) {
-				LOGGER.error(e);
-				throw e;
 			}
 		} catch (SQLException e1) {
 			WebshopAppException excep = new WebshopAppException(e1, this
@@ -231,7 +233,8 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 							foundProducts.add(parseModel(conn, rs));
 						}
 
-						LOGGER.trace("Found products: " + foundProducts);
+						Log.logOut(LOGGER, this, "GET_PRODUCT_BY_NAME",
+								"Found products: ", foundProducts.toString());
 
 						return foundProducts;
 					}
@@ -240,7 +243,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 			} catch (SQLException e) {
 				WebshopAppException excep = new WebshopAppException(e, this
 						.getClass().getSimpleName(), "GET_PRODUCT_BY_NAME");
-				LOGGER.error(e);
+				Log.logOutWAException(LOGGER, excep);
 				throw excep;
 			}
 		}
@@ -255,11 +258,13 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 		String description = rs.getString("description");
 		double price = rs.getDouble("cost");
 		double rrp = rs.getDouble("rrp");
+		int productType = rs.getInt("product_type");
 
 		List<Integer> categories = getCategories(conn, id);
 
-		return ProductModel.builder(name).id(id).description(description)
-				.cost(price).rrp(rrp).categories(categories).build();
+		return ProductModel.builder(name, productType).id(id)
+				.description(description).cost(price).rrp(rrp)
+				.categories(categories).build();
 	}
 
 	@Override
@@ -279,7 +284,8 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 						foundProducts.add(parseModel(conn, rs));
 					}
 
-					LOGGER.trace("Found products: " + foundProducts);
+					Log.logOut(LOGGER, this, "GET_PRODUCT_BY_COST",
+							"Found products: ", foundProducts.toString());
 
 					return foundProducts;
 				}
@@ -287,7 +293,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_PRODUCT_BY_COST");
-			LOGGER.error(e);
+			Log.logOutWAException(LOGGER, excep);
 			throw excep;
 		}
 	}
@@ -304,7 +310,11 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 
 				try (ResultSet rs = pstmt.executeQuery()) {
 					if (rs.next()) {
-						LOGGER.trace("Found product with id: " + productId);
+
+						Log.logOut(LOGGER, this, "GET_PRODUCT_BY_ID",
+								"Found product with id: ",
+								String.valueOf(productId));
+
 						return parseModel(conn, rs);
 					}
 				}
@@ -313,7 +323,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_PRODUCT_BY_ID");
-			LOGGER.error(e);
+			Log.logOutWAException(LOGGER, excep);
 			throw excep;
 		}
 
@@ -325,7 +335,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 
 		try (Connection conn = getConnection()) {
 
-			String sql = "SELECT id, name, description, cost, rrp FROM product_categories "
+			String sql = "SELECT id, name, description, cost, rrp,product_type FROM product_categories "
 					+ "INNER JOIN products ON product_id = products.id"
 					+ " WHERE category_id = ?";
 			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -338,14 +348,16 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 						foundProducts.add(parseModel(conn, rs));
 					}
 
-					LOGGER.trace("Found products: " + foundProducts);
+					Log.logOut(LOGGER, this, "GET_PRODUCT_BY_CATEGORY",
+							"Found products: ", foundProducts.toString());
+
 					return foundProducts;
 				}
 			}
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_PRODUCT_BY_CATEGORY");
-			LOGGER.error(e);
+			Log.logOutWAException(LOGGER, excep);
 			throw excep;
 		}
 	}
@@ -364,14 +376,17 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 					while (rs.next()) {
 						foundProducts.add(parseModel(conn, rs));
 					}
-					LOGGER.trace("Found products: " + foundProducts);
+
+					Log.logOut(LOGGER, this, "GET_ALL_PRODUCTS",
+							"Found products: ", foundProducts.toString());
+
 					return foundProducts;
 				}
 			}
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_ALL_PRODUCTS");
-			LOGGER.error(e);
+			Log.logOutWAException(LOGGER, excep);
 			throw excep;
 		}
 	}
@@ -391,7 +406,10 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 					int categoryId = rs.getInt("category_id");
 					categoryIds.add(categoryId);
 				}
-				LOGGER.trace("Found categories: " + categoryIds);
+
+				Log.logOut(LOGGER, this, "GET_CATEGORIES",
+						"Found categories: ", categoryIds.toString());
+
 				return categoryIds;
 			}
 		}
@@ -408,7 +426,7 @@ public final class ProductDAO extends GeneralDAO implements ProductRepository {
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_CATEGORIES_OF_PRODUCT");
-			LOGGER.error(e);
+			Log.logOutWAException(LOGGER, excep);
 			throw excep;
 		}
 	}

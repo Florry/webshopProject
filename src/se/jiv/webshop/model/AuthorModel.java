@@ -1,119 +1,101 @@
 package se.jiv.webshop.model;
 
-public class AuthorModel
-{
+public class AuthorModel {
+	public static final int DEFAULT_ID = -1;
+
+	private final int id;
 	private final String firstname;
 	private final String lastname;
 	private final String dob;
 	private final String country;
-	
-	public static class Builder
-	{
+
+	public static class Builder {
 		// required fields
+		private final int id;
 		private final String firstname;
 		private final String lastname;
-		
+
 		// optional fields
 		private String dob;
 		private String country;
-		
-		public Builder(String firstname, String lastname)
-		{
+
+		public Builder(int id, String firstname, String lastname) {
+			this.id = id;
 			this.firstname = firstname;
 			this.lastname = lastname;
 		}
-		
-		public Builder dob(String dob)
-		{
+
+		public Builder dob(String dob) {
 			this.dob = dob;
 			return this;
 		}
-		
-		public Builder country(String country)
-		{
+
+		public Builder country(String country) {
 			this.country = country;
 			return this;
 		}
-		
-		public AuthorModel build()
-		{
+
+		public AuthorModel build() {
 			return new AuthorModel(this);
 		}
 	}
-	
-	private AuthorModel(Builder builder)
-	{
+
+	private AuthorModel(Builder builder) {
+		this.id = builder.id;
 		this.firstname = builder.firstname;
 		this.lastname = builder.lastname;
 		this.dob = builder.dob;
 		this.country = builder.country;
-		
+
 	}
-	
-	public String getDob()
-	{
+
+	public int getId() {
+		return id;
+	}
+
+	public String getDob() {
 		return dob;
 	}
-	
-	public String getCountry()
-	{
+
+	public String getCountry() {
 		return country;
 	}
-	
-	public String getFirstname()
-	{
+
+	public String getFirstname() {
 		return firstname;
 	}
-	
-	public String getLastname()
-	{
+
+	public String getLastname() {
 		return lastname;
 	}
-	
+
 	@Override
-	public String toString()
-	{
-		return String.format("Author name: %s %s, Dob: %s, from: %s \n", this.getFirstname(),
-				this.getLastname(), this.getDob(), this.getCountry());
+	public String toString() {
+		return String.format("Author name: %s %s, Dob: %s, from: %s \n",
+				this.getFirstname(), this.getLastname(), this.getDob(),
+				this.getCountry());
 	}
-	
+
 	@Override
-	public int hashCode()
-	{
-		int result = 1;
-		result += 37 * this.firstname.hashCode();
-		result += 37 * this.lastname.hashCode();
-		if (this.dob != null)
-		{
-			result += 37 * this.dob.hashCode();
-		}
-		if (this.country != null)
-		{
-			result += 37 * this.country.hashCode();
-		}
-		result += 37 * this.getClass().hashCode();
-		return result;
+	public int hashCode() {
+		return 37 * id;
 	}
-	
+
 	@Override
-	public boolean equals(Object other)
-	{
-		if (other == this)
-		{
+	public boolean equals(Object other) {
+		if (other == this) {
 			return true;
 		}
-		
-		if (other instanceof AuthorModel)
-		{
+
+		if (other instanceof AuthorModel) {
 			AuthorModel otherAuthor = (AuthorModel) other;
-			boolean isSameClass = this.getClass().equals(otherAuthor.getClass());
-			
-			return (firstname.equals(otherAuthor.firstname))
-					&& (lastname.equals(otherAuthor.lastname)) && (dob.equals(otherAuthor.dob))
-					&& (country.equals(otherAuthor.country)) && isSameClass;
+			boolean isSameClass = this.getClass()
+					.equals(otherAuthor.getClass());
+
+			return (this.id == otherAuthor.id) && isSameClass;
 		}
-		
+
 		return false;
 	}
-	
+
 }

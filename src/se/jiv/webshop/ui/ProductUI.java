@@ -8,32 +8,22 @@ import se.jiv.webshop.model.ProductModel;
 
 public final class ProductUI extends GeneralUI {
 
-	public ProductModel createProduct() {
+	private ProductModel readProduct(int id) {
 		boolean manyCategories = true;
 		List<Integer> categories = new ArrayList<>();
 
-		System.out
-				.println("Please enter the name of the product you want to create: ");
-		String name = readString();
-		System.out.println("Please enter the description of the product: ");
-		String description = readString();
-		System.out.println("Please enter the cost of the product: ");
-		double cost = readInt();
-		System.out.println("Please enter the rrp of the product: ");
-		double rrp = readInt();
-		System.out
-				.println("Please enter the id of the category of this product: ");
-		int categoryId = readInt();
+		int productType = readIntWithLabel("Product type: ");
+		String name = readStringWithLabel("Name: ");
+		String description = readStringWithLabel("Description: ");
+		double cost = readDoubleWithLabel("Cost: ");
+		double rrp = readDoubleWithLabel("Rrp: ");
+		int categoryId = readIntWithLabel("Category Id: ");
 		categories.add(categoryId);
 
 		while (manyCategories) {
-			System.out
-					.println("Do you want to add another category to this product? yes/no");
-			String anwser = readString();
-			if (anwser.equals("yes")) {
-				System.out
-						.println("Please enter the id of the other category of this product: ");
-				categoryId = readInt();
+			String anwser = readStringWithLabel("Do you want to add another category to this product? y/n");
+			if (anwser.toLowerCase().equals("y")) {
+				categoryId = readIntWithLabel("Category Id: ");
 				categories.add(categoryId);
 			} else {
 				manyCategories = false;
@@ -41,50 +31,20 @@ public final class ProductUI extends GeneralUI {
 
 		}
 
-		ProductModel newProduct = ProductModel.builder(name)
-				.description(description).cost(cost).rrp(rrp)
-				.categories(categories).build();
+		return ProductModel.builder(name, productType).description(description)
+				.cost(cost).rrp(rrp).categories(categories).id(id).build();
+	}
 
-		return newProduct;
+	public ProductModel createProduct() {
+		System.out.println("Introduce the information for the new Product: ");
+		return readProduct(ProductModel.DEFAULT_PRODUCT_ID);
 	}
 
 	public ProductModel updateProduct(int productId) {
-		List<Integer> categories = new ArrayList<>();
-		boolean manyCategories = true;
-
-		System.out.println("Please enter the new name of the product: ");
-		String name = readString();
-		System.out.println("Please enter the new description of the product: ");
-		String description = readString();
-		System.out.println("Please enter the new cost of the product: ");
-		double cost = readInt();
-		System.out.println("Please enter the new rrp of the product: ");
-		double rrp = readInt();
-		System.out.println("Please enter the new category of this product: ");
-		int categoryId = readInt();
-
-		categories.add(categoryId);
-
-		while (manyCategories) {
-			System.out
-					.println("Do you want to add another new category to this product? yes/no");
-			String anwser = readString();
-			if (anwser.equals("yes")) {
-				System.out
-						.println("Please enter the id of the other new category of this product: ");
-				categoryId = readInt();
-				categories.add(categoryId);
-			} else {
-				manyCategories = false;
-			}
-
-		}
-
-		ProductModel newProduct = ProductModel.builder(name).id(productId)
-				.description(description).cost(cost).rrp(rrp)
-				.categories(categories).build();
-
-		return newProduct;
+		System.out
+				.println("Introduce the new information for the product with id: "
+						+ productId);
+		return readProduct(productId);
 	}
 
 	public int askCategoryToSearch(List<CategoryModel> categories) {
@@ -111,16 +71,11 @@ public final class ProductUI extends GeneralUI {
 	}
 
 	public int askProductId() {
-		System.out.println("Please enter the id of the product: ");
-
-		return readInt();
+		return readIntWithLabel("Please enter the id of the product: ");
 	}
 
 	public String askProductName() {
-		System.out
-				.println("Please enter the name of the product that you want to search: ");
-
-		return readString();
+		return readStringWithLabel("Please enter the name of the product that you want to search: ");
 	}
 
 	public void showCreateSuccess(ProductModel newProduct) {

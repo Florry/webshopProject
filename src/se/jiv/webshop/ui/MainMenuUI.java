@@ -25,6 +25,7 @@ public final class MainMenuUI extends GeneralUI {
 		System.out.println("1. Create a Product.");
 		System.out.println("2. Create a Category.");
 		System.out.println("3. Create an User.");
+		System.out.println("0. Exit");
 
 		return readInt();
 	}
@@ -34,6 +35,7 @@ public final class MainMenuUI extends GeneralUI {
 		System.out.println("1. Edit Products.");
 		System.out.println("2. Edit Categories.");
 		System.out.println("3. Edit Users.");
+		System.out.println("0. Exit");
 
 		return readInt();
 	}

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import se.jiv.webshop.exception.WebshopAppException;
 import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.CategoryRepository;
+import se.jiv.webshop.utils.Log;
 
 public final class CategoryDAO extends GeneralDAO implements CategoryRepository {
 	private static final Logger LOGGER = Logger.getLogger(CategoryDAO.class);
@@ -37,7 +38,7 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 	public CategoryModel addCategory(CategoryModel category)
 			throws WebshopAppException {
 
-		if (category != null) {
+		if (isValidCategory(category, "ADD_CATEGORY")) {
 			try (Connection conn = getConnection()) {
 
 				String sql = "INSERT INTO categories (name, staff_responsible)"
@@ -60,7 +61,8 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 					CategoryModel newModel = new CategoryModel(generatedId,
 							category);
 
-					LOGGER.trace("Category inserted: " + newModel);
+					Log.logOut(LOGGER, this, "ADD_CATEGORY",
+							"Category inserted: ", newModel.toString());
 
 					return newModel;
 
@@ -69,23 +71,21 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			} catch (SQLException e) {
 				WebshopAppException excep = new WebshopAppException(e, this
 						.getClass().getSimpleName(), "ADD_CATEGORY");
-				LOGGER.error(excep);
+
+				Log.logOutWAException(LOGGER, excep);
+
 				throw excep;
 			}
-		} else {
-			WebshopAppException excep = new WebshopAppException(
-					"Category can't be null", this.getClass().getSimpleName(),
-					"ADD_CATEGORY");
-			LOGGER.error(excep);
-			throw excep;
 		}
+
+		return null;
 	}
 
 	@Override
-	public boolean updateCategory(CategoryModel oldCategory,
-			CategoryModel newCategory) throws WebshopAppException {
+	public boolean updateCategory(CategoryModel category)
+			throws WebshopAppException {
 
-		if ((oldCategory != null) && (newCategory != null)) {
+		if (isValidCategory(category, "UPDATE_CATEGORY")) {
 
 			try (Connection conn = getConnection()) {
 
@@ -93,33 +93,30 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 						+ "staff_responsible= ? WHERE id = ?";
 
 				try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-					prepareStatementFromModel(pstmt, newCategory);
+					prepareStatementFromModel(pstmt, category);
 
-					setInteger(pstmt, 3, oldCategory.getId());
+					setInteger(pstmt, 3, category.getId());
 
 					pstmt.executeUpdate();
 
-					LOGGER.trace("The old category: " + oldCategory
-							+ " was updated to have this values: "
-							+ newCategory + " keeping the id: "
-							+ oldCategory.getId());
+					Log.logOut(LOGGER, this, "UPDATED_CATEGORY",
+							"Category updated: ", category.toString());
 
 					return true;
+
 				}
 
 			} catch (SQLException e) {
 				WebshopAppException excep = new WebshopAppException(e, this
 						.getClass().getSimpleName(), "UPDATED_CATEGORY");
-				LOGGER.error(excep);
+
+				Log.logOutWAException(LOGGER, excep);
+
 				throw excep;
 			}
-		} else {
-			WebshopAppException excep = new WebshopAppException(
-					"Category can't be null", this.getClass().getSimpleName(),
-					"UPDATED_CATEGORY");
-			LOGGER.error(excep);
-			throw excep;
 		}
+
+		return false;
 	}
 
 	@Override
@@ -135,22 +132,26 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 
 				try (ResultSet rs = pstmt.executeQuery()) {
 
+					CategoryModel model = null;
 					if (rs.next()) {
-						CategoryModel model = parseResultSetToModel(rs);
-						LOGGER.trace("Category searched by id: " + model);
-						return model;
+						model = parseResultSetToModel(rs);
+
+						Log.logOut(LOGGER, this, "GET_CATEGORY",
+								"Category searched by id: ", model.toString());
 					}
+
+					return model;
 				}
 			}
 
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_CATEGORY");
-			LOGGER.error(excep);
+
+			Log.logOutWAException(LOGGER, excep);
+
 			throw excep;
 		}
-
-		return null;
 	}
 
 	@Override
@@ -167,21 +168,28 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 
 					try (ResultSet rs = pstmt.executeQuery()) {
 
+						CategoryModel model = null;
 						if (rs.next()) {
-							CategoryModel model = parseResultSetToModel(rs);
-							LOGGER.trace("Category searched by name: " + model);
-							return model;
+							model = parseResultSetToModel(rs);
+
+							Log.logOut(LOGGER, this, "SEARCH_CATEGORY_BY_NAME",
+									"Category searched by name: ",
+									model.toString());
 						}
+						return model;
 					}
 				}
 
 			} catch (SQLException e) {
 				WebshopAppException excep = new WebshopAppException(e, this
 						.getClass().getSimpleName(), "SEARCH_CATEGORY_BY_NAME");
-				LOGGER.error(excep);
+
+				Log.logOutWAException(LOGGER, excep);
+
 				throw excep;
 			}
 		}
+
 		return null;
 	}
 
@@ -201,21 +209,28 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 					while (rs.next()) {
 						categories.add(parseResultSetToModel(rs));
 					}
-					LOGGER.trace("All categories: " + categories);
+
+					Log.logOut(LOGGER, this, "GET_ALL_CATEGORIES",
+							"All categories: ", categories.toString());
+
+					return categories;
+
 				}
 			}
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "GET_ALL_CATEGORIES");
-			LOGGER.error(excep);
+
+			Log.logOutWAException(LOGGER, excep);
+
 			throw excep;
 		}
-
-		return categories;
 	}
 
 	@Override
 	public boolean deleteCategory(int id) throws WebshopAppException {
+
+		int result = -1;
 
 		try (Connection conn = getConnection()) {
 
@@ -224,19 +239,39 @@ public final class CategoryDAO extends GeneralDAO implements CategoryRepository 
 			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 				setInteger(pstmt, 1, id);
 
-				int result = pstmt.executeUpdate();
+				result = pstmt.executeUpdate();
 
-				LOGGER.trace("Category deleted with id:" + id);
+				Log.logOut(LOGGER, this, "DELETE_CATEGORY",
+						"Category deleted with id: ", String.valueOf(id));
 
 				return result > 0;
+
 			}
 
 		} catch (SQLException e) {
 			WebshopAppException excep = new WebshopAppException(e, this
 					.getClass().getSimpleName(), "DELETE_CATEGORY");
-			LOGGER.error(excep);
+
+			Log.logOutWAException(LOGGER, excep);
+
 			throw excep;
 		}
+
+	}
+
+	private boolean isValidCategory(CategoryModel category, String functionName)
+			throws WebshopAppException {
+		if (category == null) {
+			WebshopAppException excep = new WebshopAppException(
+					"category can not be null",
+					this.getClass().getSimpleName(), functionName);
+
+			Log.logOutWAException(LOGGER, excep);
+
+			throw excep;
+		}
+
+		return true;
 	}
 
 }

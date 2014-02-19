@@ -6,8 +6,8 @@ public final class WebshopAppException extends Exception {
 
 	private static final long serialVersionUID = 20140123L;
 
-	private String className;
-	private String actionName;
+	private final String className;
+	private final String actionName;
 
 	public WebshopAppException(SQLException e, String className,
 			String actionName) {
@@ -29,6 +29,12 @@ public final class WebshopAppException extends Exception {
 
 	public String getClassName() {
 		return className;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s.%s: %s", className, actionName,
+				super.toString());
 	}
 
 }

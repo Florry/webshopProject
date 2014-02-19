@@ -53,7 +53,7 @@ public abstract class GeneralUI {
 				value = scanner.nextDouble();
 			} catch (Exception e) {
 				System.out
-						.println("It have to be a double number (x.x). Write it again:");
+						.println("It have to be a double number (x,x). Write it again:");
 				continue;
 			}
 

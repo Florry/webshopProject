@@ -3,7 +3,7 @@ package se.jiv.webshop.ui;
 import se.jiv.webshop.model.CategoryModel;
 
 public final class CategoryUI extends GeneralUI {
-	public CategoryModel addCategory() {
+	public CategoryModel askAddCategory() {
 		System.out
 				.println("Please enter the name of the category you want to create: ");
 		String categoryName = readString();
@@ -16,7 +16,7 @@ public final class CategoryUI extends GeneralUI {
 		return newCategory;
 	}
 
-	public CategoryModel updateCategory(int categoryId) {
+	public CategoryModel askUpdateCategory(int categoryId) {
 		System.out.println("Please enter the new name of the category: ");
 		String name = readString();
 		System.out

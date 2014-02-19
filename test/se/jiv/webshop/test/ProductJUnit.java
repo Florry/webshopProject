@@ -3,9 +3,9 @@ package se.jiv.webshop.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,179 +21,220 @@ import se.jiv.webshop.model.ProductModel;
 import se.jiv.webshop.repository.dao.ProductDAO;
 
 public class ProductJUnit {
-	static final String JDBC_DRIVER = DevDBConfig.JDBC_DRIVER;
-	static final String DB_URL = DevDBConfig.DB_URL;
-	static final String DB_USER = DevDBConfig.DB_USER;
-	static final String DB_PASSWORD = DevDBConfig.DB_PASSWORD;
+	private int prod_id1 = -1;
+	private final ProductDAO pd = new ProductDAO();
 
-	@Before
-	public void setUp() throws Exception {
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "INSERT INTO products(name,description,cost,rrp) VALUES('A rush of blood to the head',"
-						+ "'Best Coldplay Album', 149, 500)";
+	private static List<Integer> getCategories(Connection conn, int id)
+			throws SQLException {
 
-				stmt.executeUpdate(sql);
+		String sql = "SELECT category_id FROM product_categories where product_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
 
-			}
-		}
+			try (ResultSet rs = pstmt.executeQuery()) {
 
-	}
+				List<Integer> categoryIds = new ArrayList<Integer>();
 
-	@After
-	public void tearDown() throws Exception {
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "DELETE FROM products WHERE name = 'A rush of blood to the head'";
-
-				stmt.executeUpdate(sql);
-			}
-		}
-	}
-
-	@Test
-	public void canCreateProduct() {
-		ProductDAO productDao = new ProductDAO();
-		ProductModel expectedProduct = null;
-		ProductModel actualProduct = null;
-
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT * FROM products";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
-
-					int id = 0;
-
-					if (rs.last()) {
-						id = rs.getInt("id");
-					}
-
-					expectedProduct = ProductModel.builder("Night Visions")
-							.id(id + 1).description("Imagine Dragons")
-							.cost(149).rrp(400).build();
-
-					try {
-						actualProduct = productDao
-								.createProduct(expectedProduct);
-
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
+				while (rs.next()) {
+					int categoryId = rs.getInt("category_id");
+					categoryIds.add(categoryId);
 				}
+
+				return categoryIds;
+			}
+		}
+	}
+
+	private static ProductModel parseModel(Connection conn, ResultSet rs)
+			throws SQLException {
+
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		String description = rs.getString("description");
+		double price = rs.getDouble("cost");
+		double rrp = rs.getDouble("rrp");
+		int productType = rs.getInt("product_type");
+
+		List<Integer> categories = getCategories(conn, id);
+
+		return ProductModel.builder(name, productType).id(id)
+				.description(description).cost(price).rrp(rrp)
+				.categories(categories).build();
+	}
+
+	static int insertProduct(ProductModel product) {
+		try (Connection conn = DevDBConfig.getConnection()) {
+			String sql = "INSERT INTO products (name, description,cost,rrp,product_type)"
+					+ " VALUES (?,?,?,?,?)";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql,
+					Statement.RETURN_GENERATED_KEYS)) {
+				pstmt.setString(1, product.getName());
+				pstmt.setString(2, product.getDescription());
+				pstmt.setDouble(3, product.getCost());
+				pstmt.setDouble(4, product.getRrp());
+				pstmt.setInt(5, product.getProductType());
+
+				pstmt.executeUpdate();
+
+				int productId = -1;
+				try (ResultSet rs = pstmt.getGeneratedKeys()) {
+					if (rs.next()) {
+						productId = rs.getInt(1);
+					}
+				}
+
+				insertProductCategories(conn, productId,
+						product.getCategories());
+
+				return productId;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return -1;
+	}
 
-		assertTrue("they are not equal", expectedProduct.equals(actualProduct));
+	private static void insertProductCategories(Connection conn, int productId,
+			List<Integer> categories) throws SQLException {
+
+		String sql = "INSERT INTO product_categories VALUES( ?, ?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			for (int categoryId : categories) {
+
+				pstmt.setInt(1, productId);
+				pstmt.setInt(2, categoryId);
+
+				pstmt.addBatch();
+			}
+			pstmt.executeBatch();
+		}
+
+	}
+
+	static void deleteProduct(int prod_id) {
+		try (Connection conn = DevDBConfig.getConnection()) {
+			String sql = "DELETE FROM products WHERE id = ?";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setInt(1, prod_id);
+
+				pstmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	static ProductModel getProductById(int productId) {
+		try (Connection conn = DevDBConfig.getConnection()) {
+
+			String sql = "SELECT * FROM products WHERE id = ?";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setInt(1, productId);
+
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						return parseModel(conn, rs);
+					}
+				}
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		prod_id1 = ProductJUnit.insertProduct(ProductModel.builder("Prod1", 1)
+				.description("desc1").cost(1).rrp(1).build());
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		deleteProduct(prod_id1);
+	}
+
+	@Test
+	public void canCreateProduct() {
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel getProduct = null;
+		try {
+			addedProduct = pd.createProduct(addedProduct);
+			getProduct = getProductById(addedProduct.getId());
+
+			deleteProduct(addedProduct.getId());
+		} catch (WebshopAppException e) {
+			e.printStackTrace();
+		}
+
+		assertTrue("they are not equal", addedProduct.equals(getProduct));
 
 	}
 
 	@Test
 	public void canGetProductsByName() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expectedProducts = new ArrayList<>();
-		List<ProductModel> actualProducts = null;
+		ProductModel addedProduct1 = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel addedProduct2 = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		List<ProductModel> products = null;
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT * FROM products WHERE name = 'A rush of blood to the head'";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+		try {
+			addedProduct1 = new ProductModel(insertProduct(addedProduct1),
+					addedProduct1);
+			addedProduct2 = new ProductModel(insertProduct(addedProduct2),
+					addedProduct2);
 
-					while (rs.next()) {
+			products = pd.getProductByName(addedProduct1.getName());
 
-						int id = rs.getInt("id");
-						String name = rs.getString("name");
-						String description = rs.getString("description");
-						double cost = rs.getDouble("cost");
-						double rrp = rs.getDouble("rrp");
-
-						expectedProducts.add(ProductModel.builder(name).id(id)
-								.description(description).cost(cost).rrp(rrp)
-								.build());
-					}
-
-					try {
-						actualProducts = productDao
-								.getProductByName("A rush of blood to the head");
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
-				}
-			}
-		} catch (SQLException e) {
+			deleteProduct(addedProduct1.getId());
+			deleteProduct(addedProduct2.getId());
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
-
-		assertTrue("Not the same", expectedProducts.equals(actualProducts));
+		assertTrue(products.size() == 2
+				&& addedProduct1.equals(products.get(0))
+				&& addedProduct2.equals(products.get(1)));
 	}
 
 	@Test
 	public void canGetProductByNonExcistingName() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expected = new ArrayList<>();
-		List<ProductModel> actual = null;
+		List<ProductModel> products = null;
 		try {
-			actual = productDao.getProductByName("alskdaskldj");
+			products = pd.getProductByName("alskdaskldj");
 		} catch (WebshopAppException e) {
-			e.printStackTrace();
-			fail("Exception");
 		}
 
-		assertTrue(expected.equals(actual));
+		assertTrue(products.size() == 0);
 	}
 
 	@Test
 	public void canGetProductById() {
-		ProductDAO productDao = new ProductDAO();
-		ProductModel expectedProduct = null;
-		ProductModel actualProduct = null;
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel getProduct = null;
+		try {
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
+			getProduct = pd.getProductById(addedProduct.getId());
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT * FROM products WHERE id = 2";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
-
-					while (rs.next()) {
-
-						int id = rs.getInt("id");
-						String name = rs.getString("name");
-						String description = rs.getString("description");
-						double cost = rs.getDouble("cost");
-						double rrp = rs.getDouble("rrp");
-
-						expectedProduct = ProductModel.builder(name).id(id)
-								.description(description).cost(cost).rrp(rrp)
-								.build();
-					}
-
-					try {
-						actualProduct = productDao.getProductById(2);
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
-				}
-			}
-		} catch (SQLException e) {
+			deleteProduct(addedProduct.getId());
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
 
-		assertTrue("Not able to get the right product",
-				expectedProduct.equals(actualProduct));
+		assertTrue("they are not equal", addedProduct.equals(getProduct));
 	}
 
 	@Test
 	public void canGetProductByNonExcistingId() {
-		ProductDAO productDao = new ProductDAO();
 		ProductModel retrieved = null;
 		try {
-			retrieved = productDao.getProductById(1234);
+			retrieved = pd.getProductById(1234);
 		} catch (WebshopAppException e) {
-			e.printStackTrace();
-			fail("Exception");
 		}
 
 		assertNull(retrieved);
@@ -201,236 +242,213 @@ public class ProductJUnit {
 
 	@Test
 	public void canGetAllProducts() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expectedProducts = new ArrayList<>();
-		List<ProductModel> actualProducts = null;
+		ProductModel addedProduct1 = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel addedProduct2 = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		List<ProductModel> products = null;
+		boolean isProduct1 = false;
+		boolean isProduct2 = false;
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT * FROM products";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+		try {
+			addedProduct1 = new ProductModel(insertProduct(addedProduct1),
+					addedProduct1);
+			addedProduct2 = new ProductModel(insertProduct(addedProduct2),
+					addedProduct2);
 
-					while (rs.next()) {
-						int id = rs.getInt("id");
-						String name = rs.getString("name");
-						String description = rs.getString("description");
-						double cost = rs.getDouble("cost");
-						double rrp = rs.getDouble("rrp");
+			products = pd.getAllProducts();
 
-						expectedProducts.add(ProductModel.builder(name).id(id)
-								.description(description).cost(cost).rrp(rrp)
-								.build());
-					}
+			deleteProduct(addedProduct1.getId());
+			deleteProduct(addedProduct2.getId());
 
-					try {
-						actualProducts = productDao.getAllProducts();
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
-				}
-			}
-		} catch (SQLException e) {
+		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
+		for (ProductModel product : products) {
+			if (addedProduct1.equals(product)) {
+				isProduct1 = true;
+			}
+			if (addedProduct2.equals(product)) {
+				isProduct2 = true;
+			}
+		}
 
-		assertTrue("The product list are not the same",
-				expectedProducts.equals(actualProducts));
+		assertTrue(products.size() >= 2 && isProduct1 && isProduct2);
 
 	}
 
 	@Test
 	public void canUpdateProduct() {
-		ProductDAO productDao = new ProductDAO();
-		ProductModel newProduct = ProductModel.builder("Megalithic Melody")
-				.id(3).description("AWOLNATION").cost(145).rrp(199).build();
-		boolean expected = true;
-		boolean actual = false;
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel updatedProduct = ProductModel
+				.builder("Night Visionsadfa", 1)
+				.description("Imagine Dragonsadfa").cost(1439).rrp(4030)
+				.build();
+		ProductModel getProduct = null;
 
 		try {
-			actual = productDao.updateProduct(newProduct);
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
+			updatedProduct = new ProductModel(addedProduct.getId(),
+					updatedProduct);
+
+			pd.updateProduct(updatedProduct);
+			getProduct = getProductById(addedProduct.getId());
+
+			deleteProduct(addedProduct.getId());
 		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
 
-		assertEquals("Was not able to update", expected, actual);
+		assertEquals("Was not able to update", updatedProduct, getProduct);
 
 	}
 
 	@Test
 	public void canDeleteProduct() {
-		ProductDAO productDao = new ProductDAO();
-		boolean expected = true;
-		boolean actual = false;
-
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
+		ProductModel getProduct = null;
 		try {
-			actual = productDao.deleteProduct(5);
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
+
+			pd.deleteProduct(addedProduct.getId());
+
+			getProduct = getProductById(addedProduct.getId());
+
+			deleteProduct(addedProduct.getId());
 		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
+		assertNull(getProduct);
 
-		assertEquals("Was not able to delete", expected, actual);
 	}
 
 	@Test
 	public void canGetProductsByCost() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expectedProducts = new ArrayList<>();
-		List<ProductModel> actualProducts = null;
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400).build();
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT * FROM products WHERE cost = 149";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+		List<ProductModel> products = null;
+		boolean isInResult = false;
+		try {
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
 
-					while (rs.next()) {
-						int id = rs.getInt("id");
-						String name = rs.getString("name");
-						String description = rs.getString("description");
-						double cost = rs.getDouble("cost");
-						double rrp = rs.getDouble("rrp");
+			products = pd.getProductsByCost(addedProduct.getCost());
 
-						expectedProducts.add(ProductModel.builder(name).id(id)
-								.description(description).cost(cost).rrp(rrp)
-								.build());
-					}
-
-					try {
-						actualProducts = productDao.getProductsByCost(149);
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
+			for (ProductModel product : products) {
+				if (addedProduct.equals(product)) {
+					isInResult = true;
+					break;
 				}
 			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+
+			deleteProduct(addedProduct.getId());
+		} catch (WebshopAppException e) {
+			e.printStackTrace();
 		}
 
-		assertTrue("The foundlist are not the same",
-				expectedProducts.equals(actualProducts));
+		assertTrue(isInResult);
 
 	}
 
 	@Test
 	public void canGetProductByNonExcistingCost() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expected = new ArrayList<>();
-		List<ProductModel> actual = null;
+		List<ProductModel> products = new ArrayList<>();
 		try {
-			actual = productDao.getProductsByCost(123456);
+			products = pd.getProductsByCost(123456);
 		} catch (WebshopAppException e) {
-			e.printStackTrace();
-			fail("Exception");
+
 		}
 
-		assertTrue(expected.equals(actual));
+		assertTrue((products != null) && (products.size() == 0));
 	}
 
 	@Test
 	public void canGetProductsByCategory() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expectedProducts = new ArrayList<>();
-		List<ProductModel> actualProducts = null;
+		List<Integer> categories = new ArrayList<>();
+		categories.add(CategoryJUnit.getACategory());
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT id, name, description, cost, rrp FROM product_categories "
-						+ "INNER JOIN products ON product_id = products.id"
-						+ " WHERE category_id = 1";
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400)
+				.categories(categories).build();
 
-					while (rs.next()) {
-						int id = rs.getInt("id");
-						String name = rs.getString("name");
-						String description = rs.getString("description");
-						double cost = rs.getDouble("cost");
-						double rrp = rs.getDouble("rrp");
+		List<ProductModel> products = null;
+		boolean isInResult = false;
+		try {
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
 
-						expectedProducts.add(ProductModel.builder(name).id(id)
-								.description(description).cost(cost).rrp(rrp)
-								.build());
-					}
+			products = pd.getProductsByCategory(addedProduct.getCategories()
+					.get(0));
 
-					try {
-						actualProducts = productDao.getProductsByCategory(1);
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
+			for (ProductModel product : products) {
+				if (addedProduct.equals(product)) {
+					isInResult = true;
+					break;
 				}
 			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+
+			deleteProduct(addedProduct.getId());
+		} catch (WebshopAppException e) {
+			e.printStackTrace();
 		}
 
-		assertTrue("Unable to get products by category",
-				expectedProducts.equals(actualProducts));
+		assertTrue(isInResult);
 
 	}
 
 	@Test
 	public void canGetProductByNonExcistingCategory() {
-		ProductDAO productDao = new ProductDAO();
-		List<ProductModel> expected = new ArrayList<>();
-		List<ProductModel> actual = null;
+		List<ProductModel> products = new ArrayList<>();
 		try {
-			actual = productDao.getProductsByCategory(1234);
+			products = pd.getProductsByCategory(133234);
 		} catch (WebshopAppException e) {
-			e.printStackTrace();
-			fail("Exception");
+
 		}
 
-		assertTrue(expected.equals(actual));
+		assertTrue((products != null) && (products.size() == 0));
 	}
 
 	@Test
 	public void canGetCategoriesOfProduct() {
-		ProductDAO productDao = new ProductDAO();
-		List<Integer> expectedCategories = new ArrayList<>();
-		List<Integer> actualCategories = null;
+		List<Integer> categories = new ArrayList<>();
+		categories.add(CategoryJUnit.getACategory());
 
-		try (Connection conn = DevDBConfig.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				String sql = "SELECT category_id FROM product_categories where product_id = 2";
+		List<Integer> categories_retrieved = null;
 
-				try (ResultSet rs = stmt.executeQuery(sql)) {
+		ProductModel addedProduct = ProductModel.builder("Night Visions", 1)
+				.description("Imagine Dragons").cost(149).rrp(400)
+				.categories(categories).build();
 
-					while (rs.next()) {
-						int categoryId = rs.getInt("category_id");
+		try {
+			addedProduct = new ProductModel(insertProduct(addedProduct),
+					addedProduct);
+			categories_retrieved = pd.getCategoriesOfProduct(addedProduct
+					.getId());
 
-						expectedCategories.add(categoryId);
-					}
+			deleteProduct(addedProduct.getId());
+		} catch (WebshopAppException e) {
 
-					try {
-						actualCategories = productDao.getCategoriesOfProduct(2);
-					} catch (WebshopAppException e) {
-						e.printStackTrace();
-					}
-
-				}
-			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
 		}
 
-		assertTrue("Unable to get categories of product",
-				expectedCategories.equals(actualCategories));
+		assertEquals(categories, categories_retrieved);
 	}
 
 	@Test
 	public void canGetCategoriesOfNonExcistingProduct() {
-		ProductDAO productDao = new ProductDAO();
-		List<Integer> expected = new ArrayList<>();
-		List<Integer> actual = null;
+		List<Integer> categories_retrieved = null;
 		try {
-			actual = productDao.getCategoriesOfProduct(1234);
+			categories_retrieved = pd.getCategoriesOfProduct(1239874);
 		} catch (WebshopAppException e) {
-			e.printStackTrace();
-			fail("Exception");
+
 		}
 
-		assertTrue(expected.equals(actual));
+		assertTrue((categories_retrieved != null)
+				&& (categories_retrieved.size() == 0));
 	}
 
 }

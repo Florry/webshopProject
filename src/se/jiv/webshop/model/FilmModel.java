@@ -16,8 +16,9 @@ public class FilmModel extends ProductModel {
 		// Optional parameters
 		private String format;
 
-		public Builder(String name, String title, int rating, String director) {
-			super(name);
+		public Builder(String name, int productType, String title, int rating,
+				String director) {
+			super(name, productType);
 			this.director = director;
 			this.title = title;
 			this.rating = rating;
@@ -37,8 +38,9 @@ public class FilmModel extends ProductModel {
 	}
 
 	private static class Builder2 extends Builder<Builder2> {
-		public Builder2(String name, String title, int rating, String director) {
-			super(name, title, rating, director);
+		public Builder2(String name, int productType, String title, int rating,
+				String director) {
+			super(name, productType, title, rating, director);
 		}
 
 		@Override
@@ -47,9 +49,9 @@ public class FilmModel extends ProductModel {
 		}
 	}
 
-	public static Builder<?> builder(String name, String title, int rating,
-			String director) {
-		return new Builder2(name, title, rating, director);
+	public static Builder<?> builder(String name, int productType,
+			String title, int rating, String director) {
+		return new Builder2(name, productType, title, rating, director);
 	}
 
 	protected FilmModel(Builder<?> builder) {

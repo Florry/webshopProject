@@ -20,11 +20,6 @@ import se.jiv.webshop.model.CategoryModel;
 import se.jiv.webshop.repository.dao.CategoryDAO;
 
 public class CategoryJUnit {
-	static final String JDBC_DRIVER = DevDBConfig.JDBC_DRIVER;
-	static final String DB_URL = DevDBConfig.DB_URL;
-	static final String DB_USER = DevDBConfig.DB_USER;
-	static final String DB_PASSWORD = DevDBConfig.DB_PASSWORD;
-
 	private CategoryModel categoryTest;
 	private int generatedStaffId = -1;
 
@@ -180,6 +175,26 @@ public class CategoryJUnit {
 		}
 
 		return null;
+	}
+
+	static int getACategory() {
+		try (Connection conn = DevDBConfig.getConnection()) {
+			try (Statement stmt = conn.createStatement()) {
+
+				String sql = "select * from webshop.categories";
+
+				try (ResultSet rs = stmt.executeQuery(sql)) {
+					if (rs.next()) {
+						return rs.getInt(1);
+
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return -1;
 	}
 
 	@Before
@@ -393,14 +408,17 @@ public class CategoryJUnit {
 		CategoryDAO cd = new CategoryDAO();
 		CategoryModel addCategory = new CategoryModel("toAddCategory",
 				generatedStaffId);
-		CategoryModel updateCategory = new CategoryModel("categoryUpdated",
-				generatedStaffId);
+		CategoryModel updateCategory = null;
 		CategoryModel retrieved = null;
 
 		try {
 			addCategory = insertCategory(addCategory);
 
-			cd.updateCategory(addCategory, updateCategory);
+			updateCategory = new CategoryModel(addCategory.getId(),
+					"categoryUpdated", generatedStaffId);
+
+			cd.updateCategory(updateCategory);
+
 			retrieved = getCategoryByName("categoryUpdated");
 
 			deleteCategoryById(addCategory.getId());
@@ -419,6 +437,7 @@ public class CategoryJUnit {
 				generatedStaffId);
 		CategoryModel addCategory2 = new CategoryModel("toAddCategory2",
 				generatedStaffId);
+		CategoryModel updateCategory = null;
 		boolean wasException = false;
 
 		CategoryModel addedCategory1 = null;
@@ -428,7 +447,10 @@ public class CategoryJUnit {
 			addedCategory1 = insertCategory(addCategory1);
 			addedCategory2 = insertCategory(addCategory2);
 
-			cd.updateCategory(addedCategory1, addCategory2);
+			updateCategory = new CategoryModel(addedCategory1.getId(),
+					addedCategory2);
+
+			cd.updateCategory(updateCategory);
 
 		} catch (WebshopAppException e) {
 			wasException = true;
@@ -440,32 +462,13 @@ public class CategoryJUnit {
 	}
 
 	@Test
-	public void canUpdateCategoryWithNullInOldCategory() {
+	public void canUpdateCategoryWithNull() {
 		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = null;
-		CategoryModel newCategory = new CategoryModel("toAddCategory",
-				generatedStaffId);
+		CategoryModel updateCategory = null;
 
 		boolean wasException = false;
 		try {
-			cd.updateCategory(oldCategory, newCategory);
-		} catch (WebshopAppException e) {
-			wasException = true;
-		}
-
-		assertTrue(wasException);
-	}
-
-	@Test
-	public void canUpdateCategoryWithNullInNewCategory() {
-		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = new CategoryModel("toAddCategory",
-				generatedStaffId);
-		CategoryModel newCategory = null;
-
-		boolean wasException = false;
-		try {
-			cd.updateCategory(oldCategory, newCategory);
+			cd.updateCategory(updateCategory);
 		} catch (WebshopAppException e) {
 			wasException = true;
 		}
@@ -476,16 +479,18 @@ public class CategoryJUnit {
 	@Test
 	public void canUpdateCategoryWithNullName() {
 		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = new CategoryModel("toAddCategory",
+		CategoryModel addedCategory = new CategoryModel("toAddCategory",
 				generatedStaffId);
-		CategoryModel newCategory = new CategoryModel(null, generatedStaffId);
-		CategoryModel addedCategory = null;
+		CategoryModel updatedCategory = new CategoryModel(null,
+				generatedStaffId);
 
 		boolean wasException = false;
 		try {
-			addedCategory = insertCategory(oldCategory);
+			addedCategory = insertCategory(addedCategory);
+			updatedCategory = new CategoryModel(addedCategory.getId(),
+					updatedCategory);
 
-			cd.updateCategory(addedCategory, newCategory);
+			cd.updateCategory(updatedCategory);
 
 		} catch (WebshopAppException e) {
 			wasException = true;
@@ -498,41 +503,33 @@ public class CategoryJUnit {
 	@Test
 	public void canUpdateWithoutId() {
 		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = new CategoryModel("toAddCategory",
+		CategoryModel updatedCategory = new CategoryModel("toAddCategory",
 				generatedStaffId);
-		CategoryModel newCategory = new CategoryModel("toAddCategory2",
-				generatedStaffId);
-		CategoryModel addedCategory = null;
-		CategoryModel searchedCategory = null;
 
 		try {
-			addedCategory = insertCategory(oldCategory);
-
-			cd.updateCategory(oldCategory, newCategory);
-
-			searchedCategory = getCategoryByName(oldCategory.getName());
-
+			cd.updateCategory(updatedCategory);
 		} catch (WebshopAppException e) {
 			e.printStackTrace();
 		}
-		deleteCategoryById(addedCategory.getId());
-
-		assertEquals(oldCategory.getName(), searchedCategory.getName());
+		assertTrue(true);
 	}
 
 	@Test
 	public void canUpdatedCategoryWithStaffThatNotExist() {
 		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = new CategoryModel("toAddCategory",
+		CategoryModel addedCategory = new CategoryModel("toAddCategory",
 				generatedStaffId);
-		CategoryModel newCategory = new CategoryModel("toAddCategory",
+		CategoryModel updatedCategory = new CategoryModel("toAddCategory",
 				getMaxStaffId() + 10);
-		CategoryModel addedCategory = null;
 		boolean wasException = false;
 
 		try {
-			addedCategory = insertCategory(oldCategory);
-			cd.updateCategory(addedCategory, newCategory);
+			addedCategory = insertCategory(addedCategory);
+			updatedCategory = new CategoryModel(addedCategory.getId(),
+					updatedCategory);
+
+			cd.updateCategory(updatedCategory);
+
 		} catch (WebshopAppException e) {
 			wasException = true;
 		}
@@ -544,15 +541,17 @@ public class CategoryJUnit {
 	@Test
 	public void canUpdateCategoryWithNegativeStaff() {
 		CategoryDAO cd = new CategoryDAO();
-		CategoryModel oldCategory = new CategoryModel("toAddCategory",
+		CategoryModel addedCategory = new CategoryModel("toAddCategory",
 				generatedStaffId);
-		CategoryModel newCategory = new CategoryModel("toAddCategory", -100);
-		CategoryModel addedCategory = null;
+		CategoryModel updatedCategory = new CategoryModel("toAddCategory", -100);
 		boolean wasException = false;
 
 		try {
-			addedCategory = insertCategory(oldCategory);
-			cd.updateCategory(addedCategory, newCategory);
+			addedCategory = insertCategory(addedCategory);
+			updatedCategory = new CategoryModel(addedCategory.getId(),
+					updatedCategory);
+
+			cd.updateCategory(updatedCategory);
 		} catch (WebshopAppException e) {
 			wasException = true;
 		}

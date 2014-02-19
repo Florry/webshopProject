@@ -12,10 +12,12 @@ public class ProductModel {
 	private final double cost;
 	private final double rrp;
 	private final List<Integer> categories;
+	private final int productType;
 
 	public static abstract class Builder<T extends Builder<T>> {
 		// Required parameters
 		private final String name;
+		private final int productType;
 
 		protected abstract T self();
 
@@ -26,8 +28,9 @@ public class ProductModel {
 		private double rrp;
 		private final List<Integer> categories;
 
-		public Builder(String name) {
+		public Builder(String name, int productType) {
 			this.name = name;
+			this.productType = productType;
 
 			id = DEFAULT_PRODUCT_ID;
 			description = "";
@@ -70,8 +73,8 @@ public class ProductModel {
 	}
 
 	private static class Builder2 extends Builder<Builder2> {
-		public Builder2(String name) {
-			super(name);
+		public Builder2(String name, int productType) {
+			super(name, productType);
 		}
 
 		@Override
@@ -87,10 +90,21 @@ public class ProductModel {
 		this.cost = builder.cost;
 		this.rrp = builder.rrp;
 		this.categories = builder.categories;
+		this.productType = builder.productType;
 	}
 
-	public static Builder<?> builder(String name) {
-		return new Builder2(name);
+	public ProductModel(int id, ProductModel other) {
+		this.id = id;
+		this.name = other.name;
+		this.description = other.description;
+		this.cost = other.cost;
+		this.rrp = other.rrp;
+		this.categories = other.categories;
+		this.productType = other.productType;
+	}
+
+	public static Builder<?> builder(String name, int productType) {
+		return new Builder2(name, productType);
 	}
 
 	public int getId() {
@@ -117,6 +131,10 @@ public class ProductModel {
 		return categories;
 	}
 
+	public int getProductType() {
+		return productType;
+	}
+
 	@Override
 	public int hashCode() {
 		if (id != DEFAULT_PRODUCT_ID) {
@@ -129,6 +147,7 @@ public class ProductModel {
 		hash += cost;
 		hash += rrp;
 		hash *= categories.hashCode();
+		hash *= productType;
 
 		return hash;
 	}
@@ -142,7 +161,7 @@ public class ProductModel {
 
 			if ((other.id != DEFAULT_PRODUCT_ID)
 					|| (this.id != DEFAULT_PRODUCT_ID)) {
-				return other.id == this.id;
+				return (other.id == this.id);
 			}
 
 			boolean isEqual = true;
@@ -151,6 +170,7 @@ public class ProductModel {
 			isEqual = isEqual && other.cost == this.cost;
 			isEqual = isEqual && other.rrp == this.rrp;
 			isEqual = isEqual && other.categories.equals(this.categories);
+			isEqual = isEqual && other.productType == this.productType;
 
 			return isEqual;
 
@@ -173,8 +193,9 @@ public class ProductModel {
 		categoriesTxt += "]";
 
 		return String
-				.format("Id: %s, Name: %s, Description: %s, Cost: %s, RRP: %s, Categories: %s",
-						id, name, description, cost, rrp, categoriesTxt);
+				.format("Id: %s, Name: %s, Description: %s, Cost: %s, RRP: %s, ProductType: %s, Categories: %s",
+						id, name, description, cost, rrp, productType,
+						categoriesTxt);
 	}
 
 }
